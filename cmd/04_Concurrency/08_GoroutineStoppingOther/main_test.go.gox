@@ -1,0 +1,11 @@
+package main
+
+import (
+	"context"
+	"testing"
+)
+
+// go test -race
+func TestProcess(t *testing.T) {
+	process(context.Background())
+}

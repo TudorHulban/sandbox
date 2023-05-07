@@ -1,0 +1,32 @@
+package puub
+
+import (
+	"context"
+	"fmt"
+
+	"cloud.google.com/go/pubsub"
+)
+
+var _client *pubsub.Client
+
+func newClient(ctx context.Context) error {
+	if _client == nil {
+		if !isSocketOpened(_sockEmulator) {
+			return fmt.Errorf("emulator not responding at: %s", _sockEmulator)
+		}
+
+		client, errNew := pubsub.NewClient(ctx, _projectID)
+		if errNew != nil {
+			return errNew
+		}
+
+		_client = client
+	}
+
+	return nil
+}
+
+// GetClient returns GCP Pub / Sub client which should be reused.
+func GetClient() *pubsub.Client {
+	return _client
+}

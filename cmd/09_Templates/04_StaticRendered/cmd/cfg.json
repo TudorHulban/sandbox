@@ -1,0 +1,18 @@
+{
+ "AppConfigFile": "cfg.json",
+ "SaveToConfigFile": "",
+ "L": {},
+ "ListeningPort": 8080,
+ "FaviconImagePath": "",
+ "SiteLogoPath": "",
+ "ArticlesRAWFolder": "articles",
+ "ArticlesRenderToFolder": "/mnt/tmpfs.ramdisk/GoTemplating/cmd/renderedarticles",
+ "ContainingFolder": "../mnt/tmpfs.ramdisk/GoTemplating/cmd/static/assets",
+ "PageShell": "01_page_shell.gohtml",
+ "Head": "02_head.gohtml",
+ "Meta": "03_meta.gohtml",
+ "Header": "04_header.gohtml",
+ "Body": "05_body.gohtml",
+ "Article": "06_article.gohtml",
+ "Footer": "07_footer.gohtml"
+}

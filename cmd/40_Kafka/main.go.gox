@@ -1,0 +1,96 @@
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/Shopify/sarama"
+)
+
+type kconfig struct {
+	brokersURL              []string
+	producerReturnErrors    bool
+	producerReturnSuccesses bool
+	requiredAcks            bool
+	maxRetry                int
+}
+
+var topic = "quickstart-events"
+
+func newProducer(cfg kconfig) (sarama.SyncProducer, error) {
+	config := sarama.NewConfig()
+
+	config.Producer.Return.Errors = cfg.producerReturnErrors
+	config.Producer.Return.Successes = cfg.producerReturnSuccesses
+	config.Producer.Retry.Max = cfg.maxRetry
+
+	if cfg.requiredAcks {
+		config.Producer.RequiredAcks = sarama.WaitForAll
+	}
+
+	return sarama.NewSyncProducer(cfg.brokersURL, config)
+}
+
+func newConsumer(cfg kconfig) (sarama.Consumer, error) {
+	config := sarama.NewConfig()
+
+	config.Producer.Return.Errors = cfg.producerReturnErrors
+
+	return sarama.NewConsumer(cfg.brokersURL, config)
+}
+
+func pushToTopic(t string, msg []byte, p sarama.SyncProducer) error {
+	message := &sarama.ProducerMessage{
+		Topic: t,
+		Value: sarama.StringEncoder(msg),
+	}
+
+	partition, offset, errSend := p.SendMessage(message)
+	if errSend != nil {
+		return fmt.Errorf("push to topic: %w", errSend)
+	}
+
+	fmt.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", t, partition, offset)
+
+	return nil
+}
+
+func main() {
+	cfg := kconfig{
+		brokersURL:              []string{"192.168.1.93:9092"},
+		producerReturnErrors:    true,
+		producerReturnSuccesses: true,
+		requiredAcks:            true,
+		maxRetry:                3,
+	}
+
+	p, err := newProducer(cfg)
+	if err != nil {
+		fmt.Printf("producer error %v\n", err)
+		os.Exit(1)
+	}
+
+	defer p.Close()
+
+	errPush := pushToTopic(topic, []byte("x1"), p)
+	if err != nil {
+		fmt.Printf("push error %v\n", errPush)
+		os.Exit(2)
+	}
+
+	worker, errCons := newConsumer(cfg)
+	if errCons != nil {
+		fmt.Printf("consumer error %v\n", errCons)
+		os.Exit(3)
+	}
+
+	defer worker.Close()
+
+	consumer, errPart := worker.ConsumePartition(topic, 0, sarama.OffsetOldest)
+	if errPart != nil {
+		fmt.Printf("consume partition error %v\n", errPart)
+		os.Exit(4)
+	}
+
+	<-consumer.Messages()
+}

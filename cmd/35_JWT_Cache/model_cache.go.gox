@@ -1,0 +1,64 @@
+package cache
+
+import (
+	"sync"
+	"time"
+)
+
+// Item is part of cache. Cache is a map of items.
+type Item struct {
+	Value      interface{}
+	Expiration int64
+}
+
+// Cache contains the items.
+type Cache struct {
+	items                    map[string]Item
+	guard                    sync.RWMutex
+	defaultExpirationSeconds int64 //amount of time to be added to insert in cache time
+}
+
+// NEWCache is constructor for cache. Expiration in seconds.
+func NEWCache(secondsTTL int64) *Cache {
+	return &Cache{
+		defaultExpirationSeconds: secondsTTL,
+		items:                    make(map[string]Item),
+	}
+}
+
+// Add - adds item to cache
+func (cache *Cache) Add(key string, item *Item) {
+	if item.Expiration == 0 {
+		item.Expiration = time.Now().UnixNano() + (cache.defaultExpirationSeconds * 1000 * 1000 * 1000)
+	}
+
+	cache.guard.Lock()
+	defer cache.guard.Unlock()
+
+	cache.items[key] = *item
+}
+
+// Get Method returns the value for the key
+func (cache *Cache) Get(key string) (Item, bool) {
+	cache.guard.Lock()
+	defer cache.guard.Unlock()
+
+	item, exists := cache.items[key]
+
+	return item, exists
+}
+
+// DeleteExpired - deletes expired entries from cache
+func (cache *Cache) DeleteExpired() {
+	now := time.Now().UnixNano()
+
+	for k, item := range cache.items {
+		if item.Expiration < now {
+			cache.guard.Lock()
+
+			delete(cache.items, k)
+
+			cache.guard.Unlock()
+		}
+	}
+}

@@ -1,0 +1,88 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+)
+
+func main() {
+	process(context.Background())
+}
+
+func process(ctx context.Context) {
+	chReady := make(chan uint)
+	chStop := make(chan bool)
+	chEndOperations := make(chan struct{})
+
+	releaseResources := func() {
+		close(chStop)
+		close(chReady)
+		close(chEndOperations)
+	}
+
+	end := func() {
+		chEndOperations <- struct{}{}
+	}
+
+	doWork := func(id uint, milisecondsSleep uint) {
+		time.Sleep(time.Duration(milisecondsSleep * uint(time.Millisecond))) // do work here
+
+		_, isOpened := <-chEndOperations
+		if !isOpened {
+			return
+		}
+
+		fmt.Println("operation:", id) // should not reach this point if should stop
+
+		chReady <- id
+	}
+
+	doOperation := func(id uint, milisecondsSleep uint) {
+		var workStarted bool
+
+	loop:
+		for {
+			select {
+			case _, isOpened := <-chStop:
+				if !isOpened {
+					break loop
+				}
+
+			default:
+				if !workStarted {
+					workStarted = true
+
+					go doWork(id, milisecondsSleep)
+				}
+			}
+		}
+	}
+
+	go end()
+	go doOperation(1, 250)
+	go doOperation(2, 180)
+	go doOperation(3, 300)
+	go doOperation(4, 140)
+
+loop:
+	for {
+		select {
+		case <-ctx.Done():
+			releaseResources()
+
+			break loop
+
+		case id := <-chReady:
+			fmt.Println("finished id:", id)
+
+			releaseResources()
+
+			break loop
+		}
+	}
+
+	time.Sleep(300 * time.Millisecond) // waiting for any results
+
+	fmt.Println("exiting ...")
+}

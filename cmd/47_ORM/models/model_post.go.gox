@@ -1,0 +1,103 @@
+package models
+
+import (
+	"strconv"
+	"strings"
+
+	"github.com/TudorHulban/log"
+	"gorm.io/gorm"
+)
+
+type Post struct {
+	ID            uint64 `gorm:"primaryKey"`
+	AuthorId      uint64
+	CreatedAt     int64 `gorm:"autoUpdateTime:nano"`
+	LastUpdatedAt int64 `gorm:"autoUpdateTime:nano"`
+	Title         string
+	Contents      string
+}
+
+type Posts struct {
+	Post
+
+	l            *log.LogInfo
+	DBConn       *gorm.DB
+	postsPerPage uint64
+}
+
+func (p Posts) Add(po *Post) error {
+	return p.DBConn.Create(po).Error
+}
+
+func (p Posts) Get(id uint64) (Post, error) {
+	var result Post
+
+	return result, p.DBConn.First(&result, id).Error
+}
+
+func (p Posts) UpdatePost(po *Post) error {
+	return p.DBConn.Model(p).Updates(*po).Error
+}
+
+// GetUserPosts fetches posts for specific user, reverse order, latest first.
+func (p Posts) GetPosts(authorID, noPosts uint64) ([]Post, error) {
+	var result []Post
+	var sql string
+
+	if noPosts > 0 {
+		sql = "select * from posts where author_id = ? order by 1 desc limit " + strconv.FormatUint(noPosts, 10)
+	} else {
+		sql = "select * from posts where author_id = ? order by 1 desc limit " + strconv.FormatUint(p.postsPerPage, 10)
+	}
+
+	return result, p.DBConn.Raw(sql, authorID).Scan(&result).Error
+}
+
+// GetLatestPosts fetches last posts from all authors, reverse order, latest first.
+func (p Posts) GetLatestPosts(noPosts int64) ([]Post, error) {
+	var result []Post
+	var sql string
+
+	if noPosts > 0 {
+		sql = "select * from posts order by 1 desc limit " + strconv.FormatInt(noPosts, 10)
+	} else {
+		sql = "select * from posts order by 1 desc limit " + strconv.FormatInt(int64(p.postsPerPage), 10)
+	}
+
+	return result, p.DBConn.Raw(sql, "").Scan(&result).Error
+}
+
+func (p Posts) GetMaxIDPosts() (int64, error) {
+	var res Number
+
+	return res.No, p.DBConn.Raw("select max(id) as no from posts", "").Scan(&res).Error
+}
+
+func (p Posts) NumberPosts() (int64, error) {
+	var res Number
+
+	return res.No, p.DBConn.Raw("select count(*) as no from posts", "").Scan(&res).Error
+}
+
+func (p Posts) Seed(authorID int64, howMany uint64) error {
+	p.l.Infof("seeding %d posts", howMany)
+
+	titles := chars(8, uint(howMany))
+	contents := chars(32, uint(howMany))
+
+	i := 0
+	for uint(i) < uint(howMany) {
+		post := Post{
+			AuthorId: uint64(authorID),
+			Title:    strings.Join([]string{strconv.Itoa(i), titles[i]}, " "),
+			Contents: contents[i],
+		}
+
+		if err := p.Add(&post); err != nil {
+			return err
+		}
+		i++
+	}
+
+	return nil
+}

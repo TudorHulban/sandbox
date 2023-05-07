@@ -1,0 +1,39 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+func contains(source, what []string) bool {
+	for _, elementWhat := range what {
+		var elementIsContained bool
+
+		for _, elementSource := range source {
+			if elementSource == elementWhat {
+				elementIsContained = true
+
+				break
+			}
+		}
+
+		if !elementIsContained {
+			return false
+		}
+	}
+
+	return true
+}
+
+func TestSplitter(t *testing.T) {
+	input := "a bc word"
+
+	require.Equal(t, []string{"a", "bc", "word"}, splitter(input))
+}
+
+func TestDispatch(t *testing.T) {
+	input := "a b c d"
+
+	require.True(t, contains(splitter(input), dispatchWork(splitter(input))))
+}

@@ -1,0 +1,12 @@
+package main
+
+type Subject interface {
+	Register(o Observer) error
+	DeRegister(o Observer)
+	NotifyAll()
+}
+
+type Observer interface {
+	Update(sku string)
+	ID() int64
+}

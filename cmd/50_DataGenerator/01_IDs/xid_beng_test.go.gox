@@ -1,0 +1,17 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/rs/xid"
+)
+
+// cpu: AMD Ryzen 5 5600U with Radeon Graphics
+// BenchmarkXID-12    	100000000	        10.99 ns/op	       0 B/op	       0 allocs/op
+func BenchmarkXID(b *testing.B) {
+	guid := xid.New()
+
+	for i := 0; i < b.N; i++ {
+		guid.String()
+	}
+}

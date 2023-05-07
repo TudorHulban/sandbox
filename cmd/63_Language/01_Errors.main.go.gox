@@ -1,0 +1,71 @@
+package main
+
+import (
+	"errors"
+	"fmt"
+	"os"
+)
+
+var errUnknownPackageType = errors.New("unknown package type")
+var withoutGroupError1 = NewWithoutGroupError("1")
+var withoutGroupError2 = NewWithoutGroupError("2")
+
+type WithoutGroup struct {
+	typeOfPackage string
+}
+
+func (e WithoutGroup) Error() string {
+	return fmt.Sprintf("without group, package type: %s", e.typeOfPackage)
+}
+
+func NewWithoutGroupError(pkgType string) WithoutGroup {
+	return WithoutGroup{
+		typeOfPackage: pkgType,
+	}
+}
+
+type parcel struct {
+	status string
+}
+
+func main() {
+	p1 := parcel{
+		status: "1",
+	}
+
+	p2 := parcel{
+		status: "2",
+	}
+
+	err1 := processParcel(p1)
+	if !errors.As(err1, &WithoutGroup{}) {
+		fmt.Println(err1.Error())
+		os.Exit(1)
+	}
+
+	if errors.Is(err1, withoutGroupErrorLM) {
+		fmt.Println("err 1 is 1")
+	}
+
+	err2 := processParcel(p2)
+	if !errors.As(err2, &WithoutGroup{}) {
+		fmt.Println(err2.Error())
+		os.Exit(2)
+	}
+
+	if errors.Is(err2, withoutGroupErrorXD) {
+		fmt.Println("err 2 is 2")
+	}
+}
+
+func processParcel(p parcel) error {
+	if p.status == "1" {
+		return NewWithoutGroupError("1")
+	}
+
+	if p.status == "2" {
+		return NewWithoutGroupError("1")
+	}
+
+	return errUnknownPackageType
+}

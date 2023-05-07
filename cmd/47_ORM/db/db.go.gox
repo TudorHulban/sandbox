@@ -1,0 +1,42 @@
+package db
+
+import (
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+type DBName string
+
+var sqliteDBs map[DBName]*gorm.DB
+
+func NewSQLiteDB(dbName DBName) (*gorm.DB, error) {
+	if len(sqliteDBs) == 0 {
+		db, err := newSQLiteDB(dbName)
+		if err != nil {
+			return nil, err
+		}
+
+		sqliteDBs = make(map[DBName]*gorm.DB)
+		sqliteDBs[dbName] = db
+	}
+
+	if _, exists := sqliteDBs[dbName]; !exists {
+		db, err := newSQLiteDB(dbName)
+		if err != nil {
+			return nil, err
+		}
+
+		sqliteDBs = make(map[DBName]*gorm.DB)
+		sqliteDBs[dbName] = db
+	}
+
+	return sqliteDBs[dbName], nil
+}
+
+func newSQLiteDB(dbName DBName) (*gorm.DB, error) {
+	return gorm.Open(sqlite.Open(string(dbName)), &gorm.Config{
+		SkipDefaultTransaction: true,
+	})
+
+	// TODO: add foreign key pragma
+}

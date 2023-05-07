@@ -1,0 +1,67 @@
+package main
+
+import (
+	"database/sql"
+	"fmt"
+	"strings"
+
+	_ "github.com/lib/pq"
+)
+
+// DBPostgresInfo Struct to use for defining methods for satisfying interface.
+type DBPostgres struct {
+	DB *sql.DB
+
+	port     int
+	ip       string
+	user     string
+	password string
+}
+
+func (p *DBPostgres) Open(dbName string) error {
+	dbinfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", p.ip, p.port, p.user, p.password, dbName)
+
+	db, errOp := sql.Open("postgres", dbinfo)
+	if errOp != nil {
+		return errOp
+	}
+
+	p.DB = db
+
+	return db.Ping()
+}
+
+func (p *DBPostgres) TableExists(dbName, tableName string) bool {
+	var occurences bool
+
+	theDML := "SELECT exists (select 1 from information_schema.tables WHERE table_schema='public' AND table_name=" + "'" + tableName + "'" + ")"
+	p.DB.QueryRow(theDML).Scan(&occurences)
+
+	return occurences
+}
+
+func (p *DBPostgres) CreateTable(dbName, tableName, ddl string, columnPKAutoincrement bool) bool {
+	var theDDL string
+
+	if columnPKAutoincrement {
+		theDDL = "\"id\" serial," + ddl
+	} else {
+		theDDL = ddl
+	}
+
+	theDDL = "CREATE TABLE " + tableName + "(" + theDDL + ")"
+
+	_, errExe := p.DB.Exec(theDDL)
+	if errExe != nil {
+		return false
+	}
+
+	return p.TableExists(dbName, tableName)
+}
+
+func (p *DBPostgres) SingleInsert(tableName string, values []string) error {
+	ddl := "insert into " + tableName + " values(" + "\"" + strings.Join(values, "\""+","+"\"") + "\"" + ")"
+	_, err := p.DB.Exec(ddl)
+
+	return err
+}

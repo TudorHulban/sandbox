@@ -1,0 +1,104 @@
+package main
+
+import (
+	"fmt"
+	"net"
+	"net/rpc"
+)
+
+type RPCServer struct {
+	logic    interface{}
+	chStop   chan struct{}
+	chReady  chan struct{}
+	chPause  chan struct{}
+	chResume chan struct{}
+	port     string
+}
+
+func NewServer(port string, logic interface{}) (*RPCServer, error) {
+	return &RPCServer{
+		logic:    logic,
+		port:     port,
+		chStop:   make(chan struct{}),
+		chReady:  make(chan struct{}),
+		chPause:  make(chan struct{}),
+		chResume: make(chan struct{}),
+	}, nil
+}
+
+func (s *RPCServer) Start() error {
+	tcpAddr, errRes := net.ResolveTCPAddr("tcp", s.port)
+	if errRes != nil {
+		return fmt.Errorf("resolve TCP Addr: %w", errRes)
+	}
+
+	listener, errLis := net.ListenTCP("tcp", tcpAddr)
+	if errLis != nil {
+		return fmt.Errorf("listen TCP: %w", errLis)
+	}
+
+	rpc.Register(s.logic)
+
+	fmt.Printf("listening on port %s\n", s.port)
+
+	s.chReady <- struct{}{}
+
+	go rpc.Accept(listener)
+
+loop:
+	for {
+		select {
+		case <-s.chStop:
+			{
+				listener.Close()
+				fmt.Println("exiting loop...")
+				break loop
+			}
+
+		case <-s.chPause:
+			{
+				fmt.Println("pausing ...")
+
+				errClose := listener.Close()
+				if errClose != nil {
+					return errClose
+				}
+			}
+
+		case <-s.chResume:
+			{
+				fmt.Println("resuming ...")
+
+				_, errAccept := listener.Accept()
+				if errAccept != nil {
+					fmt.Println("on server resuming: ", errAccept.Error())
+					return errAccept
+				}
+
+			}
+		}
+	}
+
+	fmt.Printf("stopped listening on port %s\n", s.port)
+
+	return nil
+}
+
+func (s *RPCServer) Stop() {
+	s.chStop <- struct{}{}
+}
+
+func (s *RPCServer) Pause() {
+	s.chPause <- struct{}{}
+}
+
+func (s *RPCServer) Resume() {
+	s.chResume <- struct{}{}
+}
+
+func (s *RPCServer) CleanUp() {
+	close(s.chReady)
+	close(s.chPause)
+	close(s.chResume)
+	close(s.chStop)
+}

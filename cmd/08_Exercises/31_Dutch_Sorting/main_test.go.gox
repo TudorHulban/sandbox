@@ -1,0 +1,46 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestSort01(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       []int
+		want        []int
+	}{
+		{"0", []int{0}, []int{0}},
+		{"10", []int{1, 0}, []int{0, 1}},
+		{"1111", []int{1, 1, 1, 1}, []int{1, 1, 1, 1}},
+		{"010", []int{0, 1, 0}, []int{0, 0, 1}},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			assert.Equal(t, tc.want, sort01(tc.input))
+		})
+	}
+}
+
+func TestSort012(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       []int
+		want        []int
+	}{
+		{"0", []int{0}, []int{0}},
+		{"1111", []int{1, 1, 1, 1}, []int{1, 1, 1, 1}},
+		{"021", []int{0, 2, 1}, []int{0, 1, 2}},
+		{"021001221", []int{0, 2, 1, 0, 0, 1, 2, 2, 1}, []int{0, 0, 0, 1, 1, 1, 2, 2, 2}},
+		{"20110022", []int{2, 0, 1, 1, 0, 0, 2, 2}, []int{0, 0, 0, 1, 1, 2, 2, 2}},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			assert.Equal(t, tc.want, sort012(tc.input))
+		})
+	}
+}

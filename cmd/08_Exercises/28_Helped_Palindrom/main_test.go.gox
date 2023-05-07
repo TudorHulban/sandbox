@@ -1,0 +1,83 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestIsPalindrome(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       string
+		want        bool
+	}{
+		{"short 2", "aa", true},
+		{"short 3", "aka", true},
+		{"abc", "abc", false},
+		{"tenet", "tenet", true},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			assert.Equal(t, tc.want, isPalindrome(tc.input))
+		})
+	}
+}
+
+func TestGetMiddleLetter(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       string
+		want        string
+	}{
+		{"aka", "aka", "k"},
+		{"abcd", "abcd", "b"},
+		{"abxcd", "abxcd", "x"},
+		{"abxycd", "abxycd", "x"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			assert.Equal(t, tc.want, getMiddleLetter(tc.input))
+		})
+	}
+}
+
+func TestGetMiddlePosition(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       string
+		want        int
+	}{
+		{"aka", "aka", 1},
+		{"abcd", "abcd", 1},
+		{"abxcd", "abxcd", 2},
+		{"abxycd", "abxycd", 2},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			assert.Equal(t, tc.want, getMiddlePosition(tc.input))
+		})
+	}
+}
+
+func TestExtractLetter(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       string
+		position    int
+		want        string
+	}{
+		{"aka", "aka", 1, "aa"},
+		{"abcd", "abcd", 1, "acd"},
+		{"abxycd", "abxycd", 2, "abycd"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			assert.Equal(t, tc.want, extractLetter(tc.input, tc.position))
+		})
+	}
+}

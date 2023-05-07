@@ -1,0 +1,80 @@
+package main
+
+import (
+	"errors"
+	"net/http"
+	"orm/models"
+	"strings"
+
+	"github.com/TudorHulban/log"
+	"github.com/gofiber/fiber/v2"
+)
+
+type webServer struct {
+	server *fiber.App
+	l      *log.LogInfo
+}
+
+func NewWebServer(routes []models.Route, l *log.LogInfo) *fiber.App {
+	server := fiber.New()
+
+	w := webServer{
+		server: server,
+		l:      l,
+	}
+
+	err := w.registerRoutes(routes)
+	if err != nil {
+		l.Infof("routes registration %s", err.Error())
+		return nil
+	}
+
+	return server
+}
+
+// registerRoute Method adds one route to Gin internal router.
+func (s *webServer) registerRoute(r models.Route) error {
+	r.Method = strings.ToTitle(r.Method)
+
+	s.l.Debugf("Adding Route: %v, Method: %v", r.Group+r.Endpoint, r.Method)
+
+	switch r.Method {
+	case http.MethodGet:
+		s.server.Get(r.Group+r.Endpoint, r.Handler)
+
+	case http.MethodPost:
+		s.server.Post(r.Group+r.Endpoint, r.Handler)
+
+	case http.MethodPut:
+		s.server.Put(r.Group+r.Endpoint, r.Handler)
+
+	case http.MethodPatch:
+		s.server.Patch(r.Group+r.Endpoint, r.Handler)
+
+	case http.MethodDelete:
+		s.server.Delete(r.Group+r.Endpoint, r.Handler)
+
+	// could be used for grpc
+	case "ANY":
+		s.server.All(r.Group+r.Endpoint, r.Handler)
+
+	default:
+		return errors.New("unsupported method: " + r.Method)
+	}
+
+	return nil
+}
+
+// RegisterRoutes Registers the routes passed.
+func (s *webServer) registerRoutes(routes []models.Route) error {
+	if len(routes) == 0 {
+		return errors.New("no routes to add")
+	}
+
+	for _, route := range routes {
+		if errReg := s.registerRoute(route); errReg != nil {
+			return errReg
+		}
+	}
+	return nil
+}

@@ -1,0 +1,17 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/bwmarrin/snowflake"
+)
+
+// cpu: AMD Ryzen 5 5600U with Radeon Graphics
+// BenchmarkSnowflake-12    	 4922100	       243.9 ns/op	       0 B/op	       0 allocs/op
+func BenchmarkSnowflake(b *testing.B) {
+	node, _ := snowflake.NewNode(1)
+
+	for i := 0; i < b.N; i++ {
+		node.Generate()
+	}
+}

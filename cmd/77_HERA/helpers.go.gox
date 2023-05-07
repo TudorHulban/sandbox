@@ -1,0 +1,41 @@
+package main
+
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
+
+func prepareDBField(field string) string {
+	return strings.ReplaceAll(field, "'", "\"")
+}
+
+func returnNoValues(inputSlice []string, charToReturn string) string {
+	var toReturn string
+
+	for range inputSlice {
+		toReturn = toReturn + charToReturn + ","
+	}
+
+	return "(" + toReturn[0:len(toReturn)-1] + ")"
+}
+
+func wrapSliceValues(inputSlice []string, charToWrap string) string {
+	return "(" + charToWrap + strings.Join(inputSlice, charToWrap+","+charToWrap) + charToWrap + ")"
+}
+
+func SliceToInterface(slice interface{}) ([]interface{}, error) {
+	s := reflect.ValueOf(slice)
+
+	if s.Kind() != reflect.Slice {
+		return nil, fmt.Errorf("SliceToInterface - input is not a slice type but: %s.\n", s)
+	}
+
+	res := make([]interface{}, s.Len())
+
+	for i := 0; i < s.Len(); i++ {
+		res[i] = s.Index(i).Interface()
+	}
+
+	return res, nil
+}

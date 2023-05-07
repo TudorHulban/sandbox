@@ -1,0 +1,48 @@
+package main
+
+import (
+	"orm/models"
+	"os"
+
+	"github.com/TudorHulban/log"
+)
+
+const port = "8080"
+
+func main() {
+	l := log.New(log.DEBUG, os.Stderr, true)
+
+	domain, errCreate := models.NewDomain(l)
+	if errCreate != nil {
+		l.Debugf("could not create domain %s", errCreate)
+		os.Exit(6)
+	}
+
+	noPosts, errPosts := domain.Posts.NumberPosts()
+	if errPosts != nil {
+		l.Debugf("posts error %s", errCreate)
+		os.Exit(7)
+	}
+
+	l.Infof("number of posts: %d.", noPosts)
+
+	noAuthors, errAuthors := domain.Authors.NumberAuthors()
+	if errAuthors != nil {
+		l.Debugf("authors error %s", errAuthors)
+		os.Exit(7)
+	}
+	l.Infof("number of authors: %d.", noAuthors)
+
+	webServer := NewWebServer(models.NewHandlers(domain), l)
+	if webServer == nil {
+		l.Debug("could not initialize web server")
+		os.Exit(8)
+	}
+
+	webServer.Static("/", "index.html")
+
+	l.Infof("Starting Fiber Server on port %s...", port)
+
+	webServer.Listen(":" + port)
+	l.Info("Server stopping...")
+}

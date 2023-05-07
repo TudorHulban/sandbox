@@ -1,0 +1,39 @@
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/upper/db/v4/adapter/postgresql"
+)
+
+func main() {
+	dbSettings := postgresql.ConnectionURL{
+		Host:     `localhost`,
+		User:     `postgres`,
+		Password: `thepassword`,
+	}
+
+	dbSession, errOp := postgresql.Open(dbSettings)
+	if errOp != nil {
+		fmt.Println(errOp)
+		os.Exit(1)
+	}
+	defer dbSession.Close()
+
+	fmt.Printf("Connected to %q with DSN:\n\t%q\n", dbSession.Name(), dbSettings)
+
+	rows, errSQL := dbSession.SQL().Query("select * from pg_stat_activity;")
+	if errSQL != nil {
+		fmt.Println(errSQL)
+		os.Exit(2)
+	}
+
+	cols, errCo := rows.Columns()
+	if errCo != nil {
+		fmt.Println(errCo)
+		os.Exit(3)
+	}
+
+	fmt.Println(cols)
+}

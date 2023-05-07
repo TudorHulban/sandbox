@@ -1,0 +1,95 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestObjectLRUByID(t *testing.T) {
+	obj1 := Object{
+		ID:   1,
+		Name: "John",
+	}
+
+	obj2 := Object{
+		ID:   2,
+		Name: "Mary",
+	}
+
+	var objects Objects
+	objects = append(objects, &obj1)
+	objects = append(objects, &obj2)
+
+	retrievedByID := objects.FindByID(obj1.ID)
+	require.Equal(t, obj1, *retrievedByID)
+
+	retrievedByIDLRU := objects.FindByID(obj1.ID)
+	require.Equal(t, obj1, *retrievedByIDLRU)
+}
+
+func TestObjectLRUByName(t *testing.T) {
+	obj1 := Object{
+		ID:   1,
+		Name: "John",
+	}
+
+	obj2 := Object{
+		ID:   2,
+		Name: "Mary",
+	}
+
+	var objects Objects
+	objects = append(objects, &obj1)
+	objects = append(objects, &obj2)
+
+	retrievedByName := objects.FindByName(obj1.Name)
+	require.Equal(t, obj1, *retrievedByName)
+
+	retrievedByNameLRU := objects.FindByName(obj1.Name)
+	require.Equal(t, obj1, *retrievedByNameLRU)
+}
+
+func TestObjectLRUByIDs(t *testing.T) {
+	obj1 := Object{
+		ID:   1,
+		Name: "John",
+	}
+
+	obj2 := Object{
+		ID:   2,
+		Name: "Mary",
+	}
+
+	var objects Objects
+	objects = append(objects, &obj1)
+	objects = append(objects, &obj2)
+
+	retrievedByIDs := objects.FindByIDs(obj1.ID, obj2.ID)
+	require.Equal(t, []*Object{&obj1, &obj2}, retrievedByIDs)
+
+	retrievedByIDsLRU := objects.FindByIDs(obj1.ID, obj2.ID)
+	require.Equal(t, []*Object{&obj1, &obj2}, retrievedByIDsLRU)
+}
+
+func TestObjectLRUByNames(t *testing.T) {
+	obj1 := Object{
+		ID:   1,
+		Name: "John",
+	}
+
+	obj2 := Object{
+		ID:   2,
+		Name: "Mary",
+	}
+
+	var objects Objects
+	objects = append(objects, &obj1)
+	objects = append(objects, &obj2)
+
+	retrievedByNames := objects.FindByNames(obj1.Name, obj2.Name)
+	require.Equal(t, []*Object{&obj1, &obj2}, retrievedByNames)
+
+	retrievedByNamesLRU := objects.FindByNames(obj1.Name, obj2.Name)
+	require.Equal(t, []*Object{&obj1, &obj2}, retrievedByNamesLRU)
+}

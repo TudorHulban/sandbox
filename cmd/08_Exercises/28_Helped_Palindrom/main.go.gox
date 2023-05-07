@@ -1,0 +1,71 @@
+package main
+
+import (
+	"fmt"
+	"os"
+	"strings"
+)
+
+func main() {
+	word := "radkar"
+
+	if isPalindrome(word) {
+		fmt.Printf("natural palindrome: %s", word)
+		os.Exit(0)
+	}
+
+	middlePos := getMiddlePosition(word)
+
+	wordAdjusted := extractLetter(word, middlePos)
+
+	if isPalindrome(wordAdjusted) {
+		fmt.Printf("helped palindrome: %s\n", wordAdjusted)
+		os.Exit(0)
+	}
+
+	fmt.Printf("not a palindrome: %s\n", word)
+}
+
+func isPalindrome(word string) bool {
+	for i, j := 0, len(word)-1; i < j; i, j = i+1, j-1 {
+		if word[i:i+1] != word[j:j+1] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func getMiddleLetter(word string) string {
+	var res string
+
+	for i, j := 0, 0; j < len(word); i, j = i+1, j+2 {
+		res = word[i : i+1]
+	}
+
+	return res
+}
+
+func getMiddlePosition(word string) int {
+	var res int
+
+	for i, j := 0, 0; j < len(word); i, j = i+1, j+2 {
+		res = i
+	}
+
+	return res
+}
+
+func extractLetter(word string, position int) string {
+	var res []string
+
+	for i := 0; i < len(word); i = i + 1 {
+		if i == position {
+			continue
+		}
+
+		res = append(res, word[i:i+1])
+	}
+
+	return strings.Join(res, "")
+}

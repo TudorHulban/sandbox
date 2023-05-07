@@ -1,0 +1,92 @@
+package main
+
+import (
+	"fmt"
+	"sync"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestLRU1(t *testing.T) {
+	cache := NewCacheLRU(1)
+
+	k1, v1 := 1, 77
+
+	cache.Put(k1, v1)
+	require.Equal(t, v1, cache.Get(k1))
+
+	v2 := 78
+
+	cache.Put(k1, v2)
+	require.Equal(t, v2, cache.Get(k1))
+}
+
+func TestLRU2(t *testing.T) {
+	cache := NewCacheLRU(2)
+
+	k1, v1 := 1, 77
+
+	cache.Put(k1, v1)
+	require.Equal(t, v1, cache.Get(k1))
+
+	k2, v2 := 2, 87
+
+	cache.Put(k2, v2)
+	require.Equal(t, v2, cache.Get(k2))
+
+	v3 := 78
+
+	cache.Put(k1, v3)
+	require.Equal(t, v3, cache.Get(k1))
+
+	fmt.Println(cache)
+}
+
+func TestLRU2Conc(t *testing.T) {
+	cache := NewCacheLRU(2)
+
+	var wg sync.WaitGroup
+
+	put := func(key int, value int) {
+		defer wg.Done()
+
+		cache.Put(key, value)
+	}
+
+	k1, v1 := 1, 77
+	wg.Add(1)
+
+	go put(k1, v1)
+
+	k2, v2 := 2, 87
+	wg.Add(1)
+
+	go cache.Get(k1)
+	go cache.Get(k1)
+
+	go put(k2, v2)
+
+	v3 := 78
+	wg.Add(1)
+
+	go put(k1, v3)
+
+	wg.Wait()
+
+	fmt.Println(cache)
+}
+
+func TestLRU1Any(t *testing.T) {
+	cache := NewCacheLRU(1)
+
+	k1, v1 := "1", 77
+
+	cache.Put(k1, v1)
+	require.Equal(t, v1, cache.Get(k1))
+
+	v2 := 78
+
+	cache.Put(k1, v2)
+	require.Equal(t, v2, cache.Get(k1))
+}

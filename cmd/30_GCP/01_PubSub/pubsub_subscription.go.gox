@@ -1,0 +1,64 @@
+package puub
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"cloud.google.com/go/pubsub"
+	"google.golang.org/api/iterator"
+)
+
+// SubscriptionData
+// see more about subscriptions in https://cloud.google.com/pubsub/docs/create-subscription.
+// should slow start support be implemented? see from min 2 35 in https://www.youtube.com/watch?v=k8lBOV-nRXI&t=1s.
+type SubscriptionData struct {
+	subscriptionID     string
+	endpoint           string // should be HTTPS
+	topic              *pubsub.Topic
+	secondsAckDeadline uint
+}
+
+func (d *SubscriptionData) Validate() error {
+	return nil
+}
+
+// see https://cloud.google.com/pubsub/docs/create-subscription#list_subscriptions
+func (d *SubscriptionData) isCreated(ctx context.Context, client *pubsub.Client) (bool, *pubsub.Subscription) {
+	it := client.Subscriptions(ctx)
+
+	for {
+		existingSubscription, errNext := it.Next()
+		if errNext == iterator.Done {
+			return false, nil
+		}
+
+		if errNext != nil {
+			return false, nil
+		}
+
+		fmt.Printf("existingSubscription:\nID: %s\nname: %s\n", existingSubscription.ID(), existingSubscription.String())
+
+		if d.subscriptionID == existingSubscription.ID() {
+			return true, existingSubscription
+		}
+	}
+}
+
+// see https://github.com/GoogleCloudPlatform/golang-samples/blob/HEAD/pubsub/subscriptions/create_endpoint.go#L27
+func NewPushSubscription(ctx context.Context, client *pubsub.Client, data *SubscriptionData) (*pubsub.Subscription, error) {
+	if errValid := data.Validate(); errValid != nil {
+		return nil, fmt.Errorf("NewPushSubscription data.Validate: %w", errValid)
+	}
+
+	isCreated, existingSubscription := data.isCreated(ctx, client)
+	if isCreated {
+		return existingSubscription, nil
+	}
+
+	return client.CreateSubscription(ctx, data.subscriptionID, pubsub.SubscriptionConfig{
+		Topic:       data.topic,
+		AckDeadline: time.Duration(data.secondsAckDeadline) * time.Second,
+		PushConfig:  pubsub.PushConfig{Endpoint: data.endpoint},
+	})
+}

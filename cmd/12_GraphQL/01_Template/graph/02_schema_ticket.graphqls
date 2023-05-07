@@ -1,0 +1,8 @@
+type Ticket {
+    id: Int!
+    name: String!
+}
+
+extend type Query {
+    GetTicket(id: Int!): Ticket
+}

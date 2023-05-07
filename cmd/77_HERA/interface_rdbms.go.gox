@@ -1,0 +1,10 @@
+package main
+
+// RDBMS Interface for interacting with RDBMS.
+type RDBMS interface {
+	Open(dbName string) error
+	TableExists(dbName, tableName string) bool
+	CreateTable(dbName, tableName, ddl string, columnPKAutoincrement bool) bool
+	SingleInsert(tableName string, values []string) error
+	BulkInsert(tableName string, columnNames []string, values [][]string) error
+}

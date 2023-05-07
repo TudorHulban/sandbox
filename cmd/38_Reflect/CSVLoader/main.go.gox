@@ -1,0 +1,99 @@
+package main
+
+import (
+	"bufio"
+	"errors"
+	"fmt"
+	"os"
+	"reflect"
+	"strings"
+)
+
+type payload struct {
+	A string `load:"a"`
+	B string `load:"b"`
+	C string `load:"c"`
+}
+
+const (
+	separat = ","
+	apos    = "\""
+)
+
+func main() {
+	var p payload
+	noFieldsPayload := reflect.TypeOf(p).Elem().NumField()
+
+	fmt.Println(noFieldsPayload)
+}
+
+func getTags(p payload, tagName string) []string {
+	root := reflect.TypeOf(&p).Elem()
+
+	res := make([]string, 0)
+
+	for i := 0; i < root.NumField(); i++ {
+		tag := root.FieldByIndex([]int{i}).Tag.Get(tagName)
+
+		if tag != "" {
+			res = append(res, tag)
+		}
+	}
+
+	return res
+}
+
+func newMapping(row string, payloadTags []string) ([]int, error) {
+	res := make([]int, len(payloadTags))
+
+	pieces := strings.Split(row, separat)
+
+	for i, tag := range payloadTags {
+		for j, piece := range pieces {
+			if tag == strings.Trim(piece, " ") {
+				res[i] = j
+				break
+			}
+		}
+	}
+
+	if len(res) != len(payloadTags) {
+		fmt.Println(res)
+		return nil, errors.New("not all tags could be mapped")
+	}
+
+	return res, nil
+}
+
+func newPayload(mapping []int, row string) (*payload, error) {
+	fields := strings.Split(row, separat)
+
+	if len(mapping) > len(fields) {
+		return nil, errors.New("not enough fields to match the mapping")
+	}
+
+	fmt.Println("fields:", fields)
+
+	return &payload{
+		A: strings.ReplaceAll(fields[mapping[0]], apos, ""),
+		B: strings.ReplaceAll(fields[mapping[1]], apos, ""),
+		C: strings.ReplaceAll(fields[mapping[2]], apos, ""),
+	}, nil
+}
+
+func readFile(filePath string) ([]string, error) {
+	fileHandler, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer fileHandler.Close()
+
+	var result = make([]string, 0)
+
+	scanner := bufio.NewScanner(fileHandler)
+	for scanner.Scan() {
+		result = append(result, scanner.Text())
+	}
+
+	return result, nil
+}

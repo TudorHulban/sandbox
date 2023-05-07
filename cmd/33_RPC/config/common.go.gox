@@ -1,0 +1,10 @@
+package config
+
+type Args struct {
+	A int
+	B int
+}
+
+type Reply struct {
+	Resp float64
+}

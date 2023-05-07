@@ -1,0 +1,123 @@
+package models
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gofiber/fiber/v2"
+)
+
+type Route struct {
+	Group    string
+	Endpoint string
+	Method   string // HTTP Method
+	Handler  func(*fiber.Ctx) error
+}
+
+const (
+	endpointAuthors = "/authors"
+	endpointPosts   = "/posts"
+)
+
+func NewHandlers(d *Domain) []Route {
+	res := make([]Route, 4)
+
+	res[0] = Route{
+		Endpoint: endpointAuthors,
+		Method:   http.MethodPost,
+		Handler:  d.saveAuthor,
+	}
+
+	res[1] = Route{
+		Endpoint: endpointAuthors,
+		Method:   http.MethodGet,
+		Handler:  d.getAuthors,
+	}
+
+	res[2] = Route{
+		Endpoint: endpointAuthors + "/:id",
+		Method:   http.MethodGet,
+		Handler:  d.getAuthor,
+	}
+
+	res[3] = Route{
+		Endpoint: endpointAuthors + "/:id" + endpointPosts + "/:no",
+		Method:   http.MethodGet,
+		Handler:  d.getPosts,
+	}
+
+	return res
+}
+
+func (d Domain) saveAuthor(c *fiber.Ctx) error {
+	u := &Author{
+		Name:   c.FormValue("name"),
+		Emails: c.FormValue("email"),
+	}
+
+	errAdd := d.Authors.Add(u)
+	if errAdd != nil {
+		return c.Status(http.StatusInternalServerError).SendString(errAdd.Error())
+	}
+
+	return c.SendStatus(http.StatusOK)
+}
+
+// getAuthor Handler retrieves author and sends the author name to the caller.
+func (d Domain) getAuthor(c *fiber.Ctx) error {
+	authorID, errParse := strconv.ParseUint(c.Params("id"), 10, 64)
+	if errParse != nil {
+		return c.Status(http.StatusBadRequest).SendString(errParse.Error())
+	}
+
+	author, errGet := d.Authors.Get(authorID)
+	if errGet != nil {
+		return c.Status(http.StatusNotFound).SendString(errGet.Error())
+	}
+	//return c.SendString(author.Name)
+	return c.JSON(author)
+}
+
+func (d Domain) getAuthors(c *fiber.Ctx) error {
+	authors, errGetUsers := d.Authors.GetAll()
+	if errGetUsers != nil {
+		return c.Status(http.StatusInternalServerError).SendString("Error: " + errGetUsers.Error())
+	}
+	if len(authors) == 0 {
+		return c.Status(http.StatusNotFound).SendString("no authors found")
+	}
+
+	var result string
+	for _, v := range authors {
+		result = result + "," + v.Name
+	}
+	return c.SendString(result[1:])
+}
+
+func (d Domain) getPosts(c *fiber.Ctx) error {
+	authorID, errParse := strconv.ParseUint(c.FormValue("id"), 10, 64)
+	if errParse != nil {
+		return c.SendStatus(http.StatusBadRequest)
+	}
+
+	_, errGet := d.Authors.Get(authorID)
+	if errGet != nil {
+		return c.SendStatus(http.StatusNotFound)
+	}
+
+	noPosts, errParse := strconv.ParseUint(c.FormValue("no"), 10, 64)
+	if errParse != nil {
+		return c.SendStatus(http.StatusBadRequest)
+	}
+
+	posts, errGetPosts := d.Posts.GetPosts(authorID, noPosts)
+	if errGetPosts != nil {
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	var result string
+	for _, v := range posts {
+		result = result + "," + v.Title
+	}
+	return c.SendString(result[1:])
+}

@@ -1,0 +1,30 @@
+package main
+
+import (
+	"log"
+	"os"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+// const testJSON = `{"config":[{"name":"a","ftype":0, "flength":5, "fpositive":true, "min":5, "max":10000},{"name":"b","ftype":1, "flength":4, "fpositive":true}], "norows":5}`
+const testJSON = `{"config":[{"name":"id","ftype":2},{"name":"a","ftype":0, "flength":5, "fpositive":true, "min":1, "max":100}], "norows":4}`
+
+func TestController(t *testing.T) {
+	testConfig, err := NewConfig(testJSON)
+	assert.Nil(t, err)
+	log.Println("GetConfig: ", *testConfig)
+
+	generData, err := NewData(testConfig)
+	assert.Nil(t, err)
+	log.Println("GetData: ", *generData)
+
+	file, err := os.Create("xxx.csv")
+	require.NoError(t, err)
+	defer file.Close()
+
+	_, errWr := WriteDataTo(file, generData)
+	assert.NoError(t, errWr)
+}

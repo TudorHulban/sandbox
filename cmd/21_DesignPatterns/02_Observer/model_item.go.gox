@@ -1,0 +1,75 @@
+package main
+
+import (
+	"errors"
+	"fmt"
+	"sync"
+)
+
+type Item struct {
+	m             sync.RWMutex
+	Observers     []Observer
+	Name          string
+	SKU           string
+	PurchasePrice float32
+	Stock         uint
+	InStock       bool
+}
+
+var _ Subject = &Item{}
+
+func NewItem(name string) (*Item, error) {
+	if len(name) == 0 {
+		return nil, errors.New("no name for Item")
+	}
+
+	return &Item{
+		Name:      name,
+		SKU:       name,
+		Observers: []Observer{},
+	}, nil
+}
+
+func (i *Item) Purchase(howMany uint, atPrice float32) {
+	if howMany == 0 {
+		return
+	}
+
+	i.m.Lock()
+	if !i.InStock {
+		i.NotifyAll()
+	}
+	i.InStock = true
+
+	newPurchasePrice := (i.Stock*uint(i.PurchasePrice) + (howMany * uint(atPrice))) / (i.Stock + howMany)
+	i.Stock = i.Stock + howMany
+	i.PurchasePrice = float32(newPurchasePrice)
+	i.m.Unlock() // not using defer for performance reasons
+}
+
+func (i *Item) Register(o Observer) error {
+	for _, v := range i.Observers {
+		if o.ID() == v.ID() {
+			return fmt.Errorf("observer %v already registered", o.ID())
+		}
+	}
+
+	i.Observers = append(i.Observers, o)
+	return nil
+}
+
+func (i *Item) DeRegister(o Observer) {
+	for k, v := range i.Observers {
+		if v.ID() == o.ID() {
+			i.m.Lock()
+			i.Observers = append(i.Observers[:k], i.Observers[k+1:]...)
+			i.m.Unlock()
+		}
+	}
+}
+
+func (i *Item) NotifyAll() {
+	for _, o := range i.Observers {
+		o.Update(i.SKU)
+	}
+}

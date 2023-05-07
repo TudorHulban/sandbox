@@ -1,0 +1,9 @@
+folder-root1
+ folder1
+ folder2
+  subfolder3
+  subfolder4
+   subfolder5
+ folder6
+folder-root2
+folder-root3

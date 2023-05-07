@@ -1,0 +1,29 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	process(1, 2, 3, 4)
+}
+
+func process(payload ...int) {
+	chReady := make(chan int)
+
+	for ix := range payload {
+		go func() {
+			buf := ix
+
+			time.Sleep(5 * time.Second)
+
+			chReady <- buf
+		}()
+
+		select {
+		case number := <-chReady:
+			fmt.Println(number)
+		}
+	}
+}

@@ -1,0 +1,20 @@
+package main
+
+import (
+	"strconv"
+	"strings"
+)
+
+func concatSliceInt(slice []int) string {
+	var res []string
+
+	for _, item := range slice {
+		res = append(res, strconv.Itoa(item))
+	}
+
+	return strings.Join(res, "")
+}
+
+func concatSliceString(slice []string) string {
+	return strings.Join(slice, "")
+}

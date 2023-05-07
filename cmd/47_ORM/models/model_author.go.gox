@@ -1,0 +1,75 @@
+package models
+
+import (
+	"strings"
+
+	"github.com/TudorHulban/log"
+	"gorm.io/gorm"
+)
+
+// Author Umbrella for information of user that writes the blogs.
+type Author struct {
+	ID     uint64 `gorm:"primaryKey"`
+	Name   string `gorm:"uniqueIndex"`
+	Emails string // should be a slice if gorm would support it
+}
+
+type Authors struct {
+	Author
+
+	l      *log.LogInfo
+	DBConn *gorm.DB
+}
+
+func (a Authors) Add(au *Author) error {
+	return a.DBConn.Create(au).Error
+}
+
+func (a Authors) Get(id uint64) (Author, error) {
+	var result Author
+
+	return result, a.DBConn.First(&result, id).Error
+}
+
+func (a Authors) Update(au *Author) error {
+	return a.DBConn.Model(a).Updates(*au).Error
+}
+
+func (a Authors) GetAll() ([]Author, error) {
+	var result []Author
+
+	return result, a.DBConn.Find(&result).Error
+}
+
+func (a Authors) GetLastAdded() (int64, error) {
+	var res Number
+
+	return res.No, a.DBConn.Raw("select max(id) as no from authors").Scan(&res).Error
+}
+
+func (a Authors) NumberAuthors() (int64, error) {
+	var res Number
+
+	return res.No, a.DBConn.Raw("select count(*) as no from authors", "").Scan(&res).Error
+}
+
+func (a Authors) Seed(howMany uint64) error {
+	a.l.Infof("seeding %d authors", howMany)
+
+	authors := chars(8, uint(howMany))
+
+	i := 0
+	for uint(i) < uint(howMany) {
+		author := Author{
+			Name:   authors[i],
+			Emails: strings.Join([]string{authors[i], "@", "domain.com"}, ""),
+		}
+
+		if err := a.Add(&author); err != nil {
+			return err
+		}
+		i++
+	}
+
+	return nil
+}

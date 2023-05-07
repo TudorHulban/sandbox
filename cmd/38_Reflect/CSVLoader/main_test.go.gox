@@ -1,0 +1,43 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+var want = payload{
+	A: "a",
+	B: "b",
+	C: "c",
+}
+
+func TestDataLoad(t *testing.T) {
+	cases := []struct {
+		description string
+		path        string
+		want        payload
+	}{
+		{"data1.csv", "data1.csv", want},
+		{"data2.csv", "data2.csv", want},
+		{"data3.csv", "data3.csv", want},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.description, func(t *testing.T) {
+			content, errLoad := readFile(tc.path)
+			require.NoError(t, errLoad)
+
+			var p payload
+			tags := getTags(p, "load")
+			require.Equal(t, 3, len(tags))
+
+			m, errMap := newMapping(content[0], tags)
+			require.NoError(t, errMap)
+
+			pay, errPay := newPayload(m, content[1])
+			require.NoError(t, errPay)
+			require.Equal(t, tc.want, *pay)
+		})
+	}
+}

@@ -1,0 +1,37 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestTwoSum(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       string
+		want        []string
+		err         error
+	}{
+		{"email malformed", "john.doe#email.com", nil, errMalformedEmail},
+		{"name malformed 1", "johndoe@email.com", nil, errMalformedName},
+		{"name malformed 2", "john,doe@email.com", nil, errMalformedName},
+		{"happy path 1", "john.doe@email.com", []string{"John", "Doe"}, nil},
+		{"happy path 2", "john.doe.junior@email.com", []string{"John", "Doe", "Junior"}, nil},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			name, errGe := getSenderFromEmail(tc.input)
+
+			if tc.err != nil {
+				assert.Equal(t, tc.err, errGe)
+
+				return
+			}
+
+			assert.Equal(t, tc.want, name)
+			assert.Equal(t, tc.want, name)
+		})
+	}
+}

@@ -1,0 +1,58 @@
+package puub
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/gofiber/fiber/v2"
+)
+
+type ServerFiber struct {
+	app         *fiber.App
+	errShutdown error
+	port        uint
+
+	chComms chan struct{}
+}
+
+func NewFiber(portListening uint) *ServerFiber {
+	return &ServerFiber{
+		app:     fiber.New(),
+		port:    portListening,
+		chComms: make(chan struct{}),
+	}
+}
+
+func (s *ServerFiber) Start() {
+	s.addRoutes()
+
+	s.errShutdown = s.app.Listen(":" + strconv.Itoa(int(s.port)))
+}
+
+func (s *ServerFiber) Stop() {
+	fmt.Println("stopping Fiber")
+
+	close(s.chComms)
+
+	if errShut := s.app.Shutdown(); errShut != nil {
+		fmt.Println("error Fiber: ", errShut)
+	}
+}
+
+func (s *ServerFiber) handlerPush() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		body := string(c.Body())
+		fmt.Println("request body: ", body)
+
+		defer func() {
+			s.chComms <- struct{}{}
+		}()
+
+		return c.SendStatus(http.StatusOK)
+	}
+}
+
+func (s *ServerFiber) addRoutes() {
+	s.app.Post(_route, s.handlerPush())
+}

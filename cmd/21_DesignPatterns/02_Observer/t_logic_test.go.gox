@@ -1,0 +1,22 @@
+package main
+
+import (
+	"bytes"
+	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestLogic(t *testing.T) {
+	output := &bytes.Buffer{}
+	c := NewClient(1, output)
+
+	item, err := NewItem("cpu")
+	require.Nil(t, err)
+
+	item.Register(c)
+	item.Purchase(1, 1.0)
+
+	require.Equal(t, output.String(), fmt.Sprintf(msg, item.SKU))
+}

@@ -1,0 +1,29 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestPalindrome(t *testing.T) {
+	testCases := []struct {
+		description string
+		word        string
+		want        bool
+	}{
+		{"a", "a", true},
+		{"ab", "ab", false},
+		{"abc", "abc", false},
+		{"aa", "aa", true},
+		{"ascii", "tenet", true},
+		{"unicode", "♥ymy♥", true},
+		{"121", "121", true},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			assert.True(t, isPalindrome(tc.word) == tc.want, "result of palindrome: '%t' for: '%s'", isPalindrome(tc.word), tc.word)
+		})
+	}
+}

@@ -1,0 +1,50 @@
+package main
+
+import (
+	"fmt"
+	"strconv"
+	"sync"
+	"time"
+)
+
+const ramDisk = ""
+const cmd = "firefox -headless --screenshot "
+
+const (
+	u1 = "https://www.olx.ro/d/oferta/vand-pastura-cruda-100-naturala-135-lei-kg-IDc0lxY.html?reason=observed_ad"
+	u2 = "https://www.olx.ro/d/oferta/vand-pastura-direct-de-la-stupina-apicultor-sj-IDcfuXA.html?reason=observed_ad"
+)
+
+func init() {
+	runCmd("bash", "cleanpng.sh")
+}
+
+func main() {
+	var wg sync.WaitGroup
+
+	wg.Add(2)
+	capture(u1, &wg)
+	capture(u2, &wg)
+
+	wg.Wait()
+}
+
+func capture(url string, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	urlHash := hashURL(url)
+	imgPath := ramDisk + urlHash + ".png"
+
+	scriptName := urlHash + ".sh"
+	createFile(scriptName, cmd+imgPath+" "+url)
+
+	t := time.Now()
+	runCmd("bash", scriptName)
+
+	elapsed := time.Since(t).Milliseconds()
+	fmt.Printf("script took %d miliseconds to run.\n", elapsed)
+
+	fmt.Printf("file %s exists? - %s\n", imgPath, strconv.FormatBool(existsFile(imgPath)))
+
+	deleteFile(scriptName)
+}

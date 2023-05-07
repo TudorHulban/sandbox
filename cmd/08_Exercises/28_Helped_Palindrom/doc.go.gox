@@ -1,0 +1,6 @@
+package main
+
+// Given a non empty string, one may delete at most one character.
+// Find whether the string can be made a palindrome.
+// The string contains only lower case letters a to z (ASCII, no UTF).
+// example: "radkar"

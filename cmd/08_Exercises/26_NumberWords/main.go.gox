@@ -1,0 +1,42 @@
+package main
+
+import "fmt"
+
+func main() {}
+
+func isSeparator(letter rune) bool {
+	return string(letter) == " "
+}
+
+func noWords(text string) int {
+	var wordStarted bool
+	var res int
+
+	wordStart := true
+
+	for _, letter := range text {
+		if isSeparator(letter) {
+			if wordStarted {
+				res++
+
+				wordStart, wordStarted = false, false
+
+				continue
+			}
+
+			wordStart = true
+
+			continue
+		}
+
+		wordStarted = true
+	}
+
+	fmt.Println(wordStart)
+
+	if wordStarted {
+		return res + 1
+	}
+
+	return res
+}

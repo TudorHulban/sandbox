@@ -1,0 +1,62 @@
+package puub
+
+import (
+	"context"
+
+	"cloud.google.com/go/pubsub"
+	"google.golang.org/api/iterator"
+)
+
+type Message struct {
+	topic   *pubsub.Topic
+	payload []byte
+}
+
+type topicName string
+
+// see more // https://cloud.google.com/pubsub/docs/admin#list_a_topic
+func (t topicName) isCreated(ctx context.Context, client *pubsub.Client) (bool, *pubsub.Topic) {
+	it := client.Topics(ctx)
+
+	for {
+		existingTopic, errNext := it.Next()
+		if errNext == iterator.Done {
+			return false, nil
+		}
+
+		if errNext != nil {
+			return false, nil
+		}
+
+		if t == topicName(existingTopic.ID()) {
+			return true, existingTopic
+		}
+	}
+}
+
+// NewTopic creates new topic
+// see also https://cloud.google.com/pubsub/docs/admin#create_a_topic
+func NewTopic(ctx context.Context, client *pubsub.Client, name topicName) (*pubsub.Topic, error) {
+	isCreated, existingTopic := name.isCreated(ctx, client)
+	if isCreated {
+		return existingTopic, nil
+	}
+
+	return client.CreateTopic(ctx, string(name))
+}
+
+func NewMessage(topic *pubsub.Topic, payload []byte) *Message {
+	return &Message{
+		topic:   topic,
+		payload: payload,
+	}
+}
+
+// Publish returns message ID as received from PubSub and / or error
+func (m *Message) Publish(ctx context.Context) (string, error) {
+	msg := &pubsub.Message{
+		Data: m.payload,
+	}
+
+	return m.topic.Publish(ctx, msg).Get(ctx)
+}

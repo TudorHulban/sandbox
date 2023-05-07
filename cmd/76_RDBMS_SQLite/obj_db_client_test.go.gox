@@ -1,0 +1,104 @@
+package main
+
+import (
+	"log"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestConstructorInMemory(t *testing.T) {
+	db, errNew := NewSQLiteMemory()
+	require.NoError(t, errNew)
+
+	defer db.connDB.Close()
+
+	require.NotZero(t, db.connDB)
+}
+
+func TestSQLiteOperations(t *testing.T) {
+	db, errNew := NewSQLiteMemory()
+	require.NoError(t, errNew)
+
+	defer db.connDB.Close()
+
+	require.False(t, db.TableExists("userinfo"))
+
+	if !db.TableExists("userinfo") {
+		_, errCre := db.connDB.Exec("CREATE TABLE if not exists userinfo(`uid` INTEGER PRIMARY KEY AUTOINCREMENT,`username` VARCHAR(64) NULL,`departname` VARCHAR(64) NULL,`created` DATE NULL")
+
+		require.NoError(t, errCre)
+	}
+
+	if !db.TableExists("version") {
+		require.NoError(t, db.CreateTable("version", "(`name` text, `date` text, `description` text)"))
+	}
+
+	stmt1, errPrep1 := db.connDB.Prepare("INSERT INTO userinfo(username, departname, created) values(?,?,?)")
+	require.NoError(t, errPrep1)
+
+	res, errExec := stmt1.Exec("john", "HR", "2012-12-09")
+	require.NoError(t, errExec)
+
+	id, errLast := res.LastInsertId()
+	require.NoError(t, errLast)
+
+	t.Log("LastInsertId: ", id)
+
+	// query row
+	var uid int
+	var username string
+	var department string
+	var created time.Time
+
+	db.connDB.QueryRow("SELECT * FROM userinfo where username=?", "john").Scan(&uid, &username, &department, &created)
+
+	log.Println("row ID: ", uid)
+	log.Println("row name: ", username)
+	log.Println("row department: ", department)
+	log.Println("row created: ", created)
+
+	json, errJSON := getAsJSON(db.connDB, "SELECT * FROM userinfo")
+	require.NoError(t, errJSON)
+
+	// check department
+	log.Println("is Exact: ", valueExact(json, "departname"))
+
+	stmt2, errPrep2 := db.connDB.Prepare("update userinfo set username=? where uid=?")
+	require.NoError(t, errPrep2)
+
+	res, errSmith := stmt2.Exec("john smith", id)
+	require.NoError(t, errSmith)
+
+	affected, errAf := res.RowsAffected()
+	require.NoError(t, errAf)
+
+	log.Println("RowsAffected: ", affected)
+
+	// query
+	rows, errQue := db.connDB.Query("SELECT * FROM userinfo")
+	require.NoError(t, errQue)
+
+	defer rows.Close() // good habit to close
+
+	for rows.Next() {
+		if errScan := rows.Scan(&uid, &username, &department, &created); errScan != nil {
+			log.Fatal(errScan)
+		}
+
+		log.Printf("user name: %v, ID: %v, created: %v, department: %v", username, uid, created, department)
+	}
+
+	// delete
+	stmt, errDel := db.connDB.Prepare("delete from userinfo where uid=?")
+	require.NoError(t, errDel)
+
+	res, errExe := stmt.Exec(id)
+	require.NoError(t, errExe)
+
+	affected, errRows := res.RowsAffected()
+	require.NoError(t, errRows)
+
+	log.Println("RowsAffected: ", affected)
+}

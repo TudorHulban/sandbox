@@ -1,0 +1,17 @@
+package puub
+
+import (
+	"net"
+	"time"
+)
+
+func isSocketOpened(socket string) bool {
+	conn, errDial := net.DialTimeout("tcp", socket, time.Second)
+	if errDial != nil {
+		return false
+	}
+
+	defer conn.Close()
+
+	return conn != nil
+}

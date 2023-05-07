@@ -1,0 +1,211 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/mitchellh/mapstructure"
+)
+
+type jsonAnswer struct {
+	Response string `json:"response"`
+}
+
+const _Port = "8080"
+const _SecondsDefaultQueueTTL = 600
+
+const (
+	urlRegisterProducer = "/registerproducer"
+	urlRegisterConsumer = "/registerconsumer"
+	urlPostEvents       = "/postevents"
+	urlConsumeEvent     = "/consumevent" // switch to GET - later
+	urlReadyEventID     = "/readyevent"
+	urlStatusRequestID  = "/statusrequest" // switch to GET - later)
+)
+
+var q queue = *newQueue(_SecondsDefaultQueueTTL) // one queue only for now
+
+func main() {
+	http.HandleFunc(urlRegisterProducer, handlerRegisterProducer)
+	http.HandleFunc(urlRegisterConsumer, handlerRegisterConsumer)
+	http.HandleFunc(urlPostEvents, handlerPostEvent)
+	http.HandleFunc(urlConsumeEvent, handlerConsumeEvent)
+	http.HandleFunc(urlReadyEventID, handlerReadyEvID)
+	http.HandleFunc(urlStatusRequestID, handlerStatusRequestID)
+
+	http.ListenAndServe((fmt.Sprintf(":%v", _Port)), nil)
+}
+
+func sendResponse(w http.ResponseWriter, rawResponse string) error {
+	response := jsonAnswer{
+		Response: rawResponse,
+	}
+
+	return json.NewEncoder(w).Encode(&response)
+}
+
+func handlerRegisterProducer(w http.ResponseWriter, r *http.Request) {
+	req, errDecode := decodeRequest(r, registerProducer)
+	if errDecode != nil {
+		sendResponse(w, errDecode.Error())
+
+		return
+	}
+
+	var generatedProducer producer
+	mapstructure.Decode(req, &generatedProducer)
+	q.addProducer(&generatedProducer)
+
+	log.Println("registered producers:", len(q.producers), q.producers)
+
+	sendResponse(w, "ok")
+}
+
+func handlerRegisterConsumer(w http.ResponseWriter, r *http.Request) {
+	req, errDecode := decodeRequest(r, reqisterConsumer)
+	if errDecode != nil {
+		sendResponse(w, errDecode.Error())
+
+		return
+	}
+
+	var generatedConsumer consumer
+	mapstructure.Decode(req, &generatedConsumer)
+	q.addConsumer(&generatedConsumer)
+
+	log.Println("registered consumers:", len(q.consumers), q.consumers)
+
+	sendResponse(w, "ok")
+}
+
+func handlerPostEvent(w http.ResponseWriter, r *http.Request) {
+	log.Println("-- post event")
+
+	req, errDecode := decodeRequest(r, requestEvent)
+	if errDecode != nil {
+		log.Println("event decode error: ", errDecode)
+
+		sendResponse(w, errDecode.Error())
+
+		return
+	}
+
+	var payload request
+	mapstructure.Decode(req, &payload)
+
+	if exists, _ := q.isRegisteredProducer(payload.ProducerCode); !exists {
+		sendResponse(w, "not registered")
+
+		return
+	}
+
+	q.addPayload(payload)
+
+	log.Println("registered events:", len(q.events))
+	log.Println(q.events)
+
+	sendResponse(w, "ok")
+}
+
+func handlerConsumeEvent(w http.ResponseWriter, r *http.Request) {
+	req, errDecode := decodeRequest(r, requestTask)
+	if errDecode != nil {
+		sendResponse(w, errDecode.Error())
+
+		return
+	}
+
+	var generatedTask task
+	mapstructure.Decode(req, &generatedTask)
+	log.Println("requesting work:", generatedTask.ConsumerCode)
+
+	exists, consumer := q.isRegisteredConsumer(generatedTask.ConsumerCode)
+	if !exists {
+		sendResponse(w, "not registered")
+
+		return
+	}
+
+	event := q.getOldestEvent(consumer)
+	if event == nil {
+		sendResponse(w, "no work")
+
+		return
+	}
+
+	log.Println("consumed event:", event)
+	log.Println(q.events)
+
+	sendResponse(w, event.request)
+}
+
+// handlerReadyEvID - invoked by consumer
+func handlerReadyEvID(w http.ResponseWriter, r *http.Request) {
+	req, errDecode := decodeRequest(r, readyEvent)
+	if errDecode != nil {
+		sendResponse(w, errDecode.Error())
+
+		return
+	}
+
+	var generatedEvent readyevent
+	mapstructure.Decode(req, &generatedEvent)
+
+	log.Println("ready event:", generatedEvent.EventID)
+
+	event := q.getEventByID(generatedEvent.EventID)
+	if event == nil {
+		sendResponse(w, "event does not exist in queue")
+
+		return
+	}
+
+	if event.consumedByCode != generatedEvent.ConsumerCode {
+		sendResponse(w, "consumed wrong event id")
+
+		return
+	}
+
+	event.consumeEnd = time.Now().UnixNano()
+	log.Println("consumed event:", event)
+	log.Println(q.events)
+
+	sendResponse(w, event.request)
+}
+
+// handlerStatusRequestID - invoked by producer
+func handlerStatusRequestID(w http.ResponseWriter, r *http.Request) {
+	req, errDecode := decodeRequest(r, requestStatus)
+	if errDecode != nil {
+		log.Println("event decode error: ", errDecode)
+		sendResponse(w, errDecode.Error())
+		return
+	}
+
+	var generatedEvent readyevent
+	mapstructure.Decode(req, &generatedEvent)
+
+	log.Println("ready event:", generatedEvent.EventID)
+
+	event := q.getEventByID(generatedEvent.EventID)
+	if event == nil {
+		sendResponse(w, "event does not exist in queue")
+
+		return
+	}
+
+	if event.consumedByCode != generatedEvent.ConsumerCode {
+		sendResponse(w, "consumed wrong event id")
+		return
+	}
+
+	event.consumeEnd = time.Now().UnixNano()
+
+	log.Println("consumed event:", event)
+	log.Println(q.events)
+
+	sendResponse(w, event.request)
+}

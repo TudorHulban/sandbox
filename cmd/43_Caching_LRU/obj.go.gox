@@ -1,0 +1,188 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Object struct {
+	Name string
+	ID   int
+}
+
+type Objects []*Object
+
+func NewObject(id int, name string) *Object {
+	return &Object{
+		ID:   id,
+		Name: name,
+	}
+}
+
+func (o *Objects) findByID(id int) *Object {
+	for _, object := range *o {
+		if object.ID == id {
+			return object
+		}
+	}
+
+	return nil
+}
+
+// findByIDs searches by IDs in persistence.
+func (o *Objects) findByIDs(ids ...int) []*Object {
+	var res []*Object
+
+	for _, id := range ids {
+		for _, object := range *o {
+			if object.ID == id {
+				res = append(res, object)
+
+				break
+			}
+		}
+	}
+
+	return res
+}
+
+func (o *Objects) findByNames(names ...string) []*Object {
+	var res []*Object
+
+	for _, name := range names {
+		for _, object := range *o {
+			if object.Name == name {
+				res = append(res, object)
+
+				break
+			}
+		}
+	}
+
+	return res
+}
+
+func (o *Objects) findByName(name string) *Object {
+	for _, object := range *o {
+		if object.Name == name {
+			return object
+		}
+	}
+
+	return nil
+}
+
+func (o *Objects) FindByID(id int) *Object {
+	cacheLRU := getCachesForObjectsMethods()["FindByID"]
+
+	objectLRU := cacheLRU.Get(id)
+	if objectLRU != nil {
+		return objectLRU.(*Object)
+	}
+
+	objectRetrieved := o.findByID(id)
+	if objectRetrieved == nil {
+		return nil
+	}
+
+	cacheLRU.Put(id, objectRetrieved)
+
+	fmt.Println(cacheLRU)
+
+	return objectRetrieved
+}
+
+func (o *Objects) FindByName(name string) *Object {
+	cacheLRU := getCachesForObjectsMethods()["FindByName"]
+
+	objectLRU := cacheLRU.Get(name)
+	if objectLRU != nil {
+		return objectLRU.(*Object)
+	}
+
+	objectRetrieved := o.findByName(name)
+	if objectRetrieved == nil {
+		return nil
+	}
+
+	cacheLRU.Put(name, objectRetrieved)
+
+	fmt.Println(cacheLRU)
+
+	return objectRetrieved
+}
+
+func (o *Objects) FindByIDs(ids ...int) []*Object {
+	cacheLRU := getCachesForObjectsMethods()["FindByIDs"]
+
+	searchBy := concatSliceInt(ids)
+
+	objectLRU := cacheLRU.Get(searchBy)
+	if objectLRU != nil {
+		return objectLRU.([]*Object)
+	}
+
+	objectRetrieved := o.findByIDs(ids...)
+	if objectRetrieved == nil {
+		return nil
+	}
+
+	cacheLRU.Put(searchBy, objectRetrieved)
+
+	fmt.Println(cacheLRU)
+
+	return objectRetrieved
+}
+
+func (o *Objects) FindByNames(names ...string) []*Object {
+	cacheLRU := getCachesForObjectsMethods()["FindByNames"]
+
+	searchBy := concatSliceString(names)
+
+	objectLRU := cacheLRU.Get(searchBy)
+	if objectLRU != nil {
+		return objectLRU.([]*Object)
+	}
+
+	objectRetrieved := o.findByNames(names...)
+	if objectRetrieved == nil {
+		return nil
+	}
+
+	cacheLRU.Put(searchBy, objectRetrieved)
+
+	fmt.Println(cacheLRU)
+
+	return objectRetrieved
+}
+
+var _cachesForMethods map[string]*CacheLRU
+
+type CfgCache struct {
+	Name     string
+	Capacity int
+}
+
+var _cacheConfigObjects = []CfgCache{
+	{Name: "FindByID", Capacity: 10},
+	{Name: "FindByIDs", Capacity: 10},
+	{Name: "FindByName", Capacity: 10},
+	{Name: "FindByNames", Capacity: 10},
+}
+
+func getCachesForObjectsMethods() map[string]*CacheLRU {
+	if _cachesForMethods == nil {
+		_cachesForMethods = newCachesForMethods(_cacheConfigObjects...)
+	}
+
+	return _cachesForMethods
+}
+
+func newCachesForMethods(cacheConfigurations ...CfgCache) map[string]*CacheLRU {
+	res := make(map[string]*CacheLRU)
+
+	for _, cacheConfiguration := range cacheConfigurations {
+		res[cacheConfiguration.Name] = NewCacheLRU(cacheConfiguration.Capacity)
+	}
+
+	return res
+}

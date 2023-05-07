@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Template</title>
+</head>
+
+<body>
+    <h1>Product: {{.Name}}</h1>
+    <p>Price {{.PriceCents}}</p>
+    <p>Stock is {{.Quantity}}</p>
+
+    {{template "footer"}}
+</body>
+
+</html>
+
+{{define "footer"}}
+<footer>
+    <p>
+        Copyright 2020 TARA Web
+    </p>
+    <p>
+        Contact information: <a href="mailto:admin@taraweb.eu">admin@taraweb.eu</a>.
+    </p>
+</footer>
+{{end}}

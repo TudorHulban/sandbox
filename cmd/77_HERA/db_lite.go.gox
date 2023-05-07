@@ -1,0 +1,103 @@
+package main
+
+import (
+	"database/sql"
+	"errors"
+	"fmt"
+	"strings"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+type DBSQLite struct {
+	DB *sql.DB
+
+	path string
+}
+
+func (l *DBSQLite) Open(dbName string) error {
+	db, errOp := sql.Open("sqlite3", l.path)
+	if errOp != nil {
+		return errOp
+	}
+
+	l.DB = db
+
+	return db.Ping()
+}
+
+func (l *DBSQLite) TableExists(dbName, tableName string) bool {
+	var occurences int
+
+	l.DB.QueryRow("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", tableName).Scan(&occurences)
+
+	return (occurences == 1)
+}
+
+func (l *DBSQLite) CreateTable(dbName, tableName, ddl string, columnPKAutoincrement bool) bool {
+	var theDDL string
+
+	if columnPKAutoincrement {
+		theDDL = "\"id\" INTEGER PRIMARY KEY AUTOINCREMENT," + ddl
+	} else {
+		theDDL = ddl
+	}
+
+	theDDL = "CREATE TABLE " + tableName + "(" + ddl + ")"
+
+	_, errExe := l.DB.Exec(theDDL)
+	if errExe != nil {
+		return false
+	}
+
+	return l.TableExists(dbName, tableName)
+}
+
+func (l *DBSQLite) SingleInsert(tableName string, values []string) error {
+	ddl := "insert into " + tableName + " values(" + "\"" + strings.Join(values, "\""+","+"\"") + "\"" + ")"
+
+	_, err := l.DB.Exec(ddl)
+
+	return err
+}
+
+// TODO: merge to common function with maria implementation
+func (l *DBSQLite) BulkInsert(tableName string, columnNames []string, values [][]string) error {
+	if len(columnNames) == 0 {
+		return errors.New("column names missing")
+	}
+
+	if len(values) == 0 {
+		return errors.New("values missing")
+	}
+
+	questionMarks := returnNoValues(values[0], "?")
+
+	dbTransaction, errBeg := l.DB.Begin()
+	if errBeg != nil {
+		return fmt.Errorf("BulkInsert - begin transaction: %w", errBeg)
+	}
+
+	statement := "insert into " + tableName + "(" + strings.Join(columnNames, ",") + ")" + " values " + questionMarks
+
+	dml, errPrep := dbTransaction.Prepare(statement)
+	if errPrep != nil {
+		return fmt.Errorf("BulkInsert - prepare statement: %w", errPrep)
+	}
+	defer dml.Close()
+
+	for ix, columnValues := range values {
+		values, errConv := SliceToInterface(columnValues)
+		if errConv != nil {
+			return errConv
+		}
+
+		if _, errExec := dml.Exec(values...); errExec != nil { // TODO: assess more optim insert
+			return fmt.Errorf("BulkInsert - dml.Exec for row '%d': %w", ix, errPrep)
+		}
+	}
+
+	dbTransaction.Commit()
+
+	return nil
+}

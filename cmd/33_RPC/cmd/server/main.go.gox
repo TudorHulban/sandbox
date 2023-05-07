@@ -1,0 +1,41 @@
+package main
+
+import (
+	"fmt"
+	"net"
+	"net/rpc"
+	"os"
+	"os/signal"
+	"syscall"
+	"trpc/config"
+)
+
+func main() {
+	var l Logic
+	rpc.Register(&l)
+
+	tcpAddr, errRes := net.ResolveTCPAddr("tcp", config.Socket)
+	if errRes != nil {
+		fmt.Printf("resolve TCP Addr: %s.\n", errRes)
+		os.Exit(1)
+	}
+
+	listener, errLis := net.ListenTCP("tcp", tcpAddr)
+	if errLis != nil {
+		fmt.Printf("listen TCP: %s.\n", errRes)
+		os.Exit(1)
+	}
+
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
+
+	fmt.Printf("listening on port %s\n", config.Socket)
+
+	go func() {
+		for {
+			rpc.Accept(listener)
+		}
+	}()
+
+	fmt.Printf("\nshutting down on received: %s.\n", <-shutdown)
+}

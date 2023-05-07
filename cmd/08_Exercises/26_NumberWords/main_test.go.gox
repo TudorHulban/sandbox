@@ -1,0 +1,31 @@
+package main
+
+import (
+	"testing"
+
+	"gotest.tools/assert"
+)
+
+func TestNoWords(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       string
+		want        int
+	}{
+		{"empty", "", 0},
+		{"separator", "", 0},
+		{"one", "a", 1},
+		{"one with sep1", "a ", 1},
+		{"one with sep2", " a ", 1},
+		{"one with sep3", "a ", 1},
+		{"two 1", "a b", 2},
+		{"two 2", "a b ", 2},
+		{"three 1", "a bc d", 3},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			assert.Equal(t, tc.want, noWords(tc.input), tc.description)
+		})
+	}
+}

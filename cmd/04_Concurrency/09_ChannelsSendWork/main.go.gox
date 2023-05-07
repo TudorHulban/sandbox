@@ -1,0 +1,73 @@
+package main
+
+import (
+	"strings"
+)
+
+const numOfWorkers = 10
+const separator = " "
+
+func main() {}
+
+func splitter(sentence string) []string {
+	if len(sentence) == 0 {
+		return nil
+	}
+
+	return strings.Split(sentence, separator)
+}
+
+func process(chWork, chResult chan string, chStop chan struct{}) {
+	for {
+		select {
+		case <-chStop:
+			return
+
+		case event := <-chWork:
+			chResult <- event
+		}
+	}
+}
+
+func dispatchWork(work []string) []string {
+	chWork := make(chan string)
+	chStop := make(chan struct{})
+	chResult := make(chan string)
+
+	defer close(chStop)
+	defer close(chWork)
+	defer close(chResult)
+
+	// create workers
+
+	for i := 0; i < numOfWorkers; i++ {
+		go process(chWork, chResult, chStop)
+	}
+
+	sendWork := func() {
+		for i := 0; i < len(work); i++ {
+			chWork <- work[i]
+		}
+	}
+
+	go sendWork()
+
+	var res []string
+
+	for i := 0; i < len(work); i++ {
+		select {
+		case result, isOpened := <-chResult:
+			if !isOpened {
+				break
+			}
+
+			res = append(res, result)
+		}
+	}
+
+	for i := 0; i < numOfWorkers; i++ {
+		chStop <- struct{}{}
+	}
+
+	return res
+}

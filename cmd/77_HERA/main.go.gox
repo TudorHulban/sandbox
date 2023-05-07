@@ -1,0 +1,104 @@
+package main
+
+import (
+	"fmt"
+
+	"time"
+)
+
+func main() {
+	s := DBSQLite{
+		path: "./test.dbf",
+	}
+
+	initDB(&s, "")
+
+	/*
+		var p DBPostgresInfo
+		p.ip = "192.168.1.3"
+		p.port = 5432
+		p.user = "golang"
+		p.password = "golang"
+
+		initDB(p, "db_golang")
+	*/
+
+	/*
+		var m DBMariaInfo
+		m.ip = "192.168.1.12" //in container c0702c
+		m.port = 3306
+		m.user = "hera"
+		m.password = "hera"
+
+		initDB(m, "devops")
+	*/
+}
+
+type rowValues struct {
+	values []string
+}
+
+type tableDDL struct {
+	tableName   string
+	tableFields string
+
+	ColumnPKAutoincrement bool
+}
+
+func initDB(rdbms RDBMS, dbName string) error {
+	if errOp := rdbms.Open(dbName); errOp != nil {
+		return errOp
+	}
+
+	T1 := tableDDL{
+		tableName:             "version",
+		tableFields:           prepareDBField("'name' text, 'date' text, 'description' text"),
+		ColumnPKAutoincrement: false,
+	}
+
+	T2 := tableDDL{
+		tableName:             "dbtypes",
+		tableFields:           prepareDBField("'code' text, 'description' text"),
+		ColumnPKAutoincrement: true,
+	}
+
+	T3 := tableDDL{
+		tableName:             "checks",
+		tableFields:           prepareDBField("'name' text, 'description' text, 'action' text, 'mins2run' integer, 'hourfrom' integer, 'hourto' integer, 'dayofweek' integer, 'dayofmonth' integer, 'lastrun' integer, 'enabled' text, 'systemid' integer"),
+		ColumnPKAutoincrement: true,
+	}
+
+	schemaDefinition := []tableDDL{T1, T2, T3}
+
+	for i := range schemaDefinition {
+		if !rdbms.TableExists(dbName, schemaDefinition[i].tableName) {
+			fmt.Printf("creating table: %s\n", schemaDefinition[i].tableName)
+
+			tbCreated := rdbms.CreateTable(dbName, schemaDefinition[i].tableName, schemaDefinition[i].tableFields, schemaDefinition[i].ColumnPKAutoincrement)
+			fmt.Printf("table %s created? - %t\n", schemaDefinition[i].tableName, tbCreated)
+
+			continue
+		}
+
+		fmt.Printf("Table %s already exists.\n", schemaDefinition[i].tableName)
+	}
+
+	//populate tables - test functions and if not different across RDBMSs take them out from interface
+	v1 := []string{"0.01", string(time.Now().AppendFormat(nil, "Mon Jan 02 2006 15:04:05 GMT-0700")[:]), "July 2018"}
+
+	if errIns1 := rdbms.SingleInsert("version", v1); errIns1 != nil {
+		return errIns1
+	}
+
+	v2 := [][]string{{"SQLITE", "Sqlite Connection"},
+		{"POSTGRES", "PostgreSQL Connection"},
+		{"ORACLE", "Oracle Connection"},
+	}
+
+	if errIns2 := rdbms.BulkInsert("dbtypes", []string{"code", "description"}, v2); errIns2 != nil {
+		return errIns2
+	}
+
+	v3 := [][]string{{"test1", "test check", "action 1", "20", "0", "24", "127", "2147483647", "0", "Y", "1"}}
+	return rdbms.BulkInsert("checks", []string{"name", "description", "action", "mins2run", "hourfrom", "hourto", "dayofweek", "dayofmonth", "lastrun", "enabled", "systemid"}, v3)
+}

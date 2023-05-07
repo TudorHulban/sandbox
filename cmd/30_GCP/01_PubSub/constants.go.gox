@@ -1,0 +1,17 @@
+package puub
+
+import "strconv"
+
+const (
+	_projectID      = "xxx"
+	_subscriptionID = "subscription-xxx"
+)
+
+const _sockEmulator = "127.0.0.1:8085"
+
+const (
+	_portFiber = 3001
+	_route     = "/push"
+)
+
+var _pubsubPushEndpoint = "http://localhost:" + strconv.Itoa(_portFiber) + _route

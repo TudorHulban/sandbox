@@ -1,0 +1,30 @@
+package main
+
+import (
+	"io"
+	"strconv"
+	"strings"
+)
+
+// WriteDataTo writes data to passed writer.
+func WriteDataTo(w io.Writer, data *GenData) (int, error) {
+	var contents []string
+	contents = append(contents, strings.Join(data.ColumnNames, ", "))
+
+	for _, rowVals := range data.Rows {
+		var row []string
+
+		for _, value := range rowVals {
+			switch val := value.(type) {
+			case string:
+				row = append(row, val)
+			case int:
+				row = append(row, strconv.FormatInt(int64(val), 10))
+			}
+		}
+
+		contents = append(contents, strings.Join(row, ", "))
+	}
+
+	return w.Write([]byte(strings.Join(contents, "\n")))
+}

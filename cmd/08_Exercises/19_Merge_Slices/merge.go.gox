@@ -1,0 +1,34 @@
+package main
+
+// merge should take two ordered slices
+func merge(s1, s2 []int) []int {
+	var res []int
+
+	appnd := func(s []int, pos int) {
+		res = append(res, s[pos:]...)
+	}
+
+	var i, j int
+	for {
+		if i >= len(s1) {
+			appnd(s2, j)
+			break
+		}
+
+		if j >= len(s2) {
+			appnd(s1, i)
+			break
+		}
+
+		if s1[i] < s2[j] {
+			res = append(res, s1[i])
+			i++
+			continue
+		}
+
+		res = append(res, s2[j])
+		j++
+	}
+
+	return res
+}

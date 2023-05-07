@@ -1,0 +1,24 @@
+package main
+
+import (
+	"errors"
+	"trpc/config"
+)
+
+type Logic struct{}
+
+func (t *Logic) Multiply(args *config.Args, reply *int) error {
+	*reply = args.A * args.B
+
+	return nil
+}
+
+func (t *Logic) Divide(args *config.Args, reply *config.Reply) error {
+	if args.B == 0 {
+		return errors.New("divide by zero")
+	}
+
+	reply.Resp = float64(args.A) / float64(args.B)
+
+	return nil
+}

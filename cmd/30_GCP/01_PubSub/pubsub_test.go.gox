@@ -1,0 +1,71 @@
+package puub
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestPublish(t *testing.T) {
+	os.Setenv("PUBSUB_EMULATOR_HOST", _sockEmulator)
+	os.Setenv("PUBSUB_PROJECT_ID", _projectID)
+
+	ctx := context.Background()
+	errClient := newClient(ctx)
+	require.NoError(t, errClient)
+
+	defer GetClient().Close()
+
+	topicname := "topic10"
+
+	topic, errTop := NewTopic(ctx, GetClient(), topicName(topicname))
+	t.Log(errTop)
+	require.NoError(t, errTop)
+	require.NotNil(t, topic)
+
+	// see https://cloud.google.com/pubsub/docs/admin#delete_a_topic
+	defer func() {
+		errDel := topic.Delete(ctx)
+		require.NoError(t, errDel)
+	}()
+
+	fiber := NewFiber(_portFiber)
+	defer fiber.Stop()
+
+	go func() {
+		fiber.Start()
+	}()
+
+	subscriptionData := SubscriptionData{
+		subscriptionID:     _subscriptionID,
+		endpoint:           _pubsubPushEndpoint,
+		topic:              topic,
+		secondsAckDeadline: 10,
+	}
+
+	subscription, errSub := NewPushSubscription(ctx, GetClient(), &subscriptionData)
+	require.NoError(t, errSub)
+	require.NotNil(t, subscription)
+
+	defer func() {
+		errDel := subscription.Delete(ctx)
+		require.NoError(t, errDel)
+	}()
+
+	fmt.Println("got subscription: ", subscription.ID())
+
+	payload := "abcd"
+	message := NewMessage(topic, []byte(payload))
+
+	msgID, errPub := message.Publish(ctx)
+	t.Log(msgID)
+	require.NoError(t, errPub)
+	require.NotNil(t, msgID)
+
+	fmt.Println("msgID:", msgID)
+
+	<-fiber.chComms
+}

@@ -1,0 +1,338 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+
+# GNU Make 4.3
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2020 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Sat Jul  2 17:40:58 2022
+
+# Variables
+
+# environment
+GDK_BACKEND = x11
+# environment
+LC_ALL = C
+# environment
+GNOME_SHELL_SESSION_MODE = ubuntu
+# environment
+SSH_AGENT_LAUNCHER = gnome-keyring
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-9d22aa4f-7ea7-43b4-8bf3-9074087e9c6f.sock
+# environment
+LC_NAME = ro_RO.UTF-8
+# environment
+LC_NUMERIC = ro_RO.UTF-8
+# environment
+VSCODE_CWD = /mnt/tmpfs.ramdisk/GolangSandbox/12_GraphQL/01_Template
+# environment
+LC_ADDRESS = ro_RO.UTF-8
+# default
+MAKE_COMMAND := make
+# environment
+QT_ACCESSIBILITY = 1
+# environment
+GOPATH = /home/tudi/go
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+.VARIABLES := 
+# environment
+PWD = /home/tudi/ram/GolangSandbox/12_GraphQL/01_Template
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+# environment
+OLDPWD = /home/tudi/ram/GolangSandbox/12_GraphQL
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+VSCODE_LOG_STACK = false
+# automatic
+%F = $(notdir $%)
+# environment
+VSCODE_CODE_CACHE_PATH = /home/tudi/.config/Code/CachedData/30d9c6cd9483b2cc586687151bcbcd635f373630
+# environment
+LANG = C
+# environment
+XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.RVQ6N1
+# default
+.LOADED := 
+# default
+.INCLUDE_DIRS = /usr/local/include /usr/include /usr/include
+# environment
+GNOME_TERMINAL_SERVICE = :1.1179
+# makefile
+MAKEFLAGS = pqrR
+# makefile
+CURDIR := /mnt/tmpfs.ramdisk/GolangSandbox/12_GraphQL/01_Template
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# environment
+LESSOPEN = | /usr/bin/lesspipe %s
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+MFLAGS = -pqrR
+# environment
+SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
+# default
+.SHELLFLAGS := -c
+# environment
+WAYLAND_DISPLAY = wayland-0
+# environment
+XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+XDG_SESSION_DESKTOP = ubuntu
+# makefile (from 'Makefile', line 1)
+MAKEFILE_LIST := Makefile
+# automatic
+@F = $(notdir $@)
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+VSCODE_PID = 94099
+# environment
+XDG_SESSION_TYPE = wayland
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# environment
+SESSION_MANAGER = local/pad16:@/tmp/.ICE-unix/1140,unix/pad16:/tmp/.ICE-unix/1140
+# automatic
+*F = $(notdir $*)
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+GNOME_DESKTOP_SESSION_ID = this-is-deprecated
+# makefile
+SHELL = /bin/sh
+# default
+MAKECMDGOALS := all
+# environment
+XMODIFIERS = @im=ibus
+# environment
+SHLVL = 1
+# environment
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/2e430a69_e938_4947_bba3_6bee693b0c10
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/usr/local/go/bin:/home/tudi/go/bin
+# default
+MAKEFILES := 
+# environment
+LC_MONETARY = ro_RO.UTF-8
+# automatic
+^F = $(notdir $^)
+# environment
+LC_TIME = ro_RO.UTF-8
+# environment
+VSCODE_LOG_NATIVE = false
+# environment
+USERNAME = tudi
+# environment
+GNOME_SETUP_DISPLAY = :1
+# environment
+GOPRIVATE = github.com/PaackEng
+# environment
+LC_TELEPHONE = ro_RO.UTF-8
+# environment
+LESSCLOSE = /usr/bin/lesspipe %s %s
+# automatic
+?F = $(notdir $?)
+# environment
+XDG_CURRENT_DESKTOP = Unity
+# environment
+LS_COLORS = rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36::di=0;37:
+# automatic
++F = $(notdir $+)
+# environment
+DESKTOP_SESSION = ubuntu
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+LOGNAME = tudi
+# makefile
+.DEFAULT_GOAL := reset
+# environment
+SYSTEMD_EXEC_PID = 1455
+# environment
+DISPLAY = :0
+# environment
+USER = tudi
+# environment
+GTK_MODULES = gail:atk-bridge
+# default
+MAKE_VERSION := 4.3
+# environment
+LC_MEASUREMENT = ro_RO.UTF-8
+# environment
+_ = /usr/bin/code
+# environment
+LC_PAPER = ro_RO.UTF-8
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# environment
+COLORTERM = truecolor
+# environment
+GOMODCACHE = /home/tudi/go/pkg/mod
+# environment
+XDG_SESSION_CLASS = user
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/tudi
+# environment
+QT_IM_MODULE = ibus
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-a6a709a6-1.68.1-main.sock
+# environment
+TERM = xterm-256color
+# environment
+IM_CONFIG_PHASE = 1
+# environment
+GOPROXY = https://proxy.golang.org,direct
+# default
+.RECIPEPREFIX := 
+# automatic
+<F = $(notdir $<)
+# default
+SUFFIXES := 
+# environment
+VSCODE_CLI = 1
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# environment
+VTE_VERSION = 6800
+ 
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
+# environment
+XDG_MENU_PREFIX = gnome-
+# environment
+GDMSESSION = ubuntu
+# environment
+LC_IDENTIFICATION = ro_RO.UTF-8
+# variable set hash-table stats:
+# Load=112/1024=11%, Rehash=0, Collisions=11/142=8%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 36, inode 21700): 10 files, no impossibilities.
+
+# 10 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+generate:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 12):
+	@echo "Removing all '*resolver*.go' files in graph folder."
+	@rm graph/*resolver*.go
+	@echo "Generating new files."
+	@go run github.com/99designs/gqlgen
+	@echo "Generation was succesfull."
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-07-02 17:40:43.848070712
+#  File has been updated.
+#  Successfully updated.
+
+reset:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 2):
+	@rm -rf .vscode graph vendor
+	@rm -rf server.go go.sum go.mod tools.go gqlgen.yml
+	@printf '// +build tools\npackage tools\nimport _ "github.com/99designs/gqlgen"' | gofmt > tools.go
+	@go mod init testq
+	@go get github.com/99designs/gqlgen
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+init:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 9):
+	go run github.com/99designs/gqlgen init
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+run:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 19):
+	@go run ./server.go
+
+test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 22):
+	go test -v ./...
+
+# files hash-table stats:
+# Load=9/1024=1%, Rehash=0, Collisions=0/19=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 20 / storage = 156 B / avg = 7 B
+# current buf: size = 8162 B / used = 156 B / count = 20 / avg = 7 B
+
+# strcache performance: lookups = 29 / hit rate = 31%
+# hash-table stats:
+# Load=20/8192=0%, Rehash=0, Collisions=0/29=0%
+# Finished Make data base on Sat Jul  2 17:40:58 2022
+
+ 

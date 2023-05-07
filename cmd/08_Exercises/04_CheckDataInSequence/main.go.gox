@@ -1,0 +1,41 @@
+package main
+
+import (
+	"errors"
+)
+
+// should test if integer data is in given sequence
+// ex. sequence is 1,2,3 with data being 1,2,3,1,2,3,4.
+
+var (
+	errInputValidation = errors.New("please review passed conditions")
+)
+
+func main() {}
+
+func inSequence(data, seq []int) error {
+	if len(data) < len(seq) || len(seq) == 0 {
+		return errInputValidation
+	}
+
+	l := len(seq)
+
+	for i, _ := range data {
+		if i%l == 0 {
+			for ix, pos := range seq {
+				if i+ix > len(data)-1 {
+					return errors.New("not enough values for sequence")
+				}
+
+				if data[i+ix] == pos {
+					continue
+				}
+
+				return errors.New("not in sequence")
+			}
+
+		}
+	}
+
+	return nil
+}

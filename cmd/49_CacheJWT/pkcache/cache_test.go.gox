@@ -1,0 +1,64 @@
+package pkcache
+
+import (
+	"fmt"
+	"reflect"
+	"testing"
+	"time"
+)
+
+func TestCacheAdd(t *testing.T) {
+	i1 := Item{Value: "x", ExpirationTimestamp: 0}
+	i2 := Item{Value: 1, ExpirationTimestamp: 0}
+
+	c := New(2, &i1)
+	fmt.Println("cache items type:", c.ItemType)
+
+	e1 := c.Add("1", i1)
+	fmt.Println("e1:", e1)
+
+	e2 := c.Add("2", i2)
+	fmt.Println("e2:", e2)
+
+	if len(c.Items) != 1 {
+		t.Error("cache items were not added correctly")
+	}
+	for k, v := range c.Items {
+		fmt.Println("got: ", k, v, reflect.TypeOf(v.Value))
+	}
+}
+
+// Manual testing with go test -race.
+func TestJanitor(t *testing.T) {
+	i1 := Item{Value: "x", ExpirationTimestamp: 0}
+	i2 := Item{Value: "y", ExpirationTimestamp: 0}
+	i3 := Item{Value: "z", ExpirationTimestamp: 0}
+
+	c := New(2, &i1)
+
+	j := NewJanitor(2)
+	j.Clean(c.DeleteExpired)
+
+	c.Add("1", i1)
+	c.Add("2", i2)
+	c.Add("3", i3)
+
+	fmt.Println("items in cache:", len(c.Items))
+
+	for k, item := range c.Items {
+		fmt.Printf("got key: %s and item: %v, type of item value: %v\n", k, item, reflect.TypeOf(item.Value))
+	}
+
+	if len(c.Items) != 3 {
+		t.Error("cache items were not added correctly")
+	}
+
+	time.Sleep(time.Second * 2)
+
+	j.Stop()
+	time.Sleep(time.Second * 1)
+
+	if len(c.Items) != 0 {
+		t.Error("cache items were not fully cleaned by janitor")
+	}
+}

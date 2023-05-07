@@ -1,0 +1,103 @@
+package main
+
+import (
+	"encoding/json"
+	"errors"
+)
+
+/*
+type row struct {
+	ColumnNames []string
+	Values      []interface{}
+}
+*/
+
+// GenData holds data generation results. Is final result of the data generation based on input configuration.
+type GenData struct {
+	ColumnNames []string        `json:"columns"`
+	Rows        [][]interface{} `json:"rowsdata"`
+}
+
+// GenConfig holds field configuration and number of rows to generate.
+type GenConfig struct {
+	Configuration []fieldConfig `json:"config"`
+	NoRows        int64         `json:"norows"`
+}
+
+// fieldConfig - configuration for field. Attributes used for the data generated in this field.
+type fieldConfig struct {
+	Name         string `json:"name"`
+	Type         int    `json:"ftype"`
+	Length       int    `json:"flength"`
+	MinValue     int    `json:"min"`
+	MaxValue     int    `json:"max"`
+	PositiveOnly bool   `json:"fpositive"`
+}
+
+// GetConfig takes configuration as JSON and maps it to the configuration structure.
+func NewConfig(configJSON string) (*GenConfig, error) {
+	var res GenConfig
+
+	if err := json.Unmarshal([]byte(configJSON), &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+// GetData - takes input configuration structure, returns generated data.
+func NewData(config *GenConfig) (*GenData, error) {
+	res := GenData{
+		Rows: make([][]interface{}, config.NoRows),
+	}
+
+	bufferColumns := [][]interface{}{}
+
+	for _, fieldConfig := range config.Configuration {
+		res.ColumnNames = append(res.ColumnNames, fieldConfig.Name)
+
+		switch fieldConfig.Type {
+		case 0:
+			{
+				if (fieldConfig.MinValue > fieldConfig.MaxValue) && (fieldConfig.MaxValue == 0) {
+					return nil, errors.New("bad configuration")
+				}
+
+				n := newNumbers(fieldConfig.Length, fieldConfig.PositiveOnly, fieldConfig.MinValue, fieldConfig.MaxValue, int(config.NoRows))
+				bufferColumns = append(bufferColumns, *sliceToInterface[int](&n))
+			}
+
+		case 1:
+			{
+				s := newCharacters(fieldConfig.Length, int(config.NoRows))
+				bufferColumns = append(bufferColumns, *sliceToInterface[string](&s))
+			}
+
+		case 2:
+			{
+				id := newIDs(int(config.NoRows))
+				bufferColumns = append(bufferColumns, *sliceToInterface[int](&id))
+			}
+		}
+	}
+
+	for i := 0; i < int(config.NoRows); i++ {
+		res.Rows[i] = make([]interface{}, len(res.ColumnNames))
+
+		for k := range res.ColumnNames {
+			res.Rows[i][k] = bufferColumns[k][i]
+		}
+	}
+
+	return &res, nil
+}
+
+func sliceToInterface[T any](slice *[]T) *[]interface{} {
+	res := make([]interface{}, len(*slice))
+
+	for k, v := range *slice {
+		res[k] = v
+	}
+
+	return &res
+}

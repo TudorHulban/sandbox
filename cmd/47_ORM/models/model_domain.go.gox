@@ -1,0 +1,59 @@
+package models
+
+import (
+	"orm/db"
+	"os"
+
+	"github.com/TudorHulban/log"
+)
+
+type Domain struct {
+	Authors Authors
+	Posts   Posts
+}
+
+const sqliteDB = "blog.db"
+
+var _domain *Domain
+
+func NewDomain(l *log.LogInfo) (*Domain, error) {
+	databaseExists := fileExists(sqliteDB)
+
+	domain, err := newDomain(l)
+	if err != nil {
+		return nil, err
+	}
+
+	if !databaseExists {
+		migrationDB(domain)
+		return domain, seedDB(domain)
+	}
+
+	return domain, migrationDB(domain)
+}
+
+func newDomain(l *log.LogInfo) (*Domain, error) {
+	if _domain != nil {
+		return _domain, nil
+	}
+
+	db, errOpen := db.NewSQLiteDB(db.DBName(sqliteDB))
+	if errOpen != nil {
+		l.Debugf("could not create database %s", sqliteDB)
+		os.Exit(5)
+	}
+
+	_domain = &Domain{
+		Authors: Authors{
+			l:      l,
+			DBConn: db,
+		},
+		Posts: Posts{
+			l:            l,
+			DBConn:       db,
+			postsPerPage: 5,
+		},
+	}
+
+	return _domain, nil
+}

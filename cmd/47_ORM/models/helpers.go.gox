@@ -1,0 +1,70 @@
+package models
+
+import (
+	"math/rand"
+	"os"
+	"time"
+
+	"github.com/pkg/errors"
+)
+
+type Number struct {
+	No int64
+}
+
+func migrationDB(domain *Domain) error {
+	if errAuthors := domain.Authors.DBConn.AutoMigrate(&Author{}); errAuthors != nil {
+		return errAuthors
+	}
+
+	if errPosts := _domain.Posts.DBConn.AutoMigrate(&Post{}); errPosts != nil {
+		return errPosts
+	}
+
+	return nil // not really necessary but sugar candy. could have returned errPosts
+}
+
+func seedDB(domain *Domain) error {
+	// seedAuthor := domain.Authors.DBConn.Migrator().HasTable(&Author{})
+
+	if errSeedAuth := domain.Authors.Seed(1); errSeedAuth != nil {
+		return errors.WithMessage(errSeedAuth, "seeding Authors")
+	}
+
+	// seedPost := domain.Posts.DBConn.Migrator().HasTable(&Post{})
+
+	if errSeedPosts := domain.Posts.Seed(1, 100); errSeedPosts != nil {
+		return errors.WithMessage(errSeedPosts, "seeding Posts")
+	}
+
+	return nil
+}
+
+func chars(length uint, howMany uint) []string {
+	rand.Seed(time.Now().UnixNano())
+
+	res := make([]string, howMany)
+
+	randInt := func(min, max int) int {
+		return min + rand.Intn(max-min)
+	}
+
+	i := 0
+	for uint(i) < howMany {
+		bytes := make([]byte, length)
+		for k := range bytes {
+			bytes[k] = byte(randInt(65, 90))
+		}
+
+		res[i] = string(bytes)
+		i++
+	}
+
+	return res
+}
+
+func fileExists(path string) bool {
+	_, err := os.Open(path)
+
+	return !errors.Is(err, os.ErrNotExist)
+}

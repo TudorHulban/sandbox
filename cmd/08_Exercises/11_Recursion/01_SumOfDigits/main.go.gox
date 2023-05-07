@@ -1,0 +1,37 @@
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+// calculate digits sum
+// ignoring error handling for sake of reccursion
+
+func main() {
+	fmt.Println(calc(-12341))
+}
+
+func calc(n int) int {
+	number := strconv.Itoa(n)
+
+	if n < 0 {
+		number = number[1:]
+	}
+
+	return sum(number)
+}
+
+func conversion(n string) int {
+	res, _ := strconv.Atoi(n)
+
+	return res
+}
+
+func sum(n string) int {
+	if len(n) == 1 {
+		return conversion(n)
+	}
+
+	return conversion(n[:1]) + sum(n[1:])
+}

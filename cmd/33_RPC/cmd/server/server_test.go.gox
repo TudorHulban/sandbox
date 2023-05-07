@@ -1,0 +1,54 @@
+package main
+
+import (
+	"fmt"
+	"net/rpc"
+	"testing"
+	"trpc/config"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestServer(t *testing.T) {
+	var l Logic
+
+	s, errNew := NewServer(config.Socket, &l)
+	require.NoError(t, errNew)
+
+	go s.Start()
+
+	<-s.chReady
+
+	fmt.Println("server started")
+
+	client1, errDial := rpc.Dial("tcp", config.Socket)
+	require.NoError(t, errDial, "no connection")
+
+	defer client1.Close()
+
+	args := config.Args{
+		A: 2,
+		B: 4,
+	}
+
+	var reply int
+	errMu := client1.Call("Logic.Multiply", args, &reply)
+	require.NoError(t, errMu)
+	require.Equal(t, 8, reply)
+
+	fmt.Println("pausing  server")
+	s.Pause()
+
+	_, errPause := rpc.Dial("tcp", config.Socket)
+	require.NoError(t, errPause, "server should be paused")
+
+	fmt.Println("resuming server")
+	s.Resume()
+
+	_, errResume := rpc.Dial("tcp", config.Socket)
+	require.NoError(t, errResume, "server resuming")
+
+	fmt.Println("stopping  server")
+	s.Stop()
+	s.CleanUp()
+}

@@ -1,0 +1,30 @@
+package main
+
+import (
+	"fmt"
+	"io"
+)
+
+type Client struct {
+	w  io.Writer
+	id int64
+}
+
+const msg = "SKU %s is again in stock.\n"
+
+var _ Subject = &Item{}
+
+func NewClient(id int64, w io.Writer) *Client {
+	return &Client{
+		w:  w,
+		id: id,
+	}
+}
+
+func (c *Client) ID() int64 {
+	return c.id
+}
+
+func (c *Client) Update(sku string) {
+	c.w.Write([]byte(fmt.Sprintf(msg, sku)))
+}

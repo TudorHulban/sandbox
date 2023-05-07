@@ -1,0 +1,111 @@
+package main
+
+import (
+	"database/sql"
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+type DBMaria struct {
+	DB *sql.DB
+
+	port     int
+	ip       string
+	user     string
+	password string
+}
+
+func (m *DBMaria) Open(dbName string) error {
+	dbinfo := m.user + ":" + m.password + "@tcp(" + m.ip + ":" + strconv.Itoa(m.port) + ")/" + dbName
+
+	db, errOp := sql.Open("mysql", dbinfo)
+	if errOp != nil {
+		return errOp
+	}
+
+	m.DB = db
+
+	return db.Ping()
+}
+
+func (m *DBMaria) TableExists(dbName, tableName string) bool {
+	var occurences bool
+
+	dml := "select count(1) from information_schema.tables WHERE table_schema=" + "'" + dbName + "'" + " AND table_name=" + "'" + tableName + "'" + " limit 1"
+	m.DB.QueryRow(dml).Scan(&occurences)
+
+	return occurences
+}
+
+func (m *DBMaria) CreateTable(dbName, tableName, ddl string, columnPKAutoincrement bool) bool {
+	var theDDL string
+
+	if columnPKAutoincrement {
+		theDDL = "\"id\" serial," + ddl
+	} else {
+		theDDL = ddl
+	}
+
+	theDDL = "CREATE TABLE " + tableName + " (" + strings.Replace(theDDL, "\"", "", -1) + ")"
+
+	fmt.Println(theDDL, columnPKAutoincrement)
+
+	_, errExe := m.DB.Exec(theDDL)
+	if errExe != nil {
+		return false
+	}
+
+	return m.TableExists(dbName, tableName)
+}
+
+func (m *DBMaria) SingleInsert(tableName string, values []string) error {
+	ddl := "insert into " + tableName + " values(" + "\"" + strings.Join(values, "\""+","+"\"") + "\"" + ")"
+
+	_, err := m.DB.Exec(ddl)
+
+	return err
+}
+
+func (m *DBMaria) BulkInsert(tableName string, columnNames []string, values [][]string) error {
+	if len(columnNames) == 0 {
+		return errors.New("column names missing")
+	}
+
+	if len(values) == 0 {
+		return errors.New("values missing")
+	}
+
+	questionMarks := returnNoValues(values[0], "?")
+
+	dbTransaction, errBeg := m.DB.Begin()
+	if errBeg != nil {
+		return fmt.Errorf("BulkInsert - begin transaction: %w", errBeg)
+	}
+
+	statement := "insert into " + tableName + "(" + strings.Join(columnNames, ",") + ")" + " values " + questionMarks
+
+	dml, errPrep := dbTransaction.Prepare(statement)
+	if errPrep != nil {
+		return fmt.Errorf("BulkInsert - prepare statement: %w", errPrep)
+	}
+	defer dml.Close()
+
+	for ix, columnValues := range values {
+		values, errConv := SliceToInterface(columnValues)
+		if errConv != nil {
+			return errConv
+		}
+
+		if _, errExec := dml.Exec(values...); errExec != nil { // TODO: assess more optim insert
+			return fmt.Errorf("BulkInsert - dml.Exec for row '%d': %w", ix, errPrep)
+		}
+	}
+
+	dbTransaction.Commit()
+
+	return nil
+}

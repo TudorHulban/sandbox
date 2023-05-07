@@ -1,0 +1,54 @@
+package main
+
+import (
+	"database/sql"
+	"errors"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+type SQLiteClient struct {
+	pathDB string
+	connDB *sql.DB
+}
+
+func NewSQLiteMemory() (*SQLiteClient, error) {
+	db, errCo := sql.Open("sqlite3", ":memory:")
+	if errCo != nil {
+		return nil, errCo
+	}
+
+	return &SQLiteClient{
+		connDB: db,
+	}, nil
+}
+
+func NewSQLite(path string) (*SQLiteClient, error) {
+	if path == "" {
+		return nil, errors.New("invalid database path")
+	}
+
+	db, errCo := sql.Open("sqlite3", path)
+	if errCo != nil {
+		return nil, errCo
+	}
+
+	return &SQLiteClient{
+		pathDB: path,
+		connDB: db,
+	}, nil
+}
+
+func (s SQLiteClient) CreateTable(tableName, ddl string) error {
+	_, errExec := s.connDB.Exec("CREATE TABLE " + tableName + ddl)
+
+	return errExec
+}
+
+// TableExists returns true if table exists.
+func (s SQLiteClient) TableExists(tableName string) bool {
+	var occurences int
+	_ = s.connDB.QueryRow("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", tableName).Scan(&occurences)
+
+	return (occurences == 1)
+}

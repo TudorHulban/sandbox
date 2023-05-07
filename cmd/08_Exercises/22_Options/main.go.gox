@@ -1,0 +1,40 @@
+package main
+
+import "fmt"
+
+type payload struct {
+	a string
+	b string
+	c string
+}
+
+type option func(p *payload)
+
+func main() {
+	p := newPayload(withA("xxx"),
+		withB("yyy"))
+
+	fmt.Println(*p)
+}
+
+func withA(a string) option {
+	return func(p *payload) {
+		p.a = a
+	}
+}
+
+func withB(b string) option {
+	return func(p *payload) {
+		p.b = b
+	}
+}
+
+func newPayload(opts ...option) *payload {
+	var p payload
+
+	for _, o := range opts {
+		o(&p)
+	}
+
+	return &p
+}

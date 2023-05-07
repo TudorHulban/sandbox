@@ -1,0 +1,139 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+type rod []int
+
+func (r rod) getLargestDisk() int {
+	if len(r) == 0 {
+		return 0
+	}
+
+	return r[0]
+}
+
+func (r rod) getSmallestDisk() int {
+	if len(r) == 0 {
+		return 0
+	}
+
+	return r[len(r)-1]
+}
+
+func (r rod) isValid() bool {
+	if len(r) <= 1 {
+		return true
+	}
+
+	for i := 0; i < len(r)-1; i++ {
+		if r[i] < r[i+1] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (r rod) getGraphRepresent(position int) string {
+	if len(r) == 0 {
+		return ""
+	}
+
+	getX := func(howMany int) string {
+		var res string
+
+		for i := 0; i < howMany; i++ {
+			res = res + "x"
+		}
+
+		return res
+	}
+
+	return getX(r[position])
+}
+
+type state struct {
+	rodFrom rod
+	rodTo   rod
+	rodAux  rod
+
+	numDisks int
+}
+
+func (s *state) isValid() bool {
+	return s.rodFrom.isValid() && s.rodTo.isValid() && s.rodAux.isValid()
+}
+
+func (s state) String() string {
+	var res []string
+
+	allign := func(content string) string {
+		if len(content) == s.numDisks {
+			return content
+		}
+
+		res := content
+
+		for i := 0; i < s.numDisks-1; i++ {
+			res = " " + res
+
+			if len(res) == s.numDisks {
+				return res
+			}
+		}
+
+		return res
+	}
+
+	for i := s.numDisks - 1; i >= 0; i-- {
+		res = append(res, allign(s.rodFrom.getGraphRepresent(i))+"|"+s.rodTo.getGraphRepresent(i)+"|"+s.rodAux.getGraphRepresent(i))
+	}
+
+	return strings.Join(res, "\n")
+}
+
+var _operationNumber int
+
+func newHanoi() *state {
+	return &state{
+		rodFrom:  rod{4, 3, 2, 1},
+		numDisks: 4,
+	}
+}
+
+func main() {
+	h := newHanoi()
+	fmt.Println(h)
+}
+
+// func moveDisks(numDisks int, from, to, via *rod) {
+// 	if numDisks == 0 || len(*from) == 0 {
+// 		return
+// 	}
+
+// 	if len(*from) == 1 {
+// 		moveDisk(from, to)
+
+// 		return
+// 	}
+
+// 	moveDisks(numDisks-1, from, to, via)
+// 	moveDisk(from, to)
+// }
+
+// func moveDisk(from, to *rod) {
+// 	if len(*from) == 0 {
+// 		return
+// 	}
+
+// 	_operationNumber++
+// 	fmt.Println(_operationNumber, "Before:", "rodFrom: ", rodFrom, "rodAux: ", rodAux, "rodTo: ", rodTo)
+
+// 	*to = append(*to, (*from)[len(*from)-1])
+// 	*from = (*from)[:len(*from)-1]
+
+// 	fmt.Println(_operationNumber, "After :", "rodFrom: ", rodFrom, "rodAux: ", rodAux, "rodTo: ", rodTo)
+// }
