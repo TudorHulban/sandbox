@@ -16,8 +16,6 @@ type linkedList struct {
 	head *node
 }
 
-var errorNotFound = "value %d was not found"
-
 func newLinkedListFromHead(head *node) *linkedList {
 	return &linkedList{
 		head: head,
