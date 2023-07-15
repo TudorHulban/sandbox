@@ -1,5 +1,6 @@
-// Quick Sort in Golang
 package main
+
+// Quick Sort in Golang
 
 import (
 	"log"

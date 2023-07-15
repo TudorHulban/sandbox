@@ -17,6 +17,7 @@ func quicksort(sliceToSort []int) []int {
 	for i := range sliceToSort {
 		if sliceToSort[i] < sliceToSort[right] {
 			sliceToSort[left], sliceToSort[i] = sliceToSort[i], sliceToSort[left]
+
 			left++
 		}
 	}
