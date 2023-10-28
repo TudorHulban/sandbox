@@ -89,10 +89,12 @@ func (l *linkedList) deleteValue(valueData int) error {
 	if l.head.data == valueData {
 		if l.head.nextNode != nil {
 			l.head = l.head.nextNode
+
 			return nil
 		}
 
 		l.head = nil
+
 		return errors.New("empty list")
 	}
 

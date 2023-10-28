@@ -77,6 +77,7 @@ func parse(entries []*entry) []string {
 
 		if entry.indent == stackIndents.peek().(int) {
 			stackFolders.pop()
+
 			stackFolders.push(entry.folderInfo)
 			stackIndents.push(entry.indent)
 

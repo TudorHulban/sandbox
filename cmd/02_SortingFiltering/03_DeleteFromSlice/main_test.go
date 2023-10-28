@@ -8,7 +8,7 @@ func BenchmarkWType(b *testing.B) {
 	a := []int{1, 2, 3, 4, 5}
 
 	b.ResetTimer()
-	delIndex(a, 3)
+	delIndex(a, 3) //nolint:errcheck
 }
 
 // cpu: AMD Ryzen 5 5600U with Radeon Graphics
@@ -17,5 +17,5 @@ func BenchmarkWGenerics(b *testing.B) {
 	a := []int{1, 2, 3, 4, 5}
 
 	b.ResetTimer()
-	delIndexG(a, 3)
+	delIndexG(a, 3) //nolint:errcheck
 }

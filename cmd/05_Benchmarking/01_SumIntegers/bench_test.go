@@ -35,3 +35,6 @@ func BenchmarkSumRecurs(b *testing.B) {
 // cpu: AMD Ryzen 3 4300GE with Radeon Graphics
 // BenchmarkSumLoop-8   	216120318	         5.515 ns/op	       0 B/op	       0 allocs/op
 // BenchmarkSumRecurs-8   	44978752	        26.67 ns/op	       0 B/op	       0 allocs/op
+
+// cpu: AMD Ryzen 7 5700G with Radeon Graphics
+// BenchmarkSumRecurs-16    	52434220	        22.86 ns/op	       0 B/op	       0 allocs/op

@@ -61,7 +61,8 @@ func TestDeleteNodeWValue(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
 			l := newLinkedListFromNodes(tc.input...)
-			l.deleteValue(tc.value)
+
+			_ = l.deleteValue(tc.value)
 
 			var buf bytes.Buffer
 			fmt.Fprint(&buf, l)
