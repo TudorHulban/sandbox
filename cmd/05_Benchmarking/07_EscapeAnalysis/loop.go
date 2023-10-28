@@ -2,7 +2,7 @@ package escapeanalysis
 
 // memory alignment reversed to make big memory consumtion
 type car struct {
-	isAWS  bool
+	isAWD  bool
 	engine int
 
 	price float32
@@ -28,7 +28,25 @@ type person struct {
 
 func newCar() *car {
 	return &car{
-		price: 1000,
+		isAWD:  true,
+		engine: 2000,
+		price:  1000,
+		brand:  "abcd",
+	}
+}
+
+func newPerson(ix int) *person {
+	return &person{
+		age:       uint(ix + 1),
+		salary:    float32(ix),
+		hasDog:    ix == 1,
+		isMarried: ix == 1,
+		children:  uint(ix),
+
+		name:    "xyz",
+		surname: "abc",
+
+		car: newCar(),
 	}
 }
 
@@ -36,11 +54,7 @@ func ages(howMany uint) []person {
 	var res []person
 
 	for i := 0; i < int(howMany); i++ {
-		res = append(res, person{
-			age: uint(i + 1),
-
-			car: newCar(),
-		})
+		res = append(res, *newPerson(i))
 	}
 
 	return res
