@@ -8,7 +8,7 @@ import (
 var _poolWorkers int
 var _mutex sync.Mutex
 
-func doWork(work chan int, from int, steps int) {
+func doWork(work chan int, from, steps int) {
 	for i := from; i <= from+steps; i++ {
 		work <- i
 	}
@@ -20,6 +20,7 @@ func doWork(work chan int, from int, steps int) {
 
 	if _poolWorkers == 0 {
 		log.Println("Closing work.")
+
 		close(work)
 	}
 }
@@ -34,11 +35,11 @@ func main() {
 	_poolWorkers++
 
 	for {
-		ev, isOpen := <-chWork
+		value, isOpen := <-chWork
 		if !isOpen {
 			break
 		}
 
-		log.Println("event:", ev)
+		log.Println("event:", value)
 	}
 }

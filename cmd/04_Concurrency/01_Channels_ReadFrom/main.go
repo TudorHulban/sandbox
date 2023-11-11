@@ -17,11 +17,11 @@ func main() {
 	}()
 
 	for {
-		ev, isOpen := <-chIntegers
+		value, isOpen := <-chIntegers
 		if !isOpen {
 			break
 		}
 
-		log.Printf("event: %d\n", ev)
+		log.Printf("event: %d\n", value)
 	}
 }
