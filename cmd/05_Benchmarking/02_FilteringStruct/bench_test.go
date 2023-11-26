@@ -34,7 +34,7 @@ func BenchmarkFilterAssertion10K(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		work := NewTasks(10000)
 
-		showFieldDirect(fieldName, work)
+		showFieldAssertion(fieldName, work)
 	}
 }
 
@@ -44,7 +44,7 @@ func BenchmarkFilterAssertion100K(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		work := NewTasks(100000)
 
-		showFieldDirect(fieldName, work)
+		showFieldAssertion(fieldName, work)
 	}
 }
 

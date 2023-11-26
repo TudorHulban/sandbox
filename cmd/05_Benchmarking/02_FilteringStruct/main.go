@@ -35,8 +35,8 @@ func main() {
 }
 
 func (w *Work) contains(id int) int {
-	for k, v := range w.Tasks {
-		if v.ID == id {
+	for k, task := range w.Tasks {
+		if task.ID == id {
 			return k
 		}
 	}
@@ -91,10 +91,10 @@ func showFieldName(fieldName string, work *Work) []interface{} {
 	return res
 }
 
-func showFieldAssertion(fieldName string, from interface{}) []interface{} {
-	var res []interface{}
+func showFieldAssertion(fieldName string, from any) []any {
+	var res []any
 
-	for _, v := range from.(Work).Tasks {
+	for _, v := range from.(*Work).Tasks {
 		res = append(res, reflect.ValueOf(v).FieldByName(fieldName).Interface())
 	}
 

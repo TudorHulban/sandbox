@@ -175,7 +175,7 @@ func Benchmark_agesResultsOptim1(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		results := make([]*person, many, many)
+		results := make([]*person, many, many) //nolint:gosimple
 
 		agesResultsOptim(uint(many), &results)
 
@@ -205,7 +205,7 @@ func Benchmark_agesResultsOptim2(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		results := make([]*person, many, many)
+		results := make([]*person, many, many) //nolint:gosimple
 
 		agesResultsOptim(uint(many), &results)
 
