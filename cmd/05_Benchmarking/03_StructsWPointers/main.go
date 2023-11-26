@@ -1,6 +1,6 @@
 package main
 
-type aStruct1 struct {
+type structWOPointers struct {
 	state string
 	f1    string
 	f2    string
@@ -8,7 +8,7 @@ type aStruct1 struct {
 	f4    string
 }
 
-type aStruct2 struct {
+type structWPointers struct {
 	state *string
 	f1    *string
 	f2    *string
@@ -16,30 +16,30 @@ type aStruct2 struct {
 	f4    *string
 }
 
-func aFunction1(p aStruct1) string {
+func getState1(p structWOPointers) string {
 	return p.state
 }
 
 // worst performance
-func aFunction2(p aStruct2) string {
+func getState2(p structWPointers) string {
 	return *p.state
 }
 
-func aFunction3(p *aStruct1) string {
+func getState3(p *structWOPointers) string {
 	return p.state
 }
 
-func aFunction4(p *aStruct1) string {
+func getState4(p *structWOPointers) string {
 	return (*p).state
 }
 
 // performance is worst than passing by value
-func aFunction5(p *aStruct2) string {
+func getState5(p *structWPointers) string {
 	return *p.state
 }
 
 // same performance as passing the struct by value
-func aFunction6(p string) string {
+func getString(p string) string {
 	return p
 }
 

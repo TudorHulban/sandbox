@@ -2,23 +2,23 @@ package main
 
 func main() {}
 
-func sumLoop(ints []int) int {
-	if len(ints) == 0 {
+func sumLoop(values []int) int {
+	if len(values) == 0 {
 		return 0
 	}
 
 	var res int
-	for _, v := range ints {
-		res = res + v
+	for _, value := range values {
+		res = res + value
 	}
 
 	return res
 }
 
-func sumRecurs(ints []int) int {
-	if len(ints) == 0 {
+func sumRecurs(values []int) int {
+	if len(values) == 0 {
 		return 0
 	}
 
-	return ints[0] + sumRecurs(ints[1:])
+	return values[0] + sumRecurs(values[1:])
 }
