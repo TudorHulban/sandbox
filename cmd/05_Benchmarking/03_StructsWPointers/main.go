@@ -2,18 +2,20 @@ package main
 
 type structWOPointers struct {
 	state string
-	f1    string
-	f2    string
-	f3    string
-	f4    string
+
+	f1 string //nolint:unused
+	f2 string //nolint:unused
+	f3 string //nolint:unused
+	f4 string //nolint:unused
 }
 
 type structWPointers struct {
 	state *string
-	f1    *string
-	f2    *string
-	f3    *string
-	f4    *string
+
+	f1 *string //nolint:unused
+	f2 *string //nolint:unused
+	f3 *string //nolint:unused
+	f4 *string //nolint:unused
 }
 
 func getState1(p structWOPointers) string {

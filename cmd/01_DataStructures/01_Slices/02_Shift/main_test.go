@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestShiftRight(t *testing.T) {
@@ -18,10 +18,12 @@ func TestShiftRight(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.description, func(t *testing.T) {
-			shiftRight(&tc.input)
+		t.Run(tc.description,
+			func(t *testing.T) {
+				shiftRight(&tc.input)
 
-			assert.Equal(t, tc.want, tc.input)
-		})
+				require.Equal(t, tc.want, tc.input)
+			},
+		)
 	}
 }
