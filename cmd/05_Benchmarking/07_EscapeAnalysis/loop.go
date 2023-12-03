@@ -2,28 +2,27 @@ package escapeanalysis
 
 // memory alignment reversed to make big memory consumtion
 type car struct {
-	isAWD  bool
-	engine int
-
+	brand string
 	price float32
 
-	brand string
+	isAWD  bool
+	engine int
 }
 
 // memory alignment reversed to make big memory consumtion
 type person struct {
-	isMarried bool
-	age       uint
-	children  uint
-
-	hasDog bool
-
-	salary float32
-
 	name    string
 	surname string
 
 	*car
+
+	salary float32
+
+	age      uint
+	children uint
+
+	isMarried bool
+	hasDog    bool
 }
 
 func newCar() *car {

@@ -24,7 +24,7 @@ var many = 256
 // Benchmark_agesResults-16                1000000000               0.0006596 ns/op               0 B/op          0 allocs/op
 // Benchmark_agesResultsOptim-16           1000000000               0.0004468 ns/op               0 B/op          0 allocs/op
 
-// levelled:
+// leveled:
 // cpu: AMD Ryzen 7 5700G with Radeon Graphics
 // Benchmark_ages-16                             74          29413740 ns/op        39500043 B/op     100029 allocs/op
 // Benchmark_agesPtr-16                          61          21117873 ns/op        16901442 B/op     200028 allocs/op

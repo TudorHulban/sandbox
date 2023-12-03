@@ -32,7 +32,7 @@ func getState3(p *structWOPointers) string {
 }
 
 func getState4(p *structWOPointers) string {
-	return (*p).state
+	return p.state
 }
 
 // performance is worst than passing by value

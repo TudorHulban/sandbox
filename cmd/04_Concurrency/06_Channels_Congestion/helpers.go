@@ -23,6 +23,7 @@ func createWork(noTasks int, tasks chan task, maxNoConcTasks int) {
 			request := "R" + strconv.Itoa(noTasks)
 
 			tasks <- task{request: request}
+
 			log.Println("request: ", request)
 
 			noTasks--

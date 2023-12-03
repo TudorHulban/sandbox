@@ -47,53 +47,43 @@ func main() {
 		func(c *fiber.Ctx) error {
 			switch c.Params("id") {
 			case "1":
-				{
-					return c.Status(http.StatusBadRequest).JSON(
-						&fiber.Map{
-							"success": false,
-							"error":   validateInput(badInput).Error(),
-						},
-					)
-				}
+				return c.Status(http.StatusBadRequest).JSON(
+					&fiber.Map{
+						"success": false,
+						"error":   validateInput(badInput).Error(),
+					},
+				)
 
 			case "2":
-				{
-					return c.Status(http.StatusBadRequest).JSON(
-						&fiber.Map{
-							"success": false,
-							"error":   validateInput(badText).Error(),
-						},
-					)
-				}
+				return c.Status(http.StatusBadRequest).JSON(
+					&fiber.Map{
+						"success": false,
+						"error":   validateInput(badText).Error(),
+					},
+				)
 
 			case "3":
-				{
-					return c.Status(http.StatusBadRequest).JSON(
-						&fiber.Map{
-							"success": false,
-							"error":   validateInput(badSpelling).Error(),
-						},
-					)
-				}
+				return c.Status(http.StatusBadRequest).JSON(
+					&fiber.Map{
+						"success": false,
+						"error":   validateInput(badSpelling).Error(),
+					},
+				)
 
 			case "4":
-				{
-					errValid := validateInput(correctText)
-					if errValid != nil {
-						return c.Status(http.StatusInternalServerError).JSON(errValid)
-					}
-
-					return c.Status(http.StatusOK).JSON(
-						&fiber.Map{
-							"success": true,
-						},
-					)
+				errValid := validateInput(correctText)
+				if errValid != nil {
+					return c.Status(http.StatusInternalServerError).JSON(errValid)
 				}
+
+				return c.Status(http.StatusOK).JSON(
+					&fiber.Map{
+						"success": true,
+					},
+				)
 
 			default:
-				{
-					return c.JSON(validateInput(""))
-				}
+				return c.JSON(validateInput(""))
 			}
 		},
 	)

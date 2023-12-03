@@ -7,9 +7,10 @@ import (
 )
 
 type Task struct {
-	ID   int
 	Name string
 	Area string
+
+	ID int
 }
 
 type Work struct {
@@ -61,41 +62,42 @@ func NewTasks(howMany int) *Work {
 }
 
 func (w *Work) showFieldValues(fieldName string) []interface{} {
-	var res []interface{}
+	result := make([]interface{}, len(w.Tasks))
 
-	for _, v := range w.Tasks {
-		res = append(res, reflect.ValueOf(v).FieldByName(fieldName).Interface())
-
+	for ix, v := range w.Tasks {
+		result[ix] = reflect.ValueOf(v).FieldByName(fieldName).Interface()
 	}
 
-	return res
+	return result
 }
 
 func showFieldDirect(fieldName string, work *Work) []interface{} {
-	var res []interface{}
+	result := make([]interface{}, len(work.Tasks))
 
-	for _, v := range work.Tasks {
-		res = append(res, reflect.ValueOf(v).FieldByName(fieldName).Interface())
+	for ix, task := range work.Tasks {
+		result[ix] = reflect.ValueOf(task).FieldByName(fieldName).Interface()
 	}
 
-	return res
+	return result
 }
 
 func showFieldName(fieldName string, work *Work) []interface{} {
-	var res []interface{}
+	result := make([]interface{}, len(work.Tasks))
 
-	for _, v := range work.Tasks {
-		res = append(res, v.Name)
+	for ix, task := range work.Tasks {
+		result[ix] = task.Name
 	}
 
-	return res
+	return result
 }
 
 func showFieldAssertion(fieldName string, from any) []any {
-	var res []any
+	var res []any //nolint:prealloc
 
-	for _, v := range from.(*Work).Tasks {
-		res = append(res, reflect.ValueOf(v).FieldByName(fieldName).Interface())
+	for _, task := range from.(*Work).Tasks {
+		res = append(res,
+			reflect.ValueOf(task).FieldByName(fieldName).Interface(),
+		)
 	}
 
 	return res

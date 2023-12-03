@@ -79,13 +79,14 @@ func (q *queue) Extract() *data {
 	}
 
 	if l == 1 {
-		res := (*q).state[0]
+		res := q.state[0]
 
 		q.state = []*data{}
+
 		return res
 	}
 
-	res := (*q).state[0]
+	res := q.state[0]
 	go fmt.Println("extracted:", res.priority)
 
 	// swap root with last element
@@ -95,6 +96,7 @@ func (q *queue) Extract() *data {
 	q.state = q.state[:l-1]
 
 	q.heapifyDown(0)
+
 	go fmt.Println(q.Values())
 
 	return res

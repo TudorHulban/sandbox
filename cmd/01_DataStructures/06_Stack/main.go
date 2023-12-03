@@ -41,19 +41,20 @@ func convertToEntry(line string) *entry {
 }
 
 func convertToEntries(content []string) []*entry {
-	var res []*entry
+	result := make([]*entry, len(content))
 
-	for _, line := range content {
-		res = append(res, convertToEntry(line))
+	for ix, line := range content {
+		result[ix] = convertToEntry(line)
 	}
 
-	return res
+	return result
 }
 
 func parse(entries []*entry) []string {
-	var res []string
+	var res []string //nolint:prealloc
 
 	var stackFolders stack
+
 	var stackIndents stack
 
 	for ix, entry := range entries {

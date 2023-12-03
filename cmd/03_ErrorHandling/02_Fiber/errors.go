@@ -23,9 +23,10 @@ func (e errorBadText) Error() string {
 }
 
 type errorApp struct {
+	Err error
+
 	Area string
 	CODE string
-	Err  error
 }
 
 func (e errorApp) Error() string {

@@ -6,9 +6,10 @@ import (
 )
 
 type ErrService struct {
+	Issue error
+
 	Caller     string
 	MethodName string
-	Issue      error
 
 	NanosecondsDuration int64
 	WithTime            bool
@@ -20,7 +21,8 @@ func (e *ErrService) Error() string {
 	var res [4]string
 
 	if e.WithTime {
-		res[0] = fmt.Sprintf("\nArea: %s [%d] - duration nanoseconds: %d", areaErrService, time.Now().Unix(), e.NanosecondsDuration)
+		res[0] = fmt.Sprintf("\nArea: %s [%d] - duration nanoseconds: %d",
+			areaErrService, time.Now().Unix(), e.NanosecondsDuration)
 	} else {
 		res[0] = fmt.Sprintf("\nArea: %s", areaErrService)
 	}
@@ -33,9 +35,10 @@ func (e *ErrService) Error() string {
 }
 
 type ErrDomain struct {
+	Issue error
+
 	Caller     string
 	MethodName string
-	Issue      error
 
 	WithTime bool
 }

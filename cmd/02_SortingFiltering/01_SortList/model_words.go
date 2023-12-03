@@ -18,15 +18,10 @@ func (w JustWords) Swap(i, j int) {
 func (w JustWords) Less(i, j int) bool {
 	switch sortMethod {
 	case sortLength:
-		{
-			// sort by length
-			return len(w[i]) < len(w[j])
-		}
+		return len(w[i]) < len(w[j])
+
 	case sortAlphabetic:
-		{
-			// alphabetic sort
-			return strings.ToLower(w[i]) < strings.ToLower(w[j])
-		}
+		return strings.ToLower(w[i]) < strings.ToLower(w[j])
 	}
 
 	return false

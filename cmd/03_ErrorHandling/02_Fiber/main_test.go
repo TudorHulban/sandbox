@@ -18,6 +18,7 @@ func TestErrorHandlingBadText(t *testing.T) {
 	errInput := validateInput(badText)
 
 	var errText *errorBadText
+
 	require.ErrorAs(t, errInput, &errText, errInput)
 }
 

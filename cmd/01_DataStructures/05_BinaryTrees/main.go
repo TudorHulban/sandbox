@@ -13,6 +13,7 @@ func main() {
 	fmt.Println(n)
 
 	key := 12
+
 	var retrieved node
 
 	n.GetNode(key, &retrieved)

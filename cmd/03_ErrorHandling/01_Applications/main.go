@@ -12,10 +12,8 @@ func fooService() error {
 		MethodName: "m1",
 		Issue:      errors.New("issue 1"),
 
-		WithTime: true,
-		NanosecondsDuration: int64(
-			time.Since(time.Now()).Nanoseconds(),
-		),
+		WithTime:            true,
+		NanosecondsDuration: time.Since(time.Now()).Nanoseconds(),
 	}
 }
 

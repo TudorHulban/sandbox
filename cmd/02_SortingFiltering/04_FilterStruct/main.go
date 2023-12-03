@@ -7,8 +7,8 @@ import (
 )
 
 type person struct {
-	age  int64
 	name string
+	age  int64
 }
 
 func main() {

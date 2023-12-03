@@ -20,20 +20,14 @@ loop:
 	for {
 		select {
 		case <-chStop:
-			{
-				break loop
-			}
+			break loop
 
 		case msg := <-chDo:
-			{
-				fmt.Println(msg)
-			}
+			fmt.Println(msg)
 
 		default:
-			{
-				fmt.Println("other work")
-				time.Sleep(1000 * time.Millisecond)
-			}
+			fmt.Println("other work")
+			time.Sleep(1000 * time.Millisecond)
 		}
 	}
 

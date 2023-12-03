@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"sync"
+	"time"
 )
 
 type task struct {
@@ -31,7 +32,7 @@ func (p *pool) dispatchWork(from, steps int) {
 
 func (p *pool) do(t task) {
 	for i := t.begin; i <= t.end; i++ {
-		// do some work
+		time.Sleep(1 * time.Millisecond) // simulate some work
 
 		p.chWork <- i
 	}

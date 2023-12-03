@@ -9,7 +9,9 @@ func createWork(from, steps, noWorkers int) tasks {
 	load := int(math.Floor(float64(steps) / float64(noWorkers)))
 
 	var lastStep int
+
 	var assigned int
+
 	var res tasks
 
 	for i := 0; i < noWorkers; i++ {
@@ -17,16 +19,12 @@ func createWork(from, steps, noWorkers int) tasks {
 
 		switch i {
 		case 0:
-			{
-				t.begin = 0
-				lastStep = load
-			}
+			t.begin = 0
+			lastStep = load
 
 		default:
-			{
-				t.begin = lastStep + 1
-				lastStep = lastStep + load
-			}
+			t.begin = lastStep + 1
+			lastStep = lastStep + load
 		}
 
 		assigned = assigned + load

@@ -20,11 +20,9 @@ func schedule(what func(), interval time.Duration) chan struct{} {
 				log.Println("interval finished, triggering event")
 
 			case <-chStop:
-				{
-					log.Println("exiting scheduler goroutine")
+				log.Println("exiting scheduler goroutine")
 
-					return
-				}
+				return
 			}
 		}
 	}()

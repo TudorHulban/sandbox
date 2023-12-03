@@ -6,8 +6,8 @@ import (
 )
 
 type task struct {
-	id   int
 	name string
+	id   int
 }
 
 // no pointer needed due to slice mechanics
