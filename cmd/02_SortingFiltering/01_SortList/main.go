@@ -23,15 +23,18 @@ func main() {
 	sortMethod, _ = strconv.ParseInt(*flagSort, 10, 64)
 	if (sortMethod > 1) || (sortMethod < 0) {
 		fmt.Printf("Bad parameter: %d", sortMethod)
+
 		os.Exit(1)
 	}
 
 	method := []string{"by Length", "Alphabetic"}
+
 	log.Println("Flag sort: ", sortMethod, "(", method[sortMethod], ")")
 
 	data := []string{"xen", "zi", "ab", "a"}
 
 	sort.Sort(JustWords(data))
+
 	log.Println(data)
 }
 

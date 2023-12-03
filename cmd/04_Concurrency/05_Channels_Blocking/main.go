@@ -34,11 +34,13 @@ func schedule(what func(), interval time.Duration) chan struct{} {
 
 func cleanup() {
 	log.Println("cleanup")
+
 	time.Sleep(2 * time.Second) // delay exiting for catching previous sends on channel and logs.
 }
 
 func main() {
-	chCancel := make(chan os.Signal)
+	chCancel := make(chan os.Signal, 1)
+
 	signal.Notify(chCancel, os.Interrupt, syscall.SIGTERM)
 
 	event := func() {
@@ -52,6 +54,7 @@ func main() {
 		close(chStopScheduling)
 
 		cleanup()
+
 		os.Exit(1)
 	}()
 
@@ -59,6 +62,7 @@ func main() {
 
 	for {
 		time.Sleep(5 * time.Second) // or runtime.Gosched()
+
 		log.Println("awaken... going back to sleep...")
 	}
 }

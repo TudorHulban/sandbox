@@ -7,15 +7,15 @@ import (
 )
 
 func fooService() error {
-	now := time.Now()
-
 	return &ErrService{
 		Caller:     "fooService",
 		MethodName: "m1",
 		Issue:      errors.New("issue 1"),
 
-		WithTime:            true,
-		NanosecondsDuration: int64(time.Since(now).Nanoseconds()),
+		WithTime: true,
+		NanosecondsDuration: int64(
+			time.Since(time.Now()).Nanoseconds(),
+		),
 	}
 }
 

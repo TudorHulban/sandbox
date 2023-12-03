@@ -13,9 +13,9 @@ type person struct {
 
 func main() {
 	persons := []person{
-		{name: "x", age: 4},
-		{name: "y", age: 8},
-		{name: "z", age: 11},
+		{name: "Baby", age: 4},
+		{name: "Child", age: 8},
+		{name: "GrownUp", age: 16},
 	}
 
 	log.Println("Persons:", persons)
@@ -24,11 +24,11 @@ func main() {
 }
 
 func filterPersons(persons []person, f func(i int64) bool) []person {
-	result := []person{}
+	var result []person
 
-	for _, v := range persons {
-		if f(v.age) {
-			result = append(result, v)
+	for _, person := range persons {
+		if f(person.age) {
+			result = append(result, person)
 		}
 	}
 

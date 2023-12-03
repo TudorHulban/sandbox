@@ -9,7 +9,9 @@ import (
 func generateSlice(size int) []int {
 	b := []byte("always do good")
 
-	random := rand.New(rand.NewSource(int64(binary.LittleEndian.Uint64(b[:]))))
+	random := rand.New(
+		rand.NewSource(int64(binary.LittleEndian.Uint64(b[:]))),
+	)
 
 	result := make([]int, size)
 

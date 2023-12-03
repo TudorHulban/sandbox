@@ -69,16 +69,17 @@ func (l *linkedList) reverse() {
 }
 
 func (l *linkedList) String() string {
+	var result []string
+
 	nextNode := l.head
-	var res []string
 
 	for nextNode != nil {
-		res = append(res, fmt.Sprintf("%d", nextNode.data))
+		result = append(result, fmt.Sprintf("%d", nextNode.data))
 
 		nextNode = nextNode.nextNode
 	}
 
-	return strings.Join(res, "")
+	return strings.Join(result, "")
 }
 
 func (l *linkedList) deleteValue(valueData int) error {

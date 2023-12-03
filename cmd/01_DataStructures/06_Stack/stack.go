@@ -23,18 +23,18 @@ func (s *stack) pop() any {
 		return nil
 	}
 
-	res := (*s)[len(*s)-1]
+	result := (*s)[len(*s)-1]
 	(*s) = (*s)[:len(*s)-1]
 
-	return res
+	return result
 }
 
 func (s stack) String() string {
-	var res []string
+	result := make([]string, len(s))
 
-	for _, item := range s {
-		res = append(res, item.(string))
+	for ix, item := range s {
+		result[ix] = item.(string)
 	}
 
-	return strings.Join(res, "/")
+	return strings.Join(result, "/")
 }

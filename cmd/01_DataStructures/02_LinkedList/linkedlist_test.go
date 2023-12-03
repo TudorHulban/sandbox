@@ -10,37 +10,39 @@ import (
 )
 
 func TestConstructor(t *testing.T) {
-	n1 := node{
-		data: 1,
-	}
-
-	l := newLinkedListFromHead(&n1)
+	list := newLinkedListFromHead(
+		&node{
+			data: 1,
+		},
+	)
 
 	var buf bytes.Buffer
-	fmt.Fprint(&buf, l)
+
+	fmt.Fprint(&buf, list)
 
 	require.Equal(t, "1", buf.String())
 }
 
 func TestPrepend(t *testing.T) {
-	n1 := node{
-		data: 1,
-	}
+	list := newLinkedListFromHead(
+		&node{
+			data: 1,
+		},
+	)
 
-	l := newLinkedListFromHead(&n1)
+	list.prepend(
+		&node{
+			data: 2,
+		},
 
-	n2 := node{
-		data: 2,
-	}
-
-	n3 := node{
-		data: 3,
-	}
-
-	l.prepend(&n2, &n3)
+		&node{
+			data: 3,
+		},
+	)
 
 	var buf bytes.Buffer
-	fmt.Fprint(&buf, l)
+
+	fmt.Fprint(&buf, list)
 
 	require.Equal(t, "321", buf.String())
 }
@@ -59,16 +61,18 @@ func TestDeleteNodeWValue(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.description, func(t *testing.T) {
-			l := newLinkedListFromNodes(tc.input...)
+		t.Run(tc.description,
+			func(t *testing.T) {
+				l := newLinkedListFromNodes(tc.input...)
 
-			_ = l.deleteValue(tc.value)
+				_ = l.deleteValue(tc.value)
 
-			var buf bytes.Buffer
-			fmt.Fprint(&buf, l)
+				var buf bytes.Buffer
+				fmt.Fprint(&buf, l)
 
-			assert.Equal(t, tc.want, buf.String())
-		})
+				assert.Equal(t, tc.want, buf.String())
+			},
+		)
 	}
 }
 
@@ -83,14 +87,17 @@ func TestReverse(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.description, func(t *testing.T) {
-			l := newLinkedListFromNodes(tc.input...)
-			l.reverse()
+		t.Run(tc.description,
+			func(t *testing.T) {
+				l := newLinkedListFromNodes(tc.input...)
+				l.reverse()
 
-			var buf bytes.Buffer
-			fmt.Fprint(&buf, l)
+				var buf bytes.Buffer
 
-			assert.Equal(t, tc.want, buf.String())
-		})
+				fmt.Fprint(&buf, l)
+
+				assert.Equal(t, tc.want, buf.String())
+			},
+		)
 	}
 }

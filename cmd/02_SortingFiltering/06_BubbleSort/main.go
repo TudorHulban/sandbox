@@ -14,7 +14,7 @@ func main() {
 }
 
 func sort(a []int) {
-	isSorted := false
+	var isSorted bool
 
 	for !isSorted {
 		isSorted = true
@@ -22,6 +22,7 @@ func sort(a []int) {
 		for i := 0; i < len(a)-1; i++ {
 			if a[i] > a[i+1] {
 				a[i], a[i+1] = a[i+1], a[i]
+
 				isSorted = false
 			}
 		}

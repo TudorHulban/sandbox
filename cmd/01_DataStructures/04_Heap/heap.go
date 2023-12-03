@@ -34,35 +34,6 @@ func (q *queue) Insert(d *data) *queue {
 	return q
 }
 
-// Extract Method extracts top priority data from queue.
-func (q *queue) Extract() *data {
-	l := len(q.state)
-
-	if l == 0 {
-		return nil
-	}
-
-	if l == 1 {
-		res := (*q).state[0]
-
-		q.state = []*data{}
-		return res
-	}
-
-	res := (*q).state[0]
-	go fmt.Println("extracted:", res.priority)
-
-	// swap root with last element
-	q.state[0] = q.state[l-1]
-	// chop array
-	q.state = q.state[:l-1]
-
-	q.heapifyDown(0)
-	go fmt.Println(q.Values())
-
-	return res
-}
-
 // heapifyDown Helper which roots element with top priority.
 func (q *queue) heapifyDown(index int) {
 	lastIndex := len(q.state) - 1
@@ -83,11 +54,50 @@ func (q *queue) heapifyDown(index int) {
 
 			index = childToCompare
 			l, r = left(index), right(index)
+
 			continue
 		}
 
 		return
 	}
+}
+
+func (q *queue) heapifyMax(index int) {
+	for q.state[parent(index)].priority < q.state[index].priority {
+		q.swap(parent(index), index)
+
+		index = parent(index)
+	}
+}
+
+// Extract Method extracts top priority data from queue.
+func (q *queue) Extract() *data {
+	l := len(q.state)
+
+	if l == 0 {
+		return nil
+	}
+
+	if l == 1 {
+		res := (*q).state[0]
+
+		q.state = []*data{}
+		return res
+	}
+
+	res := (*q).state[0]
+	go fmt.Println("extracted:", res.priority)
+
+	// swap root with last element
+	q.state[0] = q.state[l-1]
+
+	// chop array
+	q.state = q.state[:l-1]
+
+	q.heapifyDown(0)
+	go fmt.Println(q.Values())
+
+	return res
 }
 
 // Values Method can be used to nicely print priority values.
@@ -99,14 +109,6 @@ func (q queue) Values() []int {
 	}
 
 	return res
-}
-
-func (q *queue) heapifyMax(index int) {
-	for q.state[parent(index)].priority < q.state[index].priority {
-		q.swap(parent(index), index)
-
-		index = parent(index)
-	}
 }
 
 func (q *queue) swap(i1, i2 int) {

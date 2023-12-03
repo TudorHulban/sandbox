@@ -43,6 +43,7 @@ loop:
 func do(c chan string) {
 	for {
 		c <- strconv.FormatInt(time.Now().Unix(), 10)
+
 		time.Sleep(1000 * time.Millisecond)
 	}
 }

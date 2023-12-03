@@ -20,7 +20,10 @@ func TestHeap(t *testing.T) {
 	}
 
 	h := NewQueue()
-	h.Insert(&g1).Insert(&g2).Insert(&g3)
+	h.
+		Insert(&g1).
+		Insert(&g2).
+		Insert(&g3)
 
 	require.Len(t, h.state, 3)
 }
@@ -60,7 +63,11 @@ func TestExtract(t *testing.T) {
 	}
 
 	h := NewQueue()
-	h.Insert(&g1).Insert(&g2).Insert(&g3).Insert(&g4)
+	h.
+		Insert(&g1).
+		Insert(&g2).
+		Insert(&g3).
+		Insert(&g4)
 
 	require.Equal(t, h.Extract().priority, g2.priority)
 	require.Len(t, h.state, 3)
