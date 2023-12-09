@@ -13,7 +13,6 @@ type Signal struct {
 	Value int `json:"value"`
 }
 
-// Signals Type for sending signals.
 type Signals []Signal
 
 const (
@@ -31,21 +30,26 @@ func main() {
 func handleRoutes(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/login" {
 		loginHandler(w, r)
+
 		return
 	}
 
 	if r.URL.Path == "/array" {
 		arrayHandler(w, r)
+
 		return
 	}
 
 	http.ServeFile(w, r, r.URL.Path[1:])
 }
 
-// loginHandler Handler with no marshalling, just returning slice of bytes.
+// loginHandler Handler with no marshaling, just returning slice of bytes.
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`[{"value":101},{"value":78}]`))
+
+	_, _ = w.Write(
+		[]byte(`[{"value":101},{"value":78}]`),
+	)
 }
 
 func arrayHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,11 +62,14 @@ func arrayHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	theJSON, errMa := json.Marshal(signals)
+	marshalledSignals, errMa := json.Marshal(signals)
 	if errMa != nil {
-		w.Write([]byte(errMa.Error()))
+		_, _ = w.Write([]byte(errMa.Error()))
+
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(theJSON)
+
+	_, _ = w.Write(marshalledSignals)
 }

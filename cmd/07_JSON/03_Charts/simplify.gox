@@ -148,7 +148,7 @@ func Simplify(points [][]float64, tolerance float64, highestQuality bool) [][]fl
 	return _points
 }
 
-//-------------------------------
+// -------------------------------
 func CompareSlices(p1, p2 [][]float64) bool {
 	if len(p1) == len(p2) {
 		for i := range p1 {
