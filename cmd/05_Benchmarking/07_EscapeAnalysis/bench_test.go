@@ -145,7 +145,7 @@ func Benchmark_agesResults(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		var results []*person
+		var results []*personReversedAlignment
 
 		agesResults(uint(many), &results)
 
@@ -175,7 +175,7 @@ func Benchmark_agesResultsOptim1(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		results := make([]*person, many, many) //nolint:gosimple
+		results := make([]*personReversedAlignment, many, many) //nolint:gosimple
 
 		agesResultsOptim(uint(many), &results)
 
@@ -205,7 +205,7 @@ func Benchmark_agesResultsOptim2(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		results := make([]*person, many, many) //nolint:gosimple
+		results := make([]*personReversedAlignment, many, many) //nolint:gosimple
 
 		agesResultsOptim(uint(many), &results)
 

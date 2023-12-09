@@ -10,7 +10,7 @@ func quicksort(sliceToSort []int) []int {
 	}
 
 	left, right := 0, len(sliceToSort)-1
-	pivot := rand.Int() % len(sliceToSort)
+	pivot := rand.Int() % len(sliceToSort) //nolint:gosec
 
 	sliceToSort[pivot], sliceToSort[right] = sliceToSort[right], sliceToSort[pivot]
 

@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	slice := generateSlice(10)
+	slice := generateSliceWRandom(10)
 
 	log.Println("Unsorted slice: ", slice)
 	quicksort(slice)

@@ -17,7 +17,7 @@ type ErrService struct {
 
 const areaErrService = "Service"
 
-func (e *ErrService) Error() string {
+func (e ErrService) Error() string {
 	var res [4]string
 
 	if e.WithTime {
@@ -45,7 +45,7 @@ type ErrDomain struct {
 
 const areaErrDomain = "Domain"
 
-func (e *ErrDomain) Error() string {
+func (e ErrDomain) Error() string {
 	var res [4]string
 
 	if e.WithTime {

@@ -31,7 +31,7 @@ func updateByReference(p *[]person, number int) {
 
 func updateByPointers(p []*person, number int) {
 	for _, person := range p {
-		(*person).numbers = append((*person).numbers, number)
+		person.numbers = append(person.numbers, number)
 	}
 }
 

@@ -1,32 +1,29 @@
 package escapeanalysis
 
-// memory alignment reversed to make big memory consumtion
-type car struct {
-	brand string
-	price float32
-
+type carReversedAlignment struct { //nolint:govet
 	isAWD  bool
 	engine int
+	price  float32
+	brand  string
 }
 
-// memory alignment reversed to make big memory consumtion
-type person struct {
-	name    string
-	surname string
-
-	*car
-
-	salary float32
+type personReversedAlignment struct { //nolint:govet
+	isMarried bool
+	hasDog    bool
 
 	age      uint
 	children uint
 
-	isMarried bool
-	hasDog    bool
+	*carReversedAlignment
+
+	salary float32
+
+	name    string
+	surname string
 }
 
-func newCar() *car {
-	return &car{
+func newCar() *carReversedAlignment {
+	return &carReversedAlignment{
 		isAWD:  true,
 		engine: 2000,
 		price:  1000,
@@ -34,8 +31,8 @@ func newCar() *car {
 	}
 }
 
-func newPerson(ix int) *person {
-	return &person{
+func newPerson(ix int) *personReversedAlignment {
+	return &personReversedAlignment{
 		age:       uint(ix + 1),
 		salary:    float32(ix),
 		hasDog:    ix == 1,
@@ -45,12 +42,12 @@ func newPerson(ix int) *person {
 		name:    "xyz",
 		surname: "abc",
 
-		car: newCar(),
+		carReversedAlignment: newCar(),
 	}
 }
 
-func ages(howMany uint) []person {
-	var res []person
+func ages(howMany uint) []personReversedAlignment {
+	var res []personReversedAlignment
 
 	for i := 0; i < int(howMany); i++ {
 		res = append(res, *newPerson(i))
@@ -59,50 +56,50 @@ func ages(howMany uint) []person {
 	return res
 }
 
-func agesPtr(howMany uint) []*person {
-	var res []*person
+func agesPtr(howMany uint) []*personReversedAlignment {
+	var res []*personReversedAlignment
 
 	for i := 0; i < int(howMany); i++ {
-		res = append(res, &person{
+		res = append(res, &personReversedAlignment{
 			age: uint(i + 1),
 
-			car: newCar(),
+			carReversedAlignment: newCar(),
 		})
 	}
 
 	return res
 }
 
-func agesPtrOptim(howMany uint) []*person {
-	res := make([]*person, howMany)
+func agesPtrOptim(howMany uint) []*personReversedAlignment {
+	res := make([]*personReversedAlignment, howMany)
 
 	for i := 0; i < int(howMany); i++ {
-		res[i] = &person{
+		res[i] = &personReversedAlignment{
 			age: uint(i + 1),
 
-			car: newCar(),
+			carReversedAlignment: newCar(),
 		}
 	}
 
 	return res
 }
 
-func agesResults(howMany uint, results *[]*person) {
+func agesResults(howMany uint, results *[]*personReversedAlignment) {
 	for i := 0; i < int(howMany); i++ {
-		*results = append(*results, &person{
+		*results = append(*results, &personReversedAlignment{
 			age: uint(i + 1),
 
-			car: newCar(),
+			carReversedAlignment: newCar(),
 		})
 	}
 }
 
-func agesResultsOptim(howMany uint, results *[]*person) {
+func agesResultsOptim(howMany uint, results *[]*personReversedAlignment) {
 	for i := 0; i < int(howMany); i++ {
-		(*results)[i] = &person{
+		(*results)[i] = &personReversedAlignment{
 			age: uint(i + 1),
 
-			car: newCar(),
+			carReversedAlignment: newCar(),
 		}
 	}
 }

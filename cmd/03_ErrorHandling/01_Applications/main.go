@@ -7,7 +7,7 @@ import (
 )
 
 func fooService() error {
-	return &ErrService{
+	return ErrService{
 		Caller:     "fooService",
 		MethodName: "m1",
 		Issue:      errors.New("issue 1"),
@@ -18,7 +18,7 @@ func fooService() error {
 }
 
 func fooDomain() error {
-	return &ErrDomain{
+	return ErrDomain{
 		Caller:     "fooDomain",
 		MethodName: "fooService",
 		Issue:      fooService(),
@@ -27,14 +27,4 @@ func fooDomain() error {
 
 func main() {
 	fmt.Println(fooDomain())
-	// go run .
-
-	// Area: Domain
-	// Caller: fooDomain
-	// Method Name: fooService
-	// Issue:
-	// Area: Service
-	// Caller: fooService
-	// Method Name: m1
-	// Issue: issue 1
 }
