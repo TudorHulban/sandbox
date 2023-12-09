@@ -9,7 +9,9 @@ import (
 // TestSendJSON - does not work
 func TestSendJSON(t *testing.T) {
 	params := prepareCurl("-X POST", "-H 'Content-Type: application/json'", "-d \"{\\\"message\\\": \\\"Hi\\\"}\"", "http://127.0.0.1:8080/url")
+
 	ctx := exec.Command("curl", params)
+
 	log.Println("ctx: ", ctx.Args)
 
 	errCurl := ctx.Run()
@@ -18,10 +20,12 @@ func TestSendJSON(t *testing.T) {
 	}
 }
 
-func prepareCurl(pParameters ...string) string {
+func prepareCurl(params ...string) string {
 	var result string
-	for _, v := range pParameters {
-		result = result + " " + v
+
+	for _, param := range params {
+		result = result + " " + param
 	}
+
 	return result
 }

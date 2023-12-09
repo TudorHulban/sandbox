@@ -7,10 +7,8 @@ import (
 	"net/http"
 )
 
-const port = ":8080"
-
 type httpMessage struct {
-	Msg string `json:"message"`
+	Text string `json:"message"`
 }
 
 func main() {
@@ -18,63 +16,85 @@ func main() {
 	http.HandleFunc("/url2", responseJSON)
 	http.HandleFunc("/url3", responseString)
 
-	log.Println("Listening:", port[1:])
-	log.Fatal(http.ListenAndServe(port, nil))
+	log.Println("Listening:", port)
+
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 // handleURL - test with: curl -X POST -H 'Content-Type: application/json' -d "{\"message\": \"Hi\"}" http://127.0.0.1:8080/url1
 func responseText(w http.ResponseWriter, r *http.Request) {
 	log.Println("new request ...")
+
 	decoder := json.NewDecoder(r.Body)
 
-	var ev httpMessage
-	errDecode := decoder.Decode(&ev)
-	if errDecode != nil {
-		log.Fatal("error decode: ", errDecode)
+	var event httpMessage
+
+	errDecodeEvent := decoder.Decode(&event)
+	if errDecodeEvent != nil {
+		log.Fatal("decode event: ", errDecodeEvent)
+
 		return
 	}
 
-	log.Println("response: ", ev.Msg)
-	w.Write([]byte(ev.Msg)) // echo as text
+	log.Println("response text: ", event.Text)
+
+	_, _ = w.Write(
+		[]byte(event.Text),
+	)
 }
 
 // handleURL - test with: curl -X POST -H 'Content-Type: application/json' -d "{\"message\": \"Hi\"}" http://127.0.0.1:8080/url2
 func responseJSON(w http.ResponseWriter, r *http.Request) {
 	log.Println("new request ...")
+
 	decoder := json.NewDecoder(r.Body)
 
-	var ev httpMessage
-	errDecode := decoder.Decode(&ev)
+	var event httpMessage
+
+	errDecode := decoder.Decode(&event)
 	if errDecode != nil {
-		log.Fatal("error decode: ", errDecode)
+		log.Fatal("decode event: ", errDecode)
+
 		return
 	}
 
-	log.Println("response: ", ev.Msg)
-	response := httpMessage{Msg: ev.Msg}
+	log.Println("response JSON: ", event.Text)
+
+	rawResponse := httpMessage{
+		Text: event.Text,
+	}
+
 	json2stream := json.NewEncoder(w)
-	json2stream.Encode(&response) // echo as JSON
+	_ = json2stream.Encode(&rawResponse)
 }
 
 // handleURL - test with: curl -X POST -H 'Content-Type: application/json' -d "{\"message\": \"Hi\"}" http://127.0.0.1:8080/url3
 func responseString(w http.ResponseWriter, r *http.Request) {
 	log.Println("new request ...")
+
 	decoder := json.NewDecoder(r.Body)
 
-	var ev httpMessage
-	errDecode := decoder.Decode(&ev)
+	var event httpMessage
+
+	errDecode := decoder.Decode(&event)
 	if errDecode != nil {
 		log.Fatal("error decode: ", errDecode)
+
 		return
 	}
 
-	log.Println("response: ", ev.Msg)
+	log.Println("response: ", event.Text)
 
-	var b bytes.Buffer
-	response := httpMessage{Msg: ev.Msg}
-	json2stream := json.NewEncoder(&b)
-	json2stream.Encode(&response)
+	var shellResponse bytes.Buffer
 
-	s := b.String()
-	w.Write([]byte(s)) // echo as text in JSON format
+	rawResponse := httpMessage{
+		Text: event.Text,
+	}
+
+	json2stream := json.NewEncoder(&shellResponse)
+	json2stream.Encode(&rawResponse)
+
+	_, _ = w.Write(
+		shellResponse.Bytes(),
+	)
 }
