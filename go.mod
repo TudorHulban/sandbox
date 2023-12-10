@@ -5,6 +5,8 @@ go 1.20
 require (
 	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/gorilla/mux v1.8.1
+	github.com/iancoleman/strcase v0.3.0
+	github.com/jinzhu/inflection v1.0.0
 	github.com/stretchr/testify v1.8.2
 )
 

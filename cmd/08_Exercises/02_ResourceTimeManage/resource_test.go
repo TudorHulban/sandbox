@@ -8,10 +8,13 @@ import (
 )
 
 func TestResourceBasics(t *testing.T) {
-	activ1 := Activity{ActionID: 1, TimeFrame: TimeFrame{
-		UnixStartTime: 1000,
-		UnixEndTime:   2000,
-	}}
+	activ1 := Activity{
+		ActionID: 1,
+		TimeFrame: TimeFrame{
+			UnixStartTime: 1000,
+			UnixEndTime:   2000,
+		},
+	}
 
 	activ2 := Activity{ActionID: 2, TimeFrame: TimeFrame{
 		UnixStartTime: 1500,
@@ -47,6 +50,8 @@ func TestRemoveTimeFrame(t *testing.T) {
 
 	r := NewResource()
 	r.AddActivity(activ1, activ2)
+
 	r.updateBusyTime()
+
 	assert.Equal(t, 1, len(r.BusyInterval))
 }

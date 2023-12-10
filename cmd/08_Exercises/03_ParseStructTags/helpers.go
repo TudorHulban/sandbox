@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -9,56 +8,31 @@ import (
 	"github.com/jinzhu/inflection"
 )
 
-type Field struct {
-	FieldName  string
-	Default    string // default value for field
-	DataType   string
-	FieldTag   string
-	IsNullable bool
-	Unique     bool
-	Index      bool
-}
-
-type Fields []*Field
-
-func (f Fields) String() string {
-	var res []string
-
-	for _, field := range f {
-		res = append(res, fmt.Sprintf("%#v", *field))
-	}
-
-	return strings.Join(res, "\n")
-}
-
-type User struct {
-	name string `hera:"fieldName1"`
-	age  int    `hera:"fieldName2"`
-}
-
-const _tagName = "hera"
-
 func getTableName(model any) string {
 	if typeOfModel := reflect.TypeOf(model); typeOfModel.Kind() == reflect.Ptr {
-		return inflection.Plural(strcase.ToSnake(typeOfModel.Elem().Name()))
+		return inflection.Plural(
+			strcase.ToSnake(typeOfModel.Elem().Name()),
+		)
 	}
 
-	return inflection.Plural(strcase.ToSnake(reflect.TypeOf(model).Name()))
+	return inflection.Plural(
+		strcase.ToSnake(reflect.TypeOf(model).Name()),
+	)
 }
 
 func getAllowedTypes() []string {
-	res := []string{"string", "int", "int64", "time.Time", "float64", "bool"}
+	result := []string{"string", "int", "int64", "time.Time", "float64", "bool"}
 
-	for _, allowedType := range res {
-		res = append(res, "*"+allowedType)
-		res = append(res, "[]"+allowedType)
-		res = append(res, "[]*"+allowedType)
+	for _, allowedType := range result {
+		result = append(result, "*"+allowedType)
+		result = append(result, "[]"+allowedType)
+		result = append(result, "[]*"+allowedType)
 	}
 
-	res = append(res, "map[string]interface")
-	res = append(res, "interface")
+	result = append(result, "map[string]interface")
+	result = append(result, "interface")
 
-	return res
+	return result
 }
 
 func getFields(model any) Fields {
@@ -75,7 +49,9 @@ func getFields(model any) Fields {
 	}
 
 	val := reflect.ValueOf(model).Elem()
+
 	var setFieldType string // takes field type from tag instead
+
 	var result []*Field
 
 	for i := 0; i < val.NumField(); i++ {
@@ -204,14 +180,4 @@ func getFields(model any) Fields {
 	}
 
 	return result
-}
-
-func main() {
-	fmt.Printf("Table Name: '%s'.\n", getTableName(&User{}))
-
-	fields := getFields(&User{})
-
-	for ix, field := range fields {
-		fmt.Printf("Field %d: has field name: %v.\n", ix, field.FieldName)
-	}
 }

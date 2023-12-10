@@ -34,21 +34,20 @@ func NewResource() *Resource {
 	}
 }
 
-// AddActivity Method adds activity to a resource.
-func (r *Resource) AddActivity(a ...Activity) {
-	r.Activities = append(r.Activities, a...)
+func (r *Resource) AddActivity(activities ...Activity) {
+	r.Activities = append(r.Activities, activities...)
 }
 
-// DeleteActivity Method deletes activity from a resource.
 func (r *Resource) DeleteActivity(a Activity) error {
 	return nil
 }
 
-// sortActivities Method sorts activities once a change in activities occurs.
 func (r *Resource) sortActivities() {
-	sort.Slice(r.Activities, func(i, j int) bool {
-		return r.Activities[i].UnixStartTime < r.Activities[j].UnixStartTime
-	})
+	sort.Slice(r.Activities,
+		func(i, j int) bool {
+			return r.Activities[i].UnixStartTime < r.Activities[j].UnixStartTime
+		},
+	)
 }
 
 func (r *Resource) syncBusy() {
@@ -70,6 +69,7 @@ func (r *Resource) hasOverlapping() bool {
 	for i := 0; i < len(r.Activities)-1; i++ {
 		if r.Activities[i].TimeFrame.isOverLapping(r.Activities[i+1].TimeFrame) {
 			r.overlapIndex = i
+
 			return true
 		}
 	}
@@ -87,13 +87,19 @@ func (r *Resource) updateBusyTime() error {
 	}
 
 	if r.overlapIndex > len(r.BusyInterval) {
-		return fmt.Errorf("overlapIndex is %d and number of busy intervals %d", r.overlapIndex, len(r.BusyInterval))
+		return fmt.Errorf("overlapIndex is %d and number of busy intervals %d",
+			r.overlapIndex, len(r.BusyInterval),
+		)
 	}
 
 	for r.hasOverlapping() {
 		log.Println("overlapping index:", r.overlapIndex)
 
-		newTimeFrame := mergeOverlapping(r.BusyInterval[r.overlapIndex], r.BusyInterval[r.overlapIndex+1])
+		newTimeFrame := mergeOverlapping(
+			r.BusyInterval[r.overlapIndex],
+			r.BusyInterval[r.overlapIndex+1],
+		)
+
 		r.BusyInterval = r.removeTimeFrame(r.overlapIndex + 1)
 		r.BusyInterval[r.overlapIndex] = newTimeFrame
 	}

@@ -17,7 +17,9 @@
 
 ## Code Metrics
 ### LOC
+```
 $ find . -name "*.go" -exec cat {} + | wc -l
+```
 
 ### Number of functions
 ### Number of methods
@@ -92,10 +94,10 @@ Error messages stick to the error messages policy.
 Data Structures do not have many levels.
 
 ### Functions / methods have a limited number of parameters
-Methods with 0 and 1 arguments are fine
-2 parameters still good
-3 parameters can be considered OK
-4 and more parameters are usually too much
+Methods with 0 and 1 arguments are fine  
+2 parameters still good  
+3 parameters can be considered OK  
+4 and more parameters are usually too much  
 
 Resources
 ```html
