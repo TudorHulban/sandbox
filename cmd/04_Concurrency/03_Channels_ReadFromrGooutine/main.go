@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"time"
 )
 
@@ -13,9 +13,12 @@ func main() {
 
 	timeStart := time.Now()
 
-	p.dispatchWork(0, 25)
+	p.dispatchWork(0, 24)
 	p.start()
 
-	timeEnd := time.Now()
-	log.Printf("Duration: %s.", timeEnd.Sub(timeStart))
+	fmt.Printf(
+		"Duration: %s.\nNumber of tasks handled: %d.\n",
+		time.Since(timeStart),
+		len(p.tasksHandled),
+	)
 }

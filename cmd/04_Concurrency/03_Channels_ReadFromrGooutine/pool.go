@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -14,10 +15,13 @@ type task struct {
 type tasks []task
 
 type pool struct {
-	chWork    chan int
-	mu        sync.Mutex
+	chWork chan int
+	mu     sync.Mutex
+
 	noWorkers int
 	noTasks   int
+
+	tasksHandled []int
 }
 
 func (p *pool) dispatchWork(from, steps int) {
@@ -46,16 +50,25 @@ func (p *pool) do(t task) {
 		log.Println("no more tasks. closing work.")
 
 		close(p.chWork)
+
+		log.Println("work now closed.")
 	}
 }
 
 func (p *pool) start() {
 	for {
-		ev, isOpen := <-p.chWork
+		event, isOpen := <-p.chWork
 		if !isOpen {
+			fmt.Println("work is not opened anymore, exiting...")
+
 			break
 		}
 
-		log.Printf("Done work %v.", ev)
+		p.tasksHandled = append(p.tasksHandled, event)
+
+		log.Printf(
+			"done work %v.",
+			event,
+		)
 	}
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	p := pool{
+	p := poolWork{
 		noWorkers: 3,
 		noTasks:   10,
 		chOutputs: make(chan string),

@@ -10,7 +10,7 @@ type task struct {
 	request string
 }
 
-type pool struct {
+type poolWork struct {
 	chInputs  chan task
 	chOutputs chan string
 
@@ -18,7 +18,7 @@ type pool struct {
 	noTasks   uint
 }
 
-func (p *pool) do(workerID int) {
+func (p *poolWork) do(workerID int) {
 	for job := range p.chInputs {
 		log.Printf(
 			"worker %d started job %s.\n",
@@ -52,7 +52,7 @@ func (p *pool) do(workerID int) {
 	)
 }
 
-func (p *pool) cleanUp() {
+func (p *poolWork) cleanUp() {
 	close(p.chOutputs)
 	close(p.chInputs)
 }

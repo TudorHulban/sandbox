@@ -2,19 +2,18 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 )
 
 func main() {
-	chDo := make(chan string)
+	chDo := make(chan int64)
 	defer close(chDo)
 
 	chStop := make(chan struct{})
 	defer close(chStop)
 
-	go stop(chStop)
 	go do(chDo)
+	go stop(chStop)
 
 loop:
 	for {
@@ -23,27 +22,13 @@ loop:
 			break loop
 
 		case msg := <-chDo:
-			fmt.Println(msg)
+			fmt.Println("fast work", msg)
 
 		default:
-			fmt.Println("other work")
-			time.Sleep(1000 * time.Millisecond)
+			fmt.Println("slow work", time.Now().UnixMilli())
+			time.Sleep(1500 * time.Millisecond)
 		}
 	}
 
 	fmt.Println("exiting ....")
-}
-
-func do(c chan string) {
-	for {
-		c <- strconv.FormatInt(time.Now().Unix(), 10)
-
-		time.Sleep(1000 * time.Millisecond)
-	}
-}
-
-func stop(c chan struct{}) {
-	time.Sleep(3000 * time.Millisecond)
-
-	c <- struct{}{}
 }

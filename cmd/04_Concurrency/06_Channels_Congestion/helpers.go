@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func createWork(noTasks, maxNoConcTasks uint, tasks chan task) {
+func createWork(noTasks, maxConcurrentTasks uint, tasks chan task) {
 	if noTasks == 0 {
 		return
 	}
@@ -17,13 +17,13 @@ func createWork(noTasks, maxNoConcTasks uint, tasks chan task) {
 
 		log.Println(
 			"creating work, remaining tasks:", noTasks,
-			"maxNoConcTasks:", maxNoConcTasks,
+			"maxNoConcTasks:", maxConcurrentTasks,
 			"load:", currentLoad)
 
-		if currentLoad > maxNoConcTasks {
+		if currentLoad > maxConcurrentTasks {
 			log.Printf("current load('%d') exceeding max number of conncurrent tasks: %d",
 				currentLoad,
-				maxNoConcTasks,
+				maxConcurrentTasks,
 			)
 
 			continue // allowing time for tasks to finish
