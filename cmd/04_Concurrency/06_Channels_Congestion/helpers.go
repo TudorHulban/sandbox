@@ -5,29 +5,42 @@ import (
 	"strconv"
 )
 
-func createWork(noTasks int, tasks chan task, maxNoConcTasks int) {
-	if noTasks < 1 {
+func createWork(noTasks, maxNoConcTasks uint, tasks chan task) {
+	if noTasks == 0 {
 		return
 	}
 
-	var load int
+	var currentLoad uint
 
 	for noTasks > 0 {
-		load = len(tasks)
+		currentLoad = uint(len(tasks))
 
-		log.Println("creating work, remaining tasks: ", noTasks, "load:", load)
+		log.Println(
+			"creating work, remaining tasks:", noTasks,
+			"maxNoConcTasks:", maxNoConcTasks,
+			"load:", currentLoad)
 
-		if load <= maxNoConcTasks {
-			log.Printf("channel load: %d", load)
+		if currentLoad > maxNoConcTasks {
+			log.Printf("current load('%d') exceeding max number of conncurrent tasks: %d",
+				currentLoad,
+				maxNoConcTasks,
+			)
 
-			request := "R" + strconv.Itoa(noTasks)
-
-			tasks <- task{request: request}
-
-			log.Println("request: ", request)
-
-			noTasks--
+			continue // allowing time for tasks to finish
 		}
+
+		log.Printf(
+			"channel load: %d",
+			currentLoad,
+		)
+
+		request := "R" + strconv.Itoa(int(noTasks))
+
+		tasks <- task{request: request}
+
+		log.Println("request: ", request)
+
+		noTasks--
 	}
 
 	log.Printf("no more work, remaining tasks: %d", noTasks)

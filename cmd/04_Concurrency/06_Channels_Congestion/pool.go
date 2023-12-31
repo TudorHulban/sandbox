@@ -13,25 +13,43 @@ type task struct {
 type pool struct {
 	chInputs  chan task
 	chOutputs chan string
+
 	noWorkers int
-	noTasks   int
+	noTasks   uint
 }
 
 func (p *pool) do(workerID int) {
-	for j := range p.chInputs {
-		log.Printf("worker %d started job %s.\n", workerID, j)
+	for job := range p.chInputs {
+		log.Printf(
+			"worker %d started job %s.\n",
+			workerID,
+			job,
+		)
 
-		// long process for work
-		time.Sleep(1 * time.Millisecond)
+		time.Sleep(1 * time.Millisecond) // long process for work
 
-		log.Printf("worker %d finished job %s.\n", workerID, j)
+		log.Printf(
+			"worker %d finished job %s.\n",
+			workerID,
+			job,
+		)
 
-		p.chOutputs <- "finished: " + strconv.FormatInt(time.Now().UnixNano(), 10) + " " + j.request
+		p.chOutputs <- "finished: " +
+			strconv.FormatInt(time.Now().UnixNano(), 10) +
+			" " +
+			job.request
 
-		log.Printf("work sent by worker %d for request %s.\n", workerID, j.request)
+		log.Printf(
+			"work sent by worker %d for request %s.\n",
+			workerID,
+			job.request,
+		)
 	}
 
-	log.Printf("closing worker %d.\n", workerID)
+	log.Printf(
+		"closing worker %d.\n",
+		workerID,
+	)
 }
 
 func (p *pool) cleanUp() {

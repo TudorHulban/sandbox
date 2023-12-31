@@ -48,6 +48,7 @@ func main() {
 
 	go func() {
 		<-chCancel
+
 		chStopScheduling <- struct{}{}
 		close(chStopScheduling)
 

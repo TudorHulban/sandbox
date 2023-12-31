@@ -13,27 +13,38 @@ func main() {
 		chOutputs: make(chan string),
 	}
 
-	noBuffer := int(math.Min(float64(p.noTasks), 10.0))
-	p.chInputs = make(chan task, noBuffer)
+	// could be different than number of workers
+	maxConcurrentTasks := uint(math.Min(
+		float64(p.noTasks),
+		3.0,
+	))
+	p.chInputs = make(chan task, maxConcurrentTasks)
 
 	defer p.cleanUp()
 
 	timeStart := time.Now()
 
-	for w := 0; w < p.noWorkers; w++ {
-		go p.do(w)
+	for workerID := 0; workerID < p.noWorkers; workerID++ {
+		go p.do(workerID)
 
-		log.Println("created worker:", w)
+		log.Println("created worker:", workerID)
 	}
 
-	go createWork(p.noTasks, p.chInputs, noBuffer)
+	go createWork(
+		p.noTasks,
+		maxConcurrentTasks,
+		p.chInputs,
+	)
 
-	res := []string{"\n"}
+	result := []string{"\n"}
 
-	for r := 0; r < p.noTasks; r++ {
-		res = append(res, <-p.chOutputs+"\n")
+	for r := 0; r < int(p.noTasks); r++ {
+		result = append(
+			result,
+			<-p.chOutputs+"\n",
+		)
 	}
 
-	log.Println(res)
+	log.Println(result)
 	log.Println("elapsed: ", time.Since(timeStart))
 }
