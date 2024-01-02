@@ -9,9 +9,11 @@ import (
 func main() {
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("alive")
-	})
+	app.Get("/",
+		func(c *fiber.Ctx) error {
+			return c.SendString("alive")
+		},
+	)
 
 	log.Fatal(app.Listen(":3000"))
 }

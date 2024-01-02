@@ -1,9 +1,12 @@
 # V versus Golang Fiber
+
 ## V benchmark
+
 V code run with:
 ```sh
 v run web.v 
 ```
+
 ```sh
 tudi@pad16:~/ram/test$ hey -m GET  -n 10000 "http://localhost:3000/"
 
@@ -52,10 +55,13 @@ Status code distribution:
 
 ```
 ## Go benchmark
+
 Go code run with:
+
 ```sh
 go run main.go
 ```
+
 ```sh
 tudi@pad16:~/ram/test$ hey -m GET  -n 10000 "http://localhost:3000/"
 
@@ -102,4 +108,10 @@ Details (average, fastest, slowest):
 Status code distribution:
   [200]	10000 responses
 
+```
+
+## Resources
+
+```html
+https://github.com/rakyll/hey?tab=readme-ov-file
 ```
