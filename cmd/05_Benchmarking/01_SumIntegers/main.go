@@ -7,12 +7,13 @@ func sumLoop(values []int) int {
 		return 0
 	}
 
-	var res int
+	var result int
+
 	for _, value := range values {
-		res = res + value
+		result = result + value
 	}
 
-	return res
+	return result
 }
 
 func sumRecurs(values []int) int {

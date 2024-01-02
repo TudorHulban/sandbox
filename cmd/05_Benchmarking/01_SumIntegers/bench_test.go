@@ -6,9 +6,12 @@ import (
 	"testing"
 )
 
-var sample []int = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+var sample = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
 
 func benchmarkSumLoop(ints []int, b *testing.B) {
+	b.ResetTimer()
+	b.ReportAllocs()
+
 	for n := 0; n < b.N; n++ {
 		sumLoop(ints)
 	}
@@ -19,12 +22,18 @@ func BenchmarkSumLoop(b *testing.B) {
 }
 
 func benchmarkSumRecursive(ints []int, b *testing.B) {
+	b.ResetTimer()
+	b.ReportAllocs()
+
 	for n := 0; n < b.N; n++ {
 		sumRecurs(ints)
 	}
 }
 
 func BenchmarkSumRecurs(b *testing.B) {
+	b.ResetTimer()
+	b.ReportAllocs()
+
 	benchmarkSumRecursive(sample, b)
 }
 

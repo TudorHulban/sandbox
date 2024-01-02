@@ -12,7 +12,7 @@ func BenchmarkFilterDirect10K(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		work := NewTasks(10000)
+		work := NewWork(10000)
 
 		showFieldDirect(fieldName, work)
 	}
@@ -22,7 +22,7 @@ func BenchmarkFilterDirect100K(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		work := NewTasks(100000)
+		work := NewWork(100000)
 
 		showFieldDirect(fieldName, work)
 	}
@@ -32,7 +32,7 @@ func BenchmarkFilterAssertion10K(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		work := NewTasks(10000)
+		work := NewWork(10000)
 
 		showFieldAssertion(fieldName, work)
 	}
@@ -42,7 +42,7 @@ func BenchmarkFilterAssertion100K(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		work := NewTasks(100000)
+		work := NewWork(100000)
 
 		showFieldAssertion(fieldName, work)
 	}
@@ -52,7 +52,7 @@ func BenchmarkFilterName10K(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		work := NewTasks(10000)
+		work := NewWork(10000)
 
 		showFieldName("Name", work)
 	}
@@ -62,7 +62,7 @@ func BenchmarkFilterName100K(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		work := NewTasks(100000)
+		work := NewWork(100000)
 
 		showFieldName("Name", work)
 	}
