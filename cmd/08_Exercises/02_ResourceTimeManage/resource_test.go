@@ -16,15 +16,21 @@ func TestResourceBasics(t *testing.T) {
 		},
 	}
 
-	activ2 := Activity{ActionID: 2, TimeFrame: TimeFrame{
-		UnixStartTime: 1500,
-		UnixEndTime:   2500,
-	}}
+	activ2 := Activity{
+		ActionID: 2,
+		TimeFrame: TimeFrame{
+			UnixStartTime: 1500,
+			UnixEndTime:   2500,
+		},
+	}
 
-	activ3 := Activity{ActionID: 3, TimeFrame: TimeFrame{
-		UnixStartTime: 2400,
-		UnixEndTime:   5500,
-	}}
+	activ3 := Activity{
+		ActionID: 3,
+		TimeFrame: TimeFrame{
+			UnixStartTime: 2400,
+			UnixEndTime:   5500,
+		},
+	}
 
 	r := NewResource()
 	r.AddActivity(activ1, activ2, activ3)
@@ -33,8 +39,8 @@ func TestResourceBasics(t *testing.T) {
 	// r.updateBusyTime()
 
 	log.Println(r.overlapIndex)
-	// log.Println("activities:", r.Activities)
-	// log.Println("busy:", r.BusyInterval)
+	log.Println("activities:", r.Activities)
+	log.Println("busy:", r.BusyInterval)
 }
 
 func TestRemoveTimeFrame(t *testing.T) {

@@ -14,16 +14,19 @@ type resource struct {
 }
 
 type service struct {
-	cache     map[ID]*resource
-	mu        sync.RWMutex
+	cache map[ID]*resource
+
 	chResults chan int64
 	chStop    chan struct{}
 	chPause   chan struct{}
+
+	mu sync.RWMutex
 }
 
 func newService() *service {
 	return &service{
-		cache:     make(map[ID]*resource),
+		cache: make(map[ID]*resource),
+
 		chResults: make(chan int64),
 		chStop:    make(chan struct{}),
 		chPause:   make(chan struct{}),
@@ -45,28 +48,24 @@ loop:
 	for {
 		select {
 		case <-s.chPause:
-			{
-				toggle()
+			toggle()
 
-				if isPaused {
-					fmt.Println("service is now paused ....")
-				} else {
-					fmt.Println("service is now resumed ....")
-				}
+			if isPaused {
+				fmt.Println("service is now paused ....")
+			} else {
+				fmt.Println("service is now resumed ....")
 			}
 
 		default:
-			{
-				if isPaused {
-					continue
-				}
-
-				s.chResults <- s.createResource(ID(time.Now().UnixNano())).id
-
-				wg.Done()
-
-				break loop
+			if isPaused {
+				continue
 			}
+
+			s.chResults <- s.createResource(ID(time.Now().UnixNano())).id
+
+			wg.Done()
+
+			break loop
 		}
 	}
 }
@@ -113,8 +112,13 @@ func (s *service) listResources() {
 	defer s.mu.Unlock()
 
 	log.Println("number cached resources: ", len(s.cache))
+
 	for id, resource := range s.cache {
-		log.Printf("Resources with ID: %d and resource ID; %d", id, resource.id)
+		log.Printf(
+			"resources with ID: %d and resource ID; %d",
+			id,
+			resource.id,
+		)
 	}
 }
 

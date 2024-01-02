@@ -60,7 +60,8 @@ func (r *Resource) syncBusy() {
 	log.Println("filled up busy intervals:", r.BusyInterval)
 }
 
-// hasOverlapping given ordered by start time slice gives indication if it has overlapping time frames.
+// hasOverlapping given ordered by start time slice
+// gives indication if it has overlapping time frames.
 func (r *Resource) hasOverlapping() bool {
 	if len(r.Activities) < 2 {
 		return true

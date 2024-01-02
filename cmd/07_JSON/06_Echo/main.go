@@ -21,7 +21,9 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
-// handleURL - test with: curl -X POST -H 'Content-Type: application/json' -d "{\"message\": \"Hi\"}" http://127.0.0.1:8080/url1
+// handleURL test with:
+// curl -X POST -H 'Content-Type:
+// application/json' -d "{\"message\": \"Hi\"}" http://127.0.0.1:8080/url1
 func responseText(w http.ResponseWriter, r *http.Request) {
 	log.Println("new request ...")
 
@@ -43,7 +45,9 @@ func responseText(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// handleURL - test with: curl -X POST -H 'Content-Type: application/json' -d "{\"message\": \"Hi\"}" http://127.0.0.1:8080/url2
+// handleURL test with:
+// curl -X POST -H 'Content-Type:
+// application/json' -d "{\"message\": \"Hi\"}" http://127.0.0.1:8080/url2
 func responseJSON(w http.ResponseWriter, r *http.Request) {
 	log.Println("new request ...")
 
@@ -68,7 +72,9 @@ func responseJSON(w http.ResponseWriter, r *http.Request) {
 	_ = json2stream.Encode(&rawResponse)
 }
 
-// handleURL - test with: curl -X POST -H 'Content-Type: application/json' -d "{\"message\": \"Hi\"}" http://127.0.0.1:8080/url3
+// handleURL test with:
+// curl -X POST -H 'Content-Type:
+// application/json' -d "{\"message\": \"Hi\"}" http://127.0.0.1:8080/url3
 func responseString(w http.ResponseWriter, r *http.Request) {
 	log.Println("new request ...")
 

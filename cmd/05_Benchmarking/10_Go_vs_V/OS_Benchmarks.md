@@ -14,7 +14,8 @@ https://www.cpubenchmark.net/cpu.php?cpu=Intel+Pentium+J3710+%40+1.60GHz
 
 a. Golang Fiber 2.51.0  
 b. ./hey -m GET  -n 10000 "http://localhost:3000/"
-c. cold start for Fiber
+c. cold start for Fiber  
+d. no OS optimizations (vanilla)
 
 Two types of test:  
 a. long, 10 000 requests  

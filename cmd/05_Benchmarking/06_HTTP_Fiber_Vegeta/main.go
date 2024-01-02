@@ -20,6 +20,7 @@ func main() {
 
 	chStop1 := make(chan struct{})
 	defer close(chStop1)
+
 	chStop2 := make(chan struct{})
 	defer close(chStop2)
 
@@ -33,30 +34,39 @@ func main() {
 		chStop2 <- struct{}{}
 	}()
 
-	rate := vegeta.Rate{Freq: 10, Per: time.Second}
+	rate := vegeta.Rate{
+		Freq: 10,
+		Per:  time.Second,
+	}
 	duration := 5 * time.Second
 	targeter := vegeta.NewStaticTargeter(
 		vegeta.Target{
 			Method: "GET",
 			URL:    "http://localhost:3000/",
 		},
-		vegeta.Target{
-			Method: "GET",
-			URL:    "http://localhost:3002/",
-		},
 	)
 
 	attacker := vegeta.NewAttacker()
 
 	var metrics vegeta.Metrics
-	for res := range attacker.Attack(targeter, rate, duration, "Fiber!") {
+
+	for res := range attacker.Attack(
+		targeter,
+		rate,
+		duration,
+		"Fiber!",
+	) {
 		metrics.Add(res)
 	}
 
 	metrics.Close()
+
 	chStop1 <- struct{}{}
 
 	fmt.Printf("99th percentile: %s\n", metrics.Latencies.P99)
+	fmt.Printf("95th percentile: %s\n", metrics.Latencies.P95)
+	fmt.Printf("50th percentile: %s\n", metrics.Latencies.P50)
+	fmt.Printf("requests: %d\n", metrics.Requests)
 	fmt.Printf("Metrics errors: %#v\n", metrics.Errors)
 
 	<-chStop2

@@ -1,7 +1,5 @@
 package main
 
-// based on benchmark the performance of nil is very slightly better.
-
 func main() {}
 
 func byLength(slice []string) bool {

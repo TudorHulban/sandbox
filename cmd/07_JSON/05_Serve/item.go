@@ -6,7 +6,7 @@ type item struct {
 }
 
 type items struct {
-	Items []item `json:items`
+	Items []item `json:"items"`
 }
 
 var _toServeItems items

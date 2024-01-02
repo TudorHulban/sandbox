@@ -8,6 +8,7 @@ import (
 
 func dispatchWork(noWorkers int, s *service) {
 	var wg sync.WaitGroup
+
 	var wasPaused bool
 
 	s.Start()
@@ -17,6 +18,7 @@ func dispatchWork(noWorkers int, s *service) {
 
 		if i > 3 && !wasPaused {
 			wasPaused = true
+
 			s.chPause <- struct{}{}
 		}
 
@@ -44,10 +46,12 @@ loop:
 	for {
 		select {
 		case work := <-s.chResults:
-			{
-				fmt.Printf("ev%d: %d\n", i, work)
-				i++
-			}
+			fmt.Printf("ev%d: %d\n",
+				i,
+				work,
+			)
+
+			i++
 
 		case <-s.chStop:
 			s.Stop()

@@ -15,13 +15,13 @@ type task struct {
 type tasks []task
 
 type pool struct {
-	chWork chan int
-	mu     sync.Mutex
+	chWork       chan int
+	tasksHandled []int
+
+	mu sync.Mutex
 
 	noWorkers int
 	noTasks   int
-
-	tasksHandled []int
 }
 
 func (p *pool) dispatchWork(from, steps int) {
