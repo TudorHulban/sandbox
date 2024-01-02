@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 // no router.
@@ -24,7 +25,15 @@ func main() {
 	log.Println("starting...")
 
 	http.HandleFunc(theRoute, handleRoutes)
-	panic(http.ListenAndServe(theURL, nil))
+
+	server := &http.Server{
+		Addr:              theURL,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+
+	log.Fatal(
+		server.ListenAndServe(),
+	)
 }
 
 func handleRoutes(w http.ResponseWriter, r *http.Request) {

@@ -11,7 +11,7 @@ func dispatchWork(noWorkers int, s *service) {
 
 	var wasPaused bool
 
-	s.Start()
+	_ = s.Start()
 
 	for i := 0; i < noWorkers; i++ {
 		wg.Add(1)
@@ -35,7 +35,7 @@ func dispatchWork(noWorkers int, s *service) {
 	wg.Wait()
 
 	s.chStop <- struct{}{}
-	s.Stop()
+	_ = s.Stop()
 	s.cleanUp()
 }
 
@@ -54,7 +54,7 @@ loop:
 			i++
 
 		case <-s.chStop:
-			s.Stop()
+			_ = s.Stop()
 
 			break loop
 		}

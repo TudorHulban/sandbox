@@ -19,7 +19,7 @@ type Field struct {
 type Fields []*Field
 
 func (f Fields) String() string {
-	var res []string
+	res := make([]string, 0, len(f))
 
 	for _, field := range f {
 		res = append(res, fmt.Sprintf("%#v", *field))

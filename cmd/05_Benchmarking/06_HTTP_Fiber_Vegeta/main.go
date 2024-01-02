@@ -12,11 +12,15 @@ import (
 func main() {
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendStatus(http.StatusOK)
-	})
+	app.Get("/",
+		func(c *fiber.Ctx) error {
+			return c.SendStatus(http.StatusOK)
+		},
+	)
 
-	go app.Listen(":3000")
+	go func() {
+		_ = app.Listen(":3000")
+	}()
 
 	chStop1 := make(chan struct{})
 	defer close(chStop1)
@@ -29,7 +33,7 @@ func main() {
 
 		fmt.Println("Gracefully shutting down Fiber server.")
 
-		app.Shutdown()
+		_ = app.Shutdown()
 
 		chStop2 <- struct{}{}
 	}()

@@ -15,7 +15,10 @@ func DoPOST(toURL string, cfg *GenConfig) error {
 
 	var buf bytes.Buffer
 
-	json.NewEncoder(&buf).Encode(cfg)
+	if errEncode := json.NewEncoder(&buf).Encode(cfg); errEncode != nil {
+		return errEncode
+	}
+
 	req, _ := http.NewRequest("POST", apiURLFormatted, &buf)
 
 	client := &http.Client{}
@@ -27,7 +30,6 @@ func DoPOST(toURL string, cfg *GenConfig) error {
 	defer res.Body.Close()
 
 	body, _ := io.ReadAll(res.Body)
-	//log.Println("body:", string(body))
 
 	var data GenData
 

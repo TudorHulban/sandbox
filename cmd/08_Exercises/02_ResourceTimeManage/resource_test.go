@@ -33,10 +33,14 @@ func TestResourceBasics(t *testing.T) {
 	}
 
 	r := NewResource()
-	r.AddActivity(activ1, activ2, activ3)
+	r.AddActivity(
+		activ1,
+		activ2,
+		activ3,
+	)
 	assert.True(t, r.hasOverlapping())
 
-	// r.updateBusyTime()
+	// maybe r.updateBusyTime() ?
 
 	log.Println(r.overlapIndex)
 	log.Println("activities:", r.Activities)
@@ -44,20 +48,29 @@ func TestResourceBasics(t *testing.T) {
 }
 
 func TestRemoveTimeFrame(t *testing.T) {
-	activ1 := Activity{ActionID: 1, TimeFrame: TimeFrame{
-		UnixStartTime: 1000,
-		UnixEndTime:   2000,
-	}}
+	activ1 := Activity{
+		ActionID: 1,
+		TimeFrame: TimeFrame{
+			UnixStartTime: 1000,
+			UnixEndTime:   2000,
+		},
+	}
 
-	activ2 := Activity{ActionID: 2, TimeFrame: TimeFrame{
-		UnixStartTime: 1500,
-		UnixEndTime:   2500,
-	}}
+	activ2 := Activity{
+		ActionID: 2,
+		TimeFrame: TimeFrame{
+			UnixStartTime: 1500,
+			UnixEndTime:   2500,
+		},
+	}
 
 	r := NewResource()
 	r.AddActivity(activ1, activ2)
 
 	r.updateBusyTime()
 
-	assert.Equal(t, 1, len(r.BusyInterval))
+	assert.Equal(t,
+		1,
+		len(r.BusyInterval),
+	)
 }

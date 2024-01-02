@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 type httpMessage struct {
@@ -18,7 +19,14 @@ func main() {
 
 	log.Println("Listening:", port)
 
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	server := &http.Server{
+		Addr:              ":" + port,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+
+	log.Fatal(
+		server.ListenAndServe(),
+	)
 }
 
 // handleURL test with:
@@ -98,7 +106,7 @@ func responseString(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json2stream := json.NewEncoder(&shellResponse)
-	json2stream.Encode(&rawResponse)
+	_ = json2stream.Encode(&rawResponse)
 
 	_, _ = w.Write(
 		shellResponse.Bytes(),

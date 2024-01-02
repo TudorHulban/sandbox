@@ -42,7 +42,7 @@ func collectionFetch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("collectionFetch results: ", string(results[:]))
+	fmt.Println("collectionFetch results: ", string(results))
 
 	serveJSON(w, string(results))
 }
@@ -54,5 +54,5 @@ func serveError(w http.ResponseWriter, theError string) {
 func serveJSON(w http.ResponseWriter, content string) {
 	json2stream := json.NewEncoder(w)
 
-	json2stream.Encode(&content)
+	_ = json2stream.Encode(&content)
 }
