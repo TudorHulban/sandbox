@@ -3,31 +3,10 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
-
-type httpMessage struct {
-	Text string `json:"message"`
-}
-
-func main() {
-	http.HandleFunc("/url1", responseText)
-	http.HandleFunc("/url2", responseJSON)
-	http.HandleFunc("/url3", responseString)
-
-	log.Println("Listening:", port)
-
-	server := &http.Server{
-		Addr:              ":" + port,
-		ReadHeaderTimeout: 3 * time.Second,
-	}
-
-	log.Fatal(
-		server.ListenAndServe(),
-	)
-}
 
 // handleURL test with:
 // curl -X POST -H 'Content-Type:
@@ -39,8 +18,7 @@ func responseText(w http.ResponseWriter, r *http.Request) {
 
 	var event httpMessage
 
-	errDecodeEvent := decoder.Decode(&event)
-	if errDecodeEvent != nil {
+	if errDecodeEvent := decoder.Decode(&event); errDecodeEvent != nil {
 		log.Fatal("decode event: ", errDecodeEvent)
 
 		return
@@ -48,9 +26,11 @@ func responseText(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("response text: ", event.Text)
 
-	_, _ = w.Write(
+	if _, errWrite := w.Write(
 		[]byte(event.Text),
-	)
+	); errWrite != nil {
+		fmt.Println("errWrite:", errWrite)
+	}
 }
 
 // handleURL test with:

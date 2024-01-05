@@ -1,0 +1,20 @@
+### Response as text plain
+
+POST http://127.0.0.1:8080/url1 HTTP/1.1
+content-type: application/json
+
+{"message": "hi!"}
+
+### Response as JSON
+
+POST http://127.0.0.1:8080/url2 HTTP/1.1
+content-type: application/json
+
+{"message": "hi!"}
+
+### Response as string
+
+POST http://127.0.0.1:8080/url3 HTTP/1.1
+content-type: application/json
+
+{"message": "hi!"}

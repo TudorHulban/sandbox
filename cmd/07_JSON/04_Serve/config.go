@@ -36,7 +36,7 @@ func NewConfig(noRows int64) *GenConfig {
 		PositiveOnly: true,
 	}
 
-	instance.Configuration[0] = FieldConfig{
+	instance.Configuration[1] = FieldConfig{
 		Name:         "b",
 		Type:         2,
 		Length:       5,

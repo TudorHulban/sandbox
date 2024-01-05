@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    
     <title>Chart</title>
   </head>
   <body>
@@ -19,6 +21,7 @@
         console.log(myJSON.data.labels)
         console.log(myJSON.data.datasets[0].data)
       });
+
       fetch("http://localhost:3000/simple").then((r) => r.json()).then((myJSON) => {
         let ctx = document.getElementById('SimplexDataChart').getContext('2d');
         

@@ -62,7 +62,9 @@ func parse(entries []*entry) []string {
 			stackFolders.push(entry.folderInfo)
 			stackIndents.push(0)
 
-			res = append(res, "mkdir "+stackFolders.String())
+			res = append(res,
+				commandMakeDirectory+space+stackFolders.String(),
+			)
 
 			continue
 		}
@@ -71,7 +73,9 @@ func parse(entries []*entry) []string {
 			stackFolders.push(entry.folderInfo)
 			stackIndents.push(entry.indent)
 
-			res = append(res, "mkdir "+stackFolders.String())
+			res = append(res,
+				commandMakeDirectory+space+stackFolders.String(),
+			)
 
 			continue
 		}
@@ -82,7 +86,9 @@ func parse(entries []*entry) []string {
 			stackFolders.push(entry.folderInfo)
 			stackIndents.push(entry.indent)
 
-			res = append(res, "mkdir "+stackFolders.String())
+			res = append(res,
+				commandMakeDirectory+space+stackFolders.String(),
+			)
 
 			continue
 		}
@@ -101,7 +107,9 @@ func parse(entries []*entry) []string {
 		stackFolders.push(entry.folderInfo)
 		stackIndents.push(entry.indent)
 
-		res = append(res, "mkdir "+stackFolders.String())
+		res = append(res,
+			commandMakeDirectory+space+stackFolders.String(),
+		)
 	}
 
 	return res
