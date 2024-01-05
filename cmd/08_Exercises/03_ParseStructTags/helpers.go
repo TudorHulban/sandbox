@@ -11,12 +11,16 @@ import (
 func getTableName(model any) string {
 	if typeOfModel := reflect.TypeOf(model); typeOfModel.Kind() == reflect.Ptr {
 		return inflection.Plural(
-			strcase.ToSnake(typeOfModel.Elem().Name()),
+			strcase.ToSnake(
+				typeOfModel.Elem().Name(),
+			),
 		)
 	}
 
 	return inflection.Plural(
-		strcase.ToSnake(reflect.TypeOf(model).Name()),
+		strcase.ToSnake(
+			reflect.TypeOf(model).Name(),
+		),
 	)
 }
 
@@ -39,8 +43,8 @@ func getFields(model any) Fields {
 	allowedTypes := getAllowedTypes()
 
 	isAllowedType := func(fieldType string) bool {
-		for _, at := range allowedTypes {
-			if fieldType == at {
+		for _, allowedType := range allowedTypes {
+			if fieldType == allowedType {
 				return true
 			}
 		}
@@ -56,7 +60,9 @@ func getFields(model any) Fields {
 
 	for i := 0; i < val.NumField(); i++ {
 		field := Field{
-			FieldName: strcase.ToSnake(val.Type().Field(i).Name),
+			FieldName: strcase.ToSnake(
+				val.Type().Field(i).Name,
+			),
 		}
 
 		fieldType := val.Type().Field(i).Type.String()
@@ -66,24 +72,27 @@ func getFields(model any) Fields {
 			tags := strings.Split(tag, ",")
 
 			for _, tagS := range tags {
-				s := strings.ToLower(strings.TrimSpace(tagS))
+				lowerCaseTag := strings.ToLower(
+					strings.TrimSpace(tagS),
+				)
 
-				if s == "-" {
+				if lowerCaseTag == "-" {
 					continue
 				}
 
-				if s == "unique" {
+				if lowerCaseTag == "unique" {
 					field.Unique = true
 				}
 
-				if s == "index" {
+				if lowerCaseTag == "index" {
 					field.Index = true
 				}
 
-				ss := strings.Split(s, "type:")
-				if len(ss) > 1 {
-					field.DataType = ss[1]
-					setFieldType = ss[1]
+				splitTag := strings.Split(lowerCaseTag, "type:")
+				if len(splitTag) > 1 {
+					field.DataType = splitTag[1]
+
+					setFieldType = splitTag[1]
 				}
 			}
 		}
@@ -97,6 +106,7 @@ func getFields(model any) Fields {
 		if fieldType == "string" {
 			field.DataType = "text"
 			field.IsNullable = false
+
 			field.Default = "''"
 		}
 

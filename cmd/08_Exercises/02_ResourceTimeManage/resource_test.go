@@ -33,6 +33,7 @@ func TestResourceBasics(t *testing.T) {
 	}
 
 	r := NewResource()
+
 	r.AddActivity(
 		activ1,
 		activ2,
@@ -65,6 +66,7 @@ func TestRemoveTimeFrame(t *testing.T) {
 	}
 
 	r := NewResource()
+
 	r.AddActivity(activ1, activ2)
 
 	r.updateBusyTime()

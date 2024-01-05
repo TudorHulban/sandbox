@@ -13,7 +13,10 @@ func getPairs(occurencesForPair int, slice []int) (int, error) {
 				occurencesForPair)
 	}
 
-	log.Printf("computing number of pairs for %v in pair.", occurencesForPair)
+	log.Printf(
+		"computing number of pairs for %v in pair",
+		occurencesForPair,
+	)
 
 	// defining new map to hold the number of occurrences per each value
 	// key is value, value is number of occurrences
@@ -39,12 +42,19 @@ func getPairs(occurencesForPair int, slice []int) (int, error) {
 	for item, numberOccurences := range data {
 		numberPairs := numberOccurences / occurencesForPair
 
-		log.Printf("item: %d with occurrences: %d and number of pairs: %d\n",
-			item, numberOccurences, numberPairs)
+		log.Printf(
+			"item: %d with occurrences: %d and number of pairs: %d\n",
+			item,
+			numberOccurences,
+			numberPairs,
+		)
 
 		if numberPairs >= 1 {
-			log.Printf("item: %d adding for number of pairs: %d",
-				item, numberPairs)
+			log.Printf(
+				"item: %d adding for number of pairs: %d",
+				item,
+				numberPairs,
+			)
 
 			pairs[item] = numberPairs
 		}
@@ -55,7 +65,11 @@ func getPairs(occurencesForPair int, slice []int) (int, error) {
 	var result int
 
 	for item, numberPairs := range pairs {
-		fmt.Printf("adding for item: %d pairs: %d\n", item, numberPairs)
+		fmt.Printf(
+			"adding for item: %d pairs: %d\n",
+			item,
+			numberPairs,
+		)
 
 		result = result + numberPairs
 	}

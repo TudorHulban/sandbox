@@ -25,6 +25,9 @@ func (t TimeFrame) mergeOverLapping(frameTime TimeFrame) *TimeFrame {
 
 	return &TimeFrame{
 		UnixStartTime: t.UnixStartTime,
-		UnixEndTime:   max(t.UnixEndTime, frameTime.UnixEndTime),
+		UnixEndTime: max(
+			t.UnixEndTime,
+			frameTime.UnixEndTime,
+		),
 	}
 }

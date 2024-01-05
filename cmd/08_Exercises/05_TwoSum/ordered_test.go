@@ -17,8 +17,13 @@ func TestTwoSumOrdered(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.description, func(t *testing.T) {
-			assert.Equal(t, tc.want, twoSumOrdered(tc.input, tc.sumAmount))
-		})
+		t.Run(tc.description,
+			func(t *testing.T) {
+				assert.Equal(t,
+					tc.want,
+					twoSumOrdered(tc.input, tc.sumAmount),
+				)
+			},
+		)
 	}
 }
