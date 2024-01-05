@@ -21,7 +21,11 @@ func main() {
 	)
 	defer cancel()
 
-	request, errReq := http.NewRequest(http.MethodGet, slowURL, nil)
+	request, errReq := http.NewRequest(
+		http.MethodGet,
+		slowURL,
+		nil,
+	)
 	if errReq != nil {
 		log.Fatal(errReq)
 	}

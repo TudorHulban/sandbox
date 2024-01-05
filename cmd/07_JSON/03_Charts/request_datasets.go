@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 
 	"net/http"
 )
@@ -28,27 +28,27 @@ type GenData struct {
 }
 
 func doPost(url string, config *GenConfig) ([][]float64, [][]float64, error) {
-	u, _ := url.ParseRequestURI(url)
-
-	client := &http.Client{}
 	buf := new(bytes.Buffer)
 	json.NewEncoder(buf).Encode(config)
 
-	req, errNew := http.NewRequest("POST", u.String(), buf)
+	req, errNew := http.NewRequest("POST", url, buf)
 	if errNew != nil {
 		return nil, nil, errNew
 	}
+
+	var client http.Client
 
 	res, errDo := client.Do(req)
 	if errDo != nil {
 		return nil, nil, errDo
 	}
-
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+
+	body, err := io.ReadAll(res.Body)
 	//log.Println("body:", string(body))
 
 	var bodyData GenData
+
 	err = json.Unmarshal(body, &bodyData)
 	if err != nil {
 		return nil, nil, err

@@ -14,10 +14,13 @@ func (s *Stack) Push(v int) {
 
 func (s *Stack) Pop() int {
 	if len(*s) > 0 {
-		ret := (*s)[len(*s)-1]
+		result := (*s)[len(*s)-1]
+
 		*s = (*s)[0 : len(*s)-1]
-		return ret
+
+		return result
 	}
+
 	return 0
 }
 
@@ -28,6 +31,7 @@ func getSqDist(p1, p2 []float64) (float64, error) {
 
 	dx := p1[0] - p2[0]
 	dy := p1[1] - p2[1]
+
 	return dx*dx + dy*dy, nil
 }
 
@@ -51,12 +55,14 @@ func getSqSegDist(p, p1, p2 []float64) float64 {
 
 	dx = p[0] - x
 	dy = p[1] - y
+
 	return dx*dx + dy*dy
 }
 
 func simplifyRadialDist(points [][]float64, sqTolerance float64) [][]float64 {
 	prevPoint := points[0]
 	newPoints := [][]float64{prevPoint}
+
 	var point []float64
 
 	for i := 1; i < len(points); i++ {
@@ -69,12 +75,15 @@ func simplifyRadialDist(points [][]float64, sqTolerance float64) [][]float64 {
 
 		if delta > sqTolerance {
 			newPoints = append(newPoints, point)
+
 			prevPoint = point
 		}
 	}
+
 	if !ComparePoints(prevPoint, point) {
 		newPoints = append(newPoints, point)
 	}
+
 	return newPoints
 }
 
@@ -94,6 +103,7 @@ func simplifyDouglasPeucker(points [][]float64, sqTolerance float64) [][]float64
 
 	for last > 0 {
 		maxSqDist = 0
+
 		for i = first + 1; i < last; i++ {
 			sqDist = getSqSegDist(points[i], points[first], points[last])
 			if sqDist > maxSqDist {
@@ -101,13 +111,16 @@ func simplifyDouglasPeucker(points [][]float64, sqTolerance float64) [][]float64
 				maxSqDist = sqDist
 			}
 		}
+
 		if maxSqDist > sqTolerance {
 			markers[index] = 1
+
 			stack.Push(first)
 			stack.Push(index)
 			stack.Push(index)
 			stack.Push(last)
 		}
+
 		last = stack.Pop()
 		first = stack.Pop()
 	}
@@ -117,6 +130,7 @@ func simplifyDouglasPeucker(points [][]float64, sqTolerance float64) [][]float64
 			newPoints = append(newPoints, points[i])
 		}
 	}
+
 	return newPoints
 }
 
@@ -133,22 +147,25 @@ func checkArrIndex(arr []int, index int) bool {
 }
 
 func Simplify(points [][]float64, tolerance float64, highestQuality bool) [][]float64 {
-	if len(points) <= 1 {
-		return points
+	if len(points) == 0 {
+		return nil
 	}
+
 	sqTolerance := tolerance * tolerance
-	var _points [][]float64
+
+	var result [][]float64
 
 	if highestQuality {
-		_points = points
+		result = points
 	} else {
-		_points = simplifyRadialDist(points, sqTolerance)
+		result = simplifyRadialDist(points, sqTolerance)
 	}
-	_points = simplifyDouglasPeucker(_points, sqTolerance)
-	return _points
+
+	result = simplifyDouglasPeucker(result, sqTolerance)
+
+	return result
 }
 
-// -------------------------------
 func CompareSlices(p1, p2 [][]float64) bool {
 	if len(p1) == len(p2) {
 		for i := range p1 {
@@ -156,16 +173,17 @@ func CompareSlices(p1, p2 [][]float64) bool {
 				return false
 			}
 		}
+
 		return true
-	} else {
-		return false
 	}
+
+	return false
 }
 
 func ComparePoints(p1, p2 []float64) bool {
 	if p1[0] == p2[0] && p1[1] == p2[1] {
 		return true
-	} else {
-		return false
 	}
+
+	return false
 }
