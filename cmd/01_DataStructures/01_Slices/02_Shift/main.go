@@ -3,7 +3,10 @@ package main
 import "fmt"
 
 func shiftRight(slice *[]int) {
-	*slice = append((*slice)[len(*slice)-1:], (*slice)[:len(*slice)-1]...)
+	*slice = append(
+		(*slice)[len(*slice)-1:],
+		(*slice)[:len(*slice)-1]...,
+	)
 }
 
 func main() {

@@ -3,13 +3,13 @@ package main
 import "errors"
 
 func inSequence(data, sequence []int) error {
-	if len(data) < len(sequence) || len(sequence) == 0 {
+	if len(sequence) == 0 || len(data) < len(sequence) {
 		return errInputValidation
 	}
 
 	sequenceLength := len(sequence)
 
-	for i, _ := range data {
+	for i := range data {
 		if i%sequenceLength == 0 {
 			for ix, pos := range sequence {
 				if i+ix > len(data)-1 {
@@ -22,7 +22,6 @@ func inSequence(data, sequence []int) error {
 
 				return errors.New("not in sequence")
 			}
-
 		}
 	}
 
