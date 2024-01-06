@@ -2,18 +2,31 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
-	log.Println("listening on http://localhost:9090/index.html")
-
-	err := http.ListenAndServe(
-		":9090",
-		http.FileServer(http.Dir("../../assets")),
+	listeningOn := fmt.Sprintf(
+		"localhost:%d",
+		listeningPort,
 	)
-	if err != nil {
+
+	fmt.Printf(
+		"listening on http://%s/index.html\n",
+		listeningOn,
+	)
+
+	server := http.Server{
+		Addr:              listeningOn,
+		ReadHeaderTimeout: 3 * time.Second,
+
+		Handler: http.FileServer(
+			http.Dir("../../assets"),
+		),
+	}
+
+	if err := server.ListenAndServe(); err != nil {
 		fmt.Println("Failed to start server", err)
 
 		return
