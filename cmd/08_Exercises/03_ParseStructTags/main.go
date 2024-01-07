@@ -5,8 +5,8 @@ import (
 )
 
 type User struct {
-	name string `hera:"fieldName1"`
-	age  int    `hera:"fieldName2"`
+	Name string `hera:"fieldName1"`
+	Age  int    `hera:"fieldName2"`
 }
 
 func main() {
@@ -15,6 +15,10 @@ func main() {
 	fields := getFields(&User{})
 
 	for ix, field := range fields {
-		fmt.Printf("Field %d: has field name: %v.\n", ix, field.FieldName)
+		fmt.Printf(
+			"field %d: has field name: %v.\n",
+			ix,
+			field.FieldName,
+		)
 	}
 }

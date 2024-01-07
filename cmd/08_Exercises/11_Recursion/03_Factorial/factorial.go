@@ -1,14 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
-func main() {
-	fmt.Println(factorialImperative(3))
-	fmt.Println(factorialRecursive(3))
-}
-
 func factorialImperative(n int) int {
 	result := 1
 
