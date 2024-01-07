@@ -41,3 +41,15 @@ func TestLinkedList_Nil(t *testing.T) {
 		number,
 	)
 }
+
+func TestNewLinkedListFromNumber(t *testing.T) {
+	ll := NewLinkedListFromNumber(1)
+	require.NotNil(t, ll)
+
+	listNumber, errNumber := ll.GetNumber()
+	require.NoError(t, errNumber)
+	require.Equal(t,
+		1,
+		listNumber,
+	)
+}

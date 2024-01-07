@@ -8,18 +8,18 @@ type MapString struct {
 	Value int
 }
 
-func extractOccurences(letters map[letter]occurences) []MapString {
+func extractOccurences(letters map[letter]occurrences) []MapString {
 	if len(letters) == 0 {
 		return nil
 	}
 
-	var result []MapString
+	result := make([]MapString, 0)
 
-	for letter, occurences := range letters {
+	for letter, occurrences := range letters {
 		result = append(result,
 			MapString{
 				Key:   string(letter),
-				Value: int(occurences),
+				Value: int(occurrences),
 			},
 		)
 	}

@@ -24,7 +24,7 @@ func (s *state) isValid() bool {
 func (s state) String() string {
 	var res []string
 
-	allign := func(content string) string {
+	align := func(content string) string {
 		if len(content) == s.numDisks {
 			return content
 		}
@@ -44,7 +44,7 @@ func (s state) String() string {
 
 	for i := s.numDisks - 1; i >= 0; i-- {
 		res = append(res,
-			allign(s.rodFrom.getGraphRepresent(i))+
+			align(s.rodFrom.getGraphRepresent(i))+
 				"|"+
 				s.rodTo.getGraphRepresent(i)+
 				"|"+

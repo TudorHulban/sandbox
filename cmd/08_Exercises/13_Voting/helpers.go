@@ -1,10 +1,10 @@
 package main
 
 type letter string
-type occurences int
+type occurrences int
 
-func identifyLetters(word string) map[letter]occurences {
-	result := make(map[letter]occurences)
+func identifyLetters(word string) map[letter]occurrences {
+	result := make(map[letter]occurrences)
 
 	for i := 0; i < len(word); i++ {
 		element := word[i : i+1]

@@ -8,9 +8,9 @@ import (
 type stack []int
 
 func (s *stack) push(element int) {
-	new := []int{element}
+	newStack := []int{element}
 
-	*s = append(new,
+	*s = append(newStack,
 		*s...,
 	)
 }

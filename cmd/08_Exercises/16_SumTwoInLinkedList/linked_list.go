@@ -6,8 +6,9 @@ import (
 )
 
 type Node struct {
+	Next *Node
+
 	Value int
-	Next  *Node
 }
 
 type LinkedList struct {

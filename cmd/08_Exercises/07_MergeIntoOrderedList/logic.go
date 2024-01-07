@@ -11,7 +11,7 @@ func orderWStandardLibSort(a1, a2 []int) []int {
 }
 
 func orderWComparison(slice1, slice2 []int) []int {
-	var result []int
+	result := make([]int, 0)
 
 	var indexSlice2 int
 

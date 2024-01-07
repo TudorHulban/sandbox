@@ -32,7 +32,8 @@ func TestShiftRight(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.description,
 			func(t *testing.T) {
-				shiftRight(&tc.input)
+				buf := tc.input
+				shiftRight(&buf)
 
 				require.Equal(t, tc.want, tc.input)
 			},
