@@ -7,7 +7,9 @@ import (
 )
 
 func TestString(t *testing.T) {
-	s := orderMapString(identifyLetters("saa"))
+	s := extractOccurences(
+		identifyLetters("saa"),
+	)
 
 	require.Len(t, s, 2)
 	require.Equal(t, s[0].Value, 1)
