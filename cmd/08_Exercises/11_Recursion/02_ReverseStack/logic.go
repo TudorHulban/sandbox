@@ -40,17 +40,17 @@ func (s *stack) pop() int {
 }
 
 func (s *stack) reverse() {
-	curr := s.pop()
+	frontElement := s.pop()
 
 	if len(*s) == 0 {
-		s.push(curr)
+		s.push(frontElement)
 
 		return
 	}
 
 	s.reverse()
 
-	*s = append(*s, curr)
+	*s = append(*s, frontElement)
 }
 
 func (s stack) String() string {
