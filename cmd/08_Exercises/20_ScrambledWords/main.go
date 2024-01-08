@@ -4,8 +4,6 @@ import (
 	"fmt"
 )
 
-// Find first occurence where word is contained in scrambled strings.
-
 func main() {
 	words := []string{"cat", "baby", "dog", "bird", "car"}
 	scrambled1 := "bbabylkkjabdog"
