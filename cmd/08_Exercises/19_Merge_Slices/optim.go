@@ -1,18 +1,11 @@
 package main
 
-func high(a []int) int {
-	return a[len(a)-1]
-}
-
-func low(a []int) int {
-	return a[0]
-}
-
 func mergeOverlapping(a1, a2 []int) []int {
 	var res []int
 
 	var posA1 int
 	var posA2 int
+
 	for posA1 < len(a1) && posA2 < len(a2) {
 		if a1[posA1] > a2[posA2] {
 			res = append(res, a2[posA2])
