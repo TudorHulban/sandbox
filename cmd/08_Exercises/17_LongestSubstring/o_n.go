@@ -25,7 +25,8 @@ func longestWord(word1, word2 word) word {
 }
 
 func parse(text string) string {
-	var currentlongest, previousLongest word
+	currentlongest := word(make([]rune, 0))
+	previousLongest := word(make([]rune, 0))
 
 	for _, element := range text {
 		if currentlongest.hasElement(element) {
