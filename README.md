@@ -478,6 +478,7 @@ https://asanchez.dev/blog/amazon-s3-v2-golang/
 ```
 ## Generics <a name="generics"></a> ([Up](#top))
 ```html
+https://gosamples.dev/generics-cheatsheet/
 https://planetscale.com/blog/generics-can-make-your-go-code-slower
 https://eli.thegreenplace.net/2022/faster-sorting-with-go-generics
 ```

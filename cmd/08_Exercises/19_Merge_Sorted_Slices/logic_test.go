@@ -85,19 +85,19 @@ func TestParseBruteUInts(t *testing.T) {
 		},
 	}
 
-	for _, tt := range testCases {
-		t.Run(tt.description,
+	for _, tc := range testCases {
+		t.Run(tc.description,
 			func(t *testing.T) {
 				ordered := parseBrute(
-					tt.a1,
-					tt.a2,
+					tc.a1,
+					tc.a2,
 				)
 
 				assert.Equal(t,
-					tt.want,
+					tc.want,
 					ordered,
 
-					tt.description,
+					tc.description,
 				)
 				assert.True(t,
 					slices.IsSorted(ordered),

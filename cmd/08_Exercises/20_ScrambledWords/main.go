@@ -9,55 +9,6 @@ func main() {
 	scrambled1 := "bbabylkkjabdog"
 	scrambled2 := "xxx"
 
-	fmt.Println(result(scrambled1, words))
-	fmt.Println(result(scrambled2, words))
-}
-
-func decompose(s string) map[string]int {
-	res := make(map[string]int)
-
-	for i := 0; i < len(s); i++ {
-		_, exists := res[s[i:i+1]]
-
-		if exists {
-			res[s[i:i+1]] = res[s[i:i+1]] + 1
-			continue
-		}
-
-		res[s[i:i+1]] = 1
-	}
-
-	return res
-}
-
-func match(scrambled, pin string) bool {
-	d1 := decompose(scrambled)
-	d2 := decompose(pin)
-
-	// unique number of letters in pin
-	lettersInPin := len(d2)
-
-	found := 0
-	for k, v := range d2 {
-		_, exists := d1[k]
-		if exists {
-			if v > d1[k] {
-				return false
-			}
-
-			found++
-		}
-	}
-
-	return found == lettersInPin
-}
-
-func result(scrambled string, words []string) string {
-	for _, v := range words {
-		if match(scrambled, v) {
-			return v
-		}
-	}
-
-	return "no match"
+	fmt.Println("result:", parse(scrambled1, words...))
+	fmt.Println("result:", parse(scrambled2, words...))
 }
