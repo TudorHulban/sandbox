@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParse(t *testing.T) {
+func TestParseArabicToRoman(t *testing.T) {
 	testCases := []struct {
 		description string
 		input       uint
@@ -60,11 +60,11 @@ func TestParse(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		representation := parse(testCase.input)
+		roman := arabicToRoman(testCase.input)
 
 		assert.Equal(t,
 			testCase.want,
-			representation,
+			roman,
 
 			testCase.description,
 		)

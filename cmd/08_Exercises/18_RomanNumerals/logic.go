@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func parse(number uint) string {
+func arabicToRoman(number uint) string {
 	var result []string
 
 	buffer := number
@@ -26,4 +26,15 @@ func parse(number uint) string {
 	}
 
 	return strings.Join(result, "")
+}
+
+func romanToArabic(number string) (int, error) {
+	var result int
+
+	for pos := range number {
+
+	}
+
+	return result,
+		nil
 }
