@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -18,7 +19,7 @@ func arabicToRoman(number uint) string {
 
 		for ix := 0; ix < int(remainder); ix++ {
 			result = append(result,
-				conversionMap[int(conversionValues[i])],
+				mapArabicToRoman[int(conversionValues[i])],
 			)
 		}
 
@@ -31,8 +32,34 @@ func arabicToRoman(number uint) string {
 func romanToArabic(number string) (int, error) {
 	var result int
 
-	for pos := range number {
+	for pos := 0; pos < len(number); pos++ {
+		if pos < len(number)-1 {
+			arabic2Pos, exists2Pos := mapRomanToArabic[number[pos:pos+2]]
+			if exists2Pos {
+				result = result + int(arabic2Pos)
 
+				if pos == len(number)-2 {
+					break
+				}
+
+				pos++
+
+				continue
+			}
+		}
+
+		arabic1Pos, exists1Pos := mapRomanToArabic[number[pos:pos+1]]
+		if exists1Pos {
+			result = result + int(arabic1Pos)
+
+			continue
+		}
+
+		return 0,
+			fmt.Errorf(
+				"not found in conversion table: %s",
+				number[pos:pos+1],
+			)
 	}
 
 	return result,
