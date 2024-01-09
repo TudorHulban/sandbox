@@ -110,6 +110,17 @@ func TestRomanToArabic(t *testing.T) {
 			},
 		},
 		{
+			"998",
+			"CMXCVIII",
+			func(result int, err error) {
+				require.NoError(t, err)
+				require.Equal(t,
+					998,
+					result,
+				)
+			},
+		},
+		{
 			"1111",
 			"MCXI",
 			func(result int, err error) {
