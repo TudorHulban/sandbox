@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSliceIncluded(t *testing.T) {
+func TestSliceIncludesStrings(t *testing.T) {
 	testCases := []struct {
 		description string
 		shell       []string
@@ -41,6 +41,45 @@ func TestSliceIncluded(t *testing.T) {
 			"5. shell equals includes",
 			[]string{"a"},
 			[]string{"a"},
+			true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description,
+			func(t *testing.T) {
+				require.Equal(t,
+					tc.want,
+					sliceIncluded(tc.shell, tc.includes),
+				)
+			},
+		)
+	}
+}
+
+func TestSliceIncludesInt(t *testing.T) {
+	testCases := []struct {
+		description string
+		shell       []int
+		includes    []int
+		want        bool
+	}{
+		{
+			"1. errors - empty shell",
+			nil,
+			[]int{1},
+			false,
+		},
+		{
+			"2. shell contains includes",
+			[]int{1, 2},
+			[]int{1},
+			true,
+		},
+		{
+			"5. shell equals includes",
+			[]int{1},
+			[]int{1},
 			true,
 		},
 	}

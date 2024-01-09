@@ -1,7 +1,7 @@
 package main
 
-func mapStrings(slice []string) map[string]int {
-	result := make(map[string]int)
+func mapGeneric[T string | int](slice []T) map[T]int {
+	result := make(map[T]int)
 
 	for _, word := range slice {
 		if _, exists := result[word]; exists {
@@ -16,7 +16,7 @@ func mapStrings(slice []string) map[string]int {
 	return result
 }
 
-func mapsIncluded(shell, includes map[string]int) bool {
+func mapsIncluded[T string | int](shell, includes map[T]int) bool {
 	if len(shell) < len(includes) {
 		return false
 	}
@@ -34,9 +34,9 @@ func mapsIncluded(shell, includes map[string]int) bool {
 	return true
 }
 
-func sliceIncluded(slice, includes []string) bool {
+func sliceIncluded[T string | int](slice, includes []T) bool {
 	return mapsIncluded(
-		mapStrings(slice),
-		mapStrings(includes),
+		mapGeneric(slice),
+		mapGeneric(includes),
 	)
 }
