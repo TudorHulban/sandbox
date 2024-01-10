@@ -28,7 +28,7 @@ func TestMultiply(t *testing.T) {
 			},
 		},
 		{
-			"0",
+			"2. zero x zero",
 			number("0"),
 			number("0"),
 			func(result int, errTest error) {
@@ -37,7 +37,7 @@ func TestMultiply(t *testing.T) {
 			},
 		},
 		{
-			"1",
+			"3. zero x one",
 			number("0"),
 			number("1"),
 			func(resTest int, errTest error) {
@@ -46,12 +46,21 @@ func TestMultiply(t *testing.T) {
 			},
 		},
 		{
-			"2",
+			"4. valid multiplication",
 			number("1"),
 			number("2"),
 			func(resTest int, errTest error) {
 				require.NoError(t, errTest)
 				require.Equal(t, 2, resTest)
+			},
+		},
+		{
+			"5. multi digit numbers",
+			number("13"),
+			number("20"),
+			func(resTest int, errTest error) {
+				require.NoError(t, errTest)
+				require.Equal(t, 260, resTest)
 			},
 		},
 	}

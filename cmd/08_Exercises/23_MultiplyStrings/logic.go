@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"strconv"
 
 	"github.com/TudorHulban/GolangSandbox/apperrors"
@@ -22,22 +23,14 @@ func (n number) IsNumber() error {
 }
 
 func conversion(s string) int {
-	// TODO: add input validation by comparing to rune of zero
+	if len(s) == 1 {
+		return int([]rune(s)[0]) - int(rune('0'))
+	}
 
 	var sum int
 
-	for i := len(s) - 1; i >= 0; i-- {
-		var buf int
-
-		if i == 0 {
-			buf = int(rune(s[i]) - rune('0'))
-		}
-
-		if i > 0 {
-			buf = i * 10 * int(rune(s[i])-rune('0'))
-		}
-
-		sum = sum + buf
+	for power, pos := len(s), 0; pos < len(s); power, pos = power-1, pos+1 {
+		sum = sum + int(math.Pow10(power-1))*int([]rune(s[pos : pos+1])[0]-rune('0'))
 	}
 
 	return sum
