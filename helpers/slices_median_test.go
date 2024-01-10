@@ -1,8 +1,6 @@
-package main
+package helpers
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestMedian(t *testing.T) {
 	cases := []struct {
@@ -38,7 +36,7 @@ func TestMedian(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		m := median(tc.input)
+		m := Median(tc.input)
 
 		if m != tc.expected {
 			t.Log(tc.description, m)

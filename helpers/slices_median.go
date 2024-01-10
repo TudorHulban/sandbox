@@ -1,6 +1,8 @@
-package main
+package helpers
 
-func median(slice []int) float64 {
+import "golang.org/x/exp/constraints"
+
+func Median[T constraints.Integer](slice []T) float64 {
 	if len(slice)%2 == 0 {
 		middle := len(slice)/2 - 1
 
