@@ -10,3 +10,11 @@ func Closer(from1, number, from2 uint) (uint, uint) {
 
 	return from1, diffFrom1
 }
+
+func Max[T uint | int](number1, number2 T) T {
+	if number1 > number2 {
+		return number1
+	}
+
+	return number2
+}

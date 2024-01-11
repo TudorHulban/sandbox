@@ -57,7 +57,16 @@ func TestNoWords(t *testing.T) {
 			"a b ",
 			2,
 		},
-		{"three 1", "a bc d", 3},
+		{
+			"10. two words with separator",
+			"a   b",
+			2,
+		},
+		{
+			"11. three words",
+			"a bc d",
+			3,
+		},
 	}
 
 	for _, tc := range testCases {
