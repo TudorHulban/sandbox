@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func main() {}
 
 func isSeparator(letter rune) bool {
@@ -10,21 +8,18 @@ func isSeparator(letter rune) bool {
 
 func noWords(text string) int {
 	var wordStarted bool
-	var res int
 
-	wordStart := true
+	var result int
 
 	for _, letter := range text {
 		if isSeparator(letter) {
 			if wordStarted {
-				res++
+				result++
 
-				wordStart, wordStarted = false, false
+				wordStarted = false
 
 				continue
 			}
-
-			wordStart = true
 
 			continue
 		}
@@ -32,11 +27,9 @@ func noWords(text string) int {
 		wordStarted = true
 	}
 
-	fmt.Println(wordStart)
-
 	if wordStarted {
-		return res + 1
+		return result + 1
 	}
 
-	return res
+	return result
 }
