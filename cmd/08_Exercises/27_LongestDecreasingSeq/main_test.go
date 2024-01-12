@@ -62,7 +62,10 @@ func TestLongestDecreaseValue(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.description,
 			func(t *testing.T) {
-				assert.Equal(t, tc.want, parse(tc.input))
+				assert.Equal(t,
+					tc.want,
+					parse(tc.input),
+				)
 			},
 		)
 	}
