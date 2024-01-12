@@ -6,3 +6,6 @@ package main
 // b. What is the complexity of the solution you provided?
 
 // example: []int{2,0,1,1,0,0,2,2}
+
+// see:
+// https://favtutor.com/blogs/dutch-national-flag-algorithm
