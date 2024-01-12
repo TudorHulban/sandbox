@@ -6,7 +6,9 @@ import (
 
 func parse(slice []int) int {
 	var previousNumber int
+
 	var previousRange int
+
 	var currentRange int
 
 	for ix, number := range slice {

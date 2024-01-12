@@ -3,11 +3,11 @@ package apperrors
 import "fmt"
 
 type ErrorValidation struct {
-	Issue error
+	Issue      error
+	Resolution error
 
 	CallerInitial     string
 	CallersSubsequent callers
-	Resolution        error
 }
 
 func (err ErrorValidation) Error() string {
