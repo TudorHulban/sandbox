@@ -5,25 +5,23 @@ import "fmt"
 type ErrorValidation struct {
 	Issue error
 
-	Caller     string
-	Resolution string
+	CallerInitial     string
+	CallersSubsequent callers
+	Resolution        error
 }
 
 func (err ErrorValidation) Error() string {
 	return fmt.Sprintf(
-		"caller: %s, issue: %s, resolution: %s",
-		err.Caller,
+		"subsequentCallers: %s,\ninitialCaller: %s, issue: %s, resolution: %s",
+		err.CallersSubsequent.String(),
+		err.CallerInitial,
 		err.Issue.Error(),
 		err.Resolution,
 	)
 }
 
-func (err *ErrorValidation) AddResolution(reso error) {
-	err.Resolution = reso.Error()
-}
-
-func (err *ErrorValidation) OverwriteCaller(newCaller string) {
-	err.Caller = newCaller
+func (err *ErrorValidation) AddSubsequenCaller(callerName string) {
+	err.CallersSubsequent = append(err.CallersSubsequent, callerName)
 }
 
 type ErrorInvalidInput struct {

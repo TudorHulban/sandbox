@@ -14,8 +14,8 @@ func (n number) IsNumber() error {
 
 	if errConv != nil {
 		return apperrors.ErrorValidation{
-			Caller: "IsNumber",
-			Issue:  errConv,
+			CallerInitial: "IsNumber",
+			Issue:         errConv,
 		}
 	}
 
@@ -39,12 +39,10 @@ func conversion(s string) int {
 func multiply(a, b number) (int, error) {
 	if errValidation := a.IsNumber(); errValidation != nil {
 		errResult := errValidation.(apperrors.ErrorValidation)
-		errResult.OverwriteCaller("multiply")
-		errResult.AddResolution(
-			apperrors.ErrorInvalidInput{
-				InputName: "a",
-			},
-		)
+		errResult.AddSubsequenCaller("multiply")
+		errResult.Resolution = apperrors.ErrorInvalidInput{
+			InputName: "a",
+		}
 
 		return 0,
 			errResult
@@ -52,12 +50,10 @@ func multiply(a, b number) (int, error) {
 
 	if errValidation := b.IsNumber(); errValidation != nil {
 		errResult := errValidation.(apperrors.ErrorValidation)
-		errResult.OverwriteCaller("multiply")
-		errResult.AddResolution(
-			apperrors.ErrorInvalidInput{
-				InputName: "a",
-			},
-		)
+		errResult.AddSubsequenCaller("multiply")
+		errResult.Resolution = apperrors.ErrorInvalidInput{
+			InputName: "a",
+		}
 
 		return 0,
 			errResult
