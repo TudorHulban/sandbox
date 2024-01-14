@@ -1,35 +1,13 @@
 package main
 
-func main() {}
+import "fmt"
 
-func isSeparator(letter rune) bool {
-	return string(letter) == " "
-}
+func main() {
+	test := "The quick brown fox jumps over the lazy dog."
 
-func noWords(text string) int {
-	var wordStarted bool
-
-	var result int
-
-	for _, letter := range text {
-		if isSeparator(letter) {
-			if wordStarted {
-				result++
-
-				wordStarted = false
-
-				continue
-			}
-
-			continue
-		}
-
-		wordStarted = true
-	}
-
-	if wordStarted {
-		return result + 1
-	}
-
-	return result
+	fmt.Printf(
+		"number words for: %s\nis %d.\n",
+		test,
+		noWords(test),
+	)
 }
