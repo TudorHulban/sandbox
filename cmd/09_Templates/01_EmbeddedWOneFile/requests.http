@@ -1,0 +1,6 @@
+###
+GET http://localhost:3000 HTTP/1.1
+content-type: text/html
+
+###
+GET http://localhost:3000 HTTP/1.1
