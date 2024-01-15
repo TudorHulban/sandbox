@@ -1,0 +1,15 @@
+###
+GET http://localhost:3000 HTTP/1.1
+authorization: 1234
+content-type: text/html
+
+###
+GET http://localhost:3000 HTTP/1.1
+authorization: 2345
+content-type: text/html
+
+
+###
+GET http://localhost:3000 HTTP/1.1
+authorization: 4567
+content-type: text/html
