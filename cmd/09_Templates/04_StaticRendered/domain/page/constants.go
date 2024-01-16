@@ -30,7 +30,7 @@ const (
 
 	FOOTER = `
 <footer>
-<p>Copyright 2020 TARA Web</p>
+<p>Copyright 2020 - 2024 TARA Web</p>
 <p>Contact information: <a href="mailto:admin@taraweb.eu">admin@taraweb.eu</a>.</p>
 </footer>
 `

@@ -4,9 +4,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/TudorHulban/GoTemplating/cmd/config"
-	"github.com/TudorHulban/GoTemplating/internal/blog/blogfile"
-	"github.com/TudorHulban/GoTemplating/pkg/httpserve"
+	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/cmd/config"
+	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/blog/blogfile"
 	"github.com/TudorHulban/log"
 )
 

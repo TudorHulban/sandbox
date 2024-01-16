@@ -1,4 +1,4 @@
-package config
+package app
 
 import (
 	"os"
@@ -7,32 +7,33 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Option func(cfg *AppConfiguration) error
+type Option func(cfg *ConfigurationApp) error
 
-func defaultConfiguration(options ...Option) (*AppConfiguration, error) {
+func defaultConfiguration(options ...Option) (*ConfigurationApp, error) {
 	executableFolder, err := os.Getwd()
 	if err != nil {
-		return nil, errors.WithMessage(err, "issues when creating default configuration")
+		return nil,
+			errors.WithMessage(err, "issues when creating default configuration")
 	}
 
 	var renderToFolder string
 
-	if defaultArticlesRenderedFolder[:1] != "/" {
-		renderToFolder = executableFolder + "/" + defaultArticlesRenderedFolder
+	if _defaultArticlesRenderedFolder[:1] != "/" {
+		renderToFolder = executableFolder + "/" + _defaultArticlesRenderedFolder
 	} else {
-		renderToFolder = executableFolder + defaultArticlesRenderedFolder
+		renderToFolder = executableFolder + _defaultArticlesRenderedFolder
 	}
 
-	result := &AppConfiguration{
+	result := &ConfigurationApp{
 		SiteInfo: SiteInfo{
-			ListeningPort:          defaultListeningPort,
-			ArticlesRAWFolder:      defaultArticlesRAWFolder,
+			ListeningPort:          _defaultListeningPort,
+			ArticlesRAWFolder:      _defaultArticlesRAWFolder,
 			ArticlesRenderToFolder: renderToFolder,
 		},
 
-		AppConfigFile: defaultAppConfigurationFileName,
+		AppConfigFile: _defaultAppConfigurationFileName,
 
-		HTMLPageTemplates: HTMLPageTemplates{
+		HTMLPageTemplate: HTMLPageTemplate{
 			ContainingFolder: ".." + executableFolder + "/static/assets",
 			PageShell:        "01_page_shell.gohtml",
 			Head:             "02_head.gohtml",
@@ -55,5 +56,7 @@ func defaultConfiguration(options ...Option) (*AppConfiguration, error) {
 		}
 	}
 
-	return result, saveConfiguration(result)
+	result.SaveConfiguration(os.Stdout) // TODO: save to file
+
+	return result, nil
 }

@@ -9,21 +9,20 @@ import (
 )
 
 type Cfg struct {
-	ListenPort         int
 	StaticAssetsFolder string
 
 	fiber.Config
+
+	ListenPort int
 }
 
 type HTTPSServer struct {
-	cfg Cfg
+	cfg *Cfg
 
 	server *fiber.App
 }
 
-func NewHTTPServer(cfg Cfg) (*HTTPSServer, error) {
-	// TODO: validate configuration
-
+func NewHTTPServer(cfg *Cfg) (*HTTPSServer, error) {
 	result := HTTPSServer{
 		cfg:    cfg,
 		server: fiber.New(cfg.Config),

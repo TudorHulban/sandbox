@@ -1,10 +1,14 @@
 # GoTemplating
+
 ## Benchmark Results
-```
+
+```sh
 hey -n 1500 http://localhost:8080/
 ```
+
 ### With Gin
-```
+
+```sh
 Summary:
   Total:	0.0481 secs
   Slowest:	0.0082 secs
@@ -15,8 +19,10 @@ Summary:
   Total data:	418500 bytes
   Size/request:	279 bytes
 ```
+
 With must:
-```
+
+```sh
 Summary:
   Total:	0.0281 secs
   Slowest:	0.0080 secs
@@ -29,6 +35,7 @@ Summary:
 ```
 
 ## Resources
-```
+
+```html
 https://www.calhoun.io/intro-to-templates/
 ```

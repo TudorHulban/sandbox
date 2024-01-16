@@ -3,10 +3,12 @@ module github.com/TudorHulban/GolangSandbox
 go 1.20
 
 require (
+	github.com/TudorHulban/log v0.0.0-20220417102515-4df74e30f0a0
 	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/gorilla/mux v1.8.1
 	github.com/iancoleman/strcase v0.3.0
 	github.com/jinzhu/inflection v1.0.0
+	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.2
 	github.com/tsenart/vegeta v12.7.0+incompatible
 	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc
@@ -27,7 +29,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/streadway/quantile v0.0.0-20220407130108-4246515d968d // indirect

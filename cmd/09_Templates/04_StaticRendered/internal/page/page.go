@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/TudorHulban/GoTemplating/internal/article"
+	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/article"
 	"github.com/TudorHulban/log"
 )
 
@@ -98,12 +98,10 @@ func (p *Page) RenderArticle(a article.Article, renderToFolder string) error {
 	f, errCreate := os.Create(toPath)
 	if errCreate != nil {
 		p.l.Warnf("error creating file into which to render: %s", errCreate.Error())
+
 		return errCreate
 	}
 	defer f.Close()
-
-	// p.l.Debug("page HTML:")
-	// p.l.Debug(p.GetString())
 
 	if errExec := t.Execute(f, a); errExec != nil {
 		p.l.Warnf("error parsing template: %s", errExec.Error())

@@ -1,6 +1,5 @@
 package products
 
-// Article model concentrates state and methods for interacting with an article.
 type Product struct {
 	Quantity       uint8  `json:"quantity"`
 	PriceCents     uint8  `json:"pricecents"`

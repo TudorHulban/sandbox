@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
+	"os"
+
+	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/cmd/config"
+	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/article"
+	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/blog"
+	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/page"
 	"github.com/TudorHulban/log"
 
-	"github.com/TudorHulban/GoTemplating/cmd/config"
-	"github.com/TudorHulban/GoTemplating/internal/article"
-	"github.com/TudorHulban/GoTemplating/internal/blog"
-	"github.com/TudorHulban/GoTemplating/internal/page"
 	"github.com/pkg/errors"
 )
 
@@ -82,7 +84,7 @@ func NewBlogFromFiles(cfg *config.AppConfiguration, importFiles ...string) (blog
 
 // loadArticle Loads article from file, performs article validation.
 func (b *Blog) loadArticle(loadFrom string) (*article.Article, error) {
-	data, errRead := ioutil.ReadFile(loadFrom)
+	data, errRead := os.ReadFile(loadFrom)
 	if errRead != nil {
 		return nil, errors.WithMessagef(errRead, "issues when loading blog article in file %s", loadFrom)
 	}
@@ -129,7 +131,7 @@ func (b *Blog) GetArticle(code string) (*article.Article, error) {
 
 // RenderArticles Main method of blog. Part of exposed interface.
 func (b *Blog) RenderArticles() error {
-	p, errNew := page.NewPage(b.l, page.PageArticle())
+	p, errNew := page.NewPage(page.PageArticle())
 	if errNew != nil {
 		return errors.WithMessage(errNew, "error creating article page")
 	}
