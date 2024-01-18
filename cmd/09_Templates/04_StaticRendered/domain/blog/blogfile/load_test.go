@@ -14,7 +14,7 @@ import (
 // test save articles
 
 func TestBlogArticles(t *testing.T) {
-	b, err := NewBlogFromArticles(article.DefaultArticles()...)
+	b, err := NewBlog(article.DefaultArticles()...)
 	require.Nil(t, err)
 
 	require.Nil(t, b.(*Blog).saveBlogArticles())
@@ -25,7 +25,7 @@ func TestBlogFiles(t *testing.T) {
 	files := make([]string, len(article.DefaultArticles()))
 
 	for i, art := range article.DefaultArticles() {
-		files[i] = art.SaveToFile
+		files[i] = art.SaveToFilePath
 	}
 
 	_, err := NewBlogFromFiles(files...)
