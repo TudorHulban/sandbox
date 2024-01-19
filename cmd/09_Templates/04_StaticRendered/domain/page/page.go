@@ -70,11 +70,11 @@ func (p *Page) GetString() string {
 	return strings.Join(p.GetHTML(), "\n")
 }
 
-func (p *Page) RenderArticle(a article.Article, renderToFolder string) error {
-	renderToFolder = strings.Trim(renderToFolder, " ")
+func (p *Page) RenderArticle(art *article.Article, toFolder string) error {
+	toFolder = strings.Trim(toFolder, " ")
 
-	if len(renderToFolder) == 0 {
-		return errors.New("folder where to render articles missing")
+	if len(toFolder) == 0 {
+		return errors.New("passed folder is nil")
 	}
 
 	t, errParse := template.New("").Parse(p.GetString())
@@ -82,7 +82,7 @@ func (p *Page) RenderArticle(a article.Article, renderToFolder string) error {
 		return errParse
 	}
 
-	toPath := renderToFolder + "/" + strings.ToLower(a.CODE) + ".html"
+	toPath := toFolder + "/" + strings.ToLower(art.CODE) + ".html"
 
 	f, errCreate := os.Create(toPath)
 	if errCreate != nil {
@@ -90,7 +90,7 @@ func (p *Page) RenderArticle(a article.Article, renderToFolder string) error {
 	}
 	defer f.Close()
 
-	if errExec := t.Execute(f, a); errExec != nil {
+	if errExec := t.Execute(f, art); errExec != nil {
 		return errExec
 	}
 

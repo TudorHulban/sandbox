@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/article"
+	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/blog"
 	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/products"
 )
 
@@ -9,7 +9,7 @@ type App struct {
 	ConfigurationApp
 
 	Templates         map[TemplateName]TemplateContents
-	BlogArticles      []article.Article
+	Blog              *blog.Blog
 	ECommerceProducts []products.Product
 }
 

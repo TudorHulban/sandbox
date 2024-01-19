@@ -11,3 +11,13 @@ func (articles *Articles) Validate() error {
 
 	return nil
 }
+
+func (articles *Articles) SaveToPath(folder string) error {
+	for _, article := range *articles {
+		if _, errSave := article.SaveToPath(folder); errSave != nil {
+			return errSave
+		}
+	}
+
+	return nil
+}
