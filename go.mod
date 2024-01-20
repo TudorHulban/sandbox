@@ -12,6 +12,7 @@ require (
 	github.com/stretchr/testify v1.8.2
 	github.com/tsenart/vegeta v12.7.0+incompatible
 	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc
+	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools v2.2.0+incompatible
 )
 
@@ -38,5 +39,4 @@ require (
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

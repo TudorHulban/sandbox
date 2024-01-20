@@ -7,5 +7,3 @@ const (
 	_defaultArticlesRenderedFolder   = "renderedarticles"
 	_defaultFaviconFileName          = "favicon_created_by_logaster.ico"
 )
-
-const ExtensionArticleFile = ".art"

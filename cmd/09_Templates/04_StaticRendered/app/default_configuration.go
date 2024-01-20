@@ -56,7 +56,7 @@ func defaultConfiguration(options ...Option) (*ConfigurationApp, error) {
 		}
 	}
 
-	result.SaveConfiguration(os.Stdout) // TODO: save to file
+	result.SaveConfiguration(os.Stdout)
 
 	return result, nil
 }

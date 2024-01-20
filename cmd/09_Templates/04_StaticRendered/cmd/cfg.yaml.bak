@@ -1,0 +1,19 @@
+appconfigfile: ""
+savetoconfigfile: ""
+l: null
+site:
+    port: 0
+    host: ""
+    faviconimagepath: ""
+    sitelogopath: ""
+    articlesrawfolder: ""
+    articlesrendertofolder: ""
+htmlpagetemplate:
+    containingfolder: ""
+    pageshell: ""
+    head: ""
+    meta: ""
+    header: ""
+    body: ""
+    article: ""
+    footer: ""

@@ -8,6 +8,7 @@ import (
 
 	"github.com/TudorHulban/log"
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v3"
 )
 
 type HTMLPageTemplate struct {
@@ -24,7 +25,8 @@ type HTMLPageTemplate struct {
 }
 
 type SiteInfo struct {
-	ListeningPort    int
+	ListeningPort    int    `yaml:"port"`
+	Host             string `yaml:"host"`
 	FaviconImagePath string
 	SiteLogoPath     string
 
@@ -35,9 +37,10 @@ type SiteInfo struct {
 type ConfigurationApp struct {
 	AppConfigFile    string
 	SaveToConfigFile string
-	L                *log.Logger
 
-	SiteInfo
+	L *log.Logger `json:"-"`
+
+	SiteInfo `yaml:"site"`
 	HTMLPageTemplate
 }
 
@@ -78,11 +81,44 @@ func NewAppConfiguration(importPath string, logLevel int) (*ConfigurationApp, er
 }
 
 func (cfg *ConfigurationApp) SaveConfiguration(w io.Writer) (n int, err error) {
-	configuration, errMarshal := json.MarshalIndent(cfg, "", " ")
+	// configuration, errMarshal := json.MarshalIndent(cfg, "", " ")
+	configuration, errMarshal := yaml.Marshal(cfg)
 	if errMarshal != nil {
 		return 0,
 			errors.WithMessage(errMarshal, "could not unmarshal configuration")
 	}
 
 	return w.Write(configuration)
+}
+
+func (cfg *ConfigurationApp) SaveConfigurationTo(path string) error {
+	configuration, errMarshal := yaml.Marshal(cfg)
+	if errMarshal != nil {
+		return errors.WithMessage(errMarshal, "could not unmarshal configuration")
+	}
+
+	return os.WriteFile(
+		path,
+		configuration,
+		0644,
+	)
+}
+
+func (cfg *ConfigurationApp) ReadFrom(path string) error {
+	f, errOpen := os.Open(path)
+	if errOpen != nil {
+		return errOpen
+	}
+	defer f.Close()
+
+	var configuration ConfigurationApp
+
+	decoder := yaml.NewDecoder(f)
+	if errdecode := decoder.Decode(&configuration); errdecode != nil {
+		return errdecode
+	}
+
+	*cfg = configuration
+
+	return nil
 }
