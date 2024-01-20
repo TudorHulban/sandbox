@@ -1,19 +1,23 @@
 package app
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/app/constants"
 	"github.com/TudorHulban/log"
-	"github.com/pkg/errors"
 )
 
 type Option func(cfg *ConfigurationApp) error
 
 func defaultConfiguration(options ...Option) (*ConfigurationApp, error) {
-	executableFolder, err := os.Getwd()
-	if err != nil {
+	executableFolder, errGetWorkingDirectory := os.Getwd()
+	if errGetWorkingDirectory != nil {
 		return nil,
-			errors.WithMessage(err, "issues when creating default configuration")
+			fmt.Errorf(
+				"creating default configuration: %w",
+				errGetWorkingDirectory,
+			)
 	}
 
 	var renderToFolder string
@@ -25,13 +29,18 @@ func defaultConfiguration(options ...Option) (*ConfigurationApp, error) {
 	}
 
 	result := &ConfigurationApp{
-		SiteInfo: SiteInfo{
-			ListeningPort:          _defaultListeningPort,
+		InfoSite: InfoSite{
+			ListeningPort: constants.DefaultListeningPort,
+		},
+
+		InfoArticles: InfoArticles{
 			ArticlesRAWFolder:      _defaultArticlesRAWFolder,
 			ArticlesRenderToFolder: renderToFolder,
 		},
 
-		AppConfigFile: _defaultAppConfigurationFileName,
+		ConfigFile: ConfigFile{
+			AppFile: constants.ConfigFilePath,
+		},
 
 		HTMLPageTemplate: HTMLPageTemplate{
 			ContainingFolder: ".." + executableFolder + "/static/assets",
@@ -47,16 +56,13 @@ func defaultConfiguration(options ...Option) (*ConfigurationApp, error) {
 		L: log.NewLogger(log.DEBUG, os.Stdout, true),
 	}
 
-	// moved below initialization in order to use the logger
-	result.L.Print(renderToFolder)
-
 	if _, err := os.Stat(renderToFolder); err != nil {
 		if os.IsNotExist(err) {
 			os.Mkdir(renderToFolder, os.ModePerm)
 		}
 	}
 
-	result.SaveConfiguration(os.Stdout)
+	result.SaveConfigurationTo(result.AppFile)
 
 	return result, nil
 }

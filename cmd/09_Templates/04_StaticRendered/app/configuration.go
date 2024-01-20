@@ -24,23 +24,32 @@ type HTMLPageTemplate struct {
 	Footer  string
 }
 
-type SiteInfo struct {
-	ListeningPort    int    `yaml:"port"`
-	Host             string `yaml:"host"`
+type ConfigFile struct {
+	AppFile string
+	Backup  string
+}
+
+type InfoSite struct {
+	ListeningPort int    `yaml:"port"`
+	Host          string `yaml:"host"`
+
 	FaviconImagePath string
 	SiteLogoPath     string
+}
 
+type InfoArticles struct {
 	ArticlesRAWFolder      string
 	ArticlesRenderToFolder string
 }
 
 type ConfigurationApp struct {
-	AppConfigFile    string
-	SaveToConfigFile string
+	ConfigFile `yaml:"config-file"`
 
-	L *log.Logger `json:"-"`
+	L *log.Logger `yaml:"-"`
 
-	SiteInfo `yaml:"site"`
+	InfoSite     `yaml:"site"`
+	InfoArticles `yaml:"articles"`
+
 	HTMLPageTemplate
 }
 
@@ -60,7 +69,7 @@ func NewAppConfiguration(importPath string, logLevel int) (*ConfigurationApp, er
 	}
 
 	var result struct {
-		SiteInfo
+		InfoSite
 		HTMLPageTemplate
 	}
 
@@ -73,7 +82,7 @@ func NewAppConfiguration(importPath string, logLevel int) (*ConfigurationApp, er
 	}
 
 	return &ConfigurationApp{
-			SiteInfo:         result.SiteInfo,
+			InfoSite:         result.InfoSite,
 			HTMLPageTemplate: result.HTMLPageTemplate,
 			L:                log.NewLogger(log.DEBUG, os.Stdout, true),
 		},
@@ -81,7 +90,6 @@ func NewAppConfiguration(importPath string, logLevel int) (*ConfigurationApp, er
 }
 
 func (cfg *ConfigurationApp) SaveConfiguration(w io.Writer) (n int, err error) {
-	// configuration, errMarshal := json.MarshalIndent(cfg, "", " ")
 	configuration, errMarshal := yaml.Marshal(cfg)
 	if errMarshal != nil {
 		return 0,

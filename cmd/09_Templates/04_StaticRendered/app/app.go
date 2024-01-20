@@ -13,6 +13,9 @@ type AppServices struct {
 	ServiceRender *servicerender.Service
 }
 
+type TemplateName string
+type TemplateContents string
+
 type App struct {
 	ConfigurationApp
 	AppServices
@@ -22,12 +25,39 @@ type App struct {
 	ECommerceProducts []products.Product
 }
 
-type TemplateName string
-type TemplateContents string
-
 func NewApp(configurationFilePath string) (*App, error) {
-	return &App{},
+	configurationDefault, errConfig := defaultConfiguration()
+	if errConfig != nil {
+		return nil,
+			errConfig
+	}
+
+	app := App{
+		ConfigurationApp: *configurationDefault,
+
+		AppServices: AppServices{
+			ServiceArticle: &servicearticle.Service{},
+			ServiceRender:  &servicerender.Service{},
+		},
+	}
+
+	articles, errLoadArticles := app.ServiceArticle.ArticlesFromFolder(app.ArticlesRAWFolder)
+	if errLoadArticles != nil {
+		return nil,
+			errLoadArticles
+	}
+
+	blog, errNew := blog.NewBlog(*articles...)
+	if errNew != nil {
+		return nil,
+			errNew
+	}
+
+	app.Blog = blog
+
+	return &app,
 		nil
+
 }
 
 func (a *App) Start() error {
