@@ -57,13 +57,7 @@ func NewApp(configurationFilePath string) (*App, error) {
 		transport: transport,
 	}
 
-	transport.AddRoute(
-		&transportfiber.ParamAddRoute{
-			Method:  http.MethodGet,
-			Path:    "/",
-			Handler: app.HandlerAll(),
-		},
-	)
+	app.addRoutes()
 
 	articles, errLoadArticles := app.ServiceArticle.ArticlesFromFolder(app.ArticlesRAWFolder)
 	if errLoadArticles != nil {
@@ -82,6 +76,24 @@ func NewApp(configurationFilePath string) (*App, error) {
 	return &app,
 		nil
 
+}
+
+func (a *App) addRoutes() {
+	a.transport.AddRoute(
+		&transportfiber.ParamAddRoute{
+			Method:  http.MethodGet,
+			Path:    "/",
+			Handler: a.HandlerAll(),
+		},
+	)
+
+	a.transport.AddRoute(
+		&transportfiber.ParamAddRoute{
+			Method:  http.MethodGet,
+			Path:    "/:code",
+			Handler: a.HandlerGetArticle(),
+		},
+	)
 }
 
 func (a *App) Start() error {

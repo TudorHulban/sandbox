@@ -63,3 +63,7 @@ func (b *Blog) GetArticle(code string) (*article.Article, error) {
 			code,
 		)
 }
+
+func (b *Blog) GetNumberArticles() int {
+	return len(b.articles)
+}
