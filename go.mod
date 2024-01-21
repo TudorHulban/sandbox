@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/TudorHulban/log v0.0.0-20220417102515-4df74e30f0a0
+	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/gorilla/mux v1.8.1
 	github.com/iancoleman/strcase v0.3.0
