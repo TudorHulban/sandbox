@@ -16,26 +16,17 @@ type Transport struct {
 }
 
 type ParamTransportFiber struct {
-	Port string
-	Host string
+	Port string `valid:"port"`
+	Host string `valid:"host"`
 }
 
 func NewTransport(params *ParamTransportFiber) (*Transport, error) {
-	if !govalidator.IsHost(params.Port) {
+	if _, errValidate := govalidator.ValidateStruct(params); errValidate != nil {
 		return nil,
-			fmt.Errorf(
-				"passed port: %s is not valid",
-				params.Port)
+			errValidate
 	}
 
-	if !govalidator.IsPort(params.Port) {
-		return nil,
-			fmt.Errorf(
-				"passed port: %s is not valid",
-				params.Port)
-	}
-
-	numericPort, errConversion := strconv.ParseUint(params.Port, 10, 10)
+	numericPort, errConversion := strconv.ParseUint(params.Port, 10, 64)
 	if errConversion != nil {
 		return nil,
 			errConversion
@@ -43,6 +34,7 @@ func NewTransport(params *ParamTransportFiber) (*Transport, error) {
 
 	return &Transport{
 			Port: uint16(numericPort),
+			Host: params.Host,
 			app:  fiber.New(),
 		},
 		nil
@@ -62,6 +54,14 @@ func (t *Transport) AddRoute(params *ParamAddRoute) {
 	)
 }
 
+func (t *Transport) getListeningSocket() string {
+	return fmt.Sprintf(
+		"%s:%d",
+		t.Host,
+		t.Port,
+	)
+}
+
 func (t *Transport) Start() error {
 	if len(t.app.GetRoutes()) == 0 {
 		return fmt.Errorf(
@@ -70,11 +70,12 @@ func (t *Transport) Start() error {
 		)
 	}
 
+	fmt.Printf(
+		"transport fiber started on http://%s",
+		t.getListeningSocket(),
+	)
+
 	return t.app.Listen(
-		fmt.Sprintf(
-			"%s:%d",
-			t.Host,
-			t.Port,
-		),
+		t.getListeningSocket(),
 	)
 }

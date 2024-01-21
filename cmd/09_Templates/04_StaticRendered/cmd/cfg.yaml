@@ -7,7 +7,7 @@ site:
     faviconimagepath: ""
     sitelogopath: ""
 articles:
-    articlesrawfolder: articles
+    articlesrawfolder: ../static/articles
     articlesrendertofolder: /mnt/tmpfs.ramdisk/sandbox/cmd/09_Templates/04_StaticRendered/cmd/renderedarticles
 htmlpagetemplate:
     containingfolder: ../mnt/tmpfs.ramdisk/sandbox/cmd/09_Templates/04_StaticRendered/cmd/static/assets

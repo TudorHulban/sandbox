@@ -1,16 +1,18 @@
 package app
 
 import (
+	"net/http"
+
 	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/blog"
 	"github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/domain/products"
 	servicearticle "github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/services/service-article"
 	servicerender "github.com/TudorHulban/GolangSandbox/cmd/09_Templates/04_StaticRendered/services/service-render"
+	transportfiber "github.com/TudorHulban/GolangSandbox/infra/transport-fiber"
 )
 
 type AppServices struct {
 	ServiceArticle *servicearticle.Service
-
-	ServiceRender *servicerender.Service
+	ServiceRender  *servicerender.Service
 }
 
 type TemplateName string
@@ -19,6 +21,7 @@ type TemplateContents string
 type App struct {
 	ConfigurationApp
 	AppServices
+	transport *transportfiber.Transport
 
 	Templates         map[TemplateName]TemplateContents
 	Blog              *blog.Blog
@@ -32,6 +35,17 @@ func NewApp(configurationFilePath string) (*App, error) {
 			errConfig
 	}
 
+	transport, errNewTransport := transportfiber.NewTransport(
+		&transportfiber.ParamTransportFiber{
+			Port: "3000",
+			Host: "localhost",
+		},
+	)
+	if errNewTransport != nil {
+		return nil,
+			errNewTransport
+	}
+
 	app := App{
 		ConfigurationApp: *configurationDefault,
 
@@ -39,7 +53,17 @@ func NewApp(configurationFilePath string) (*App, error) {
 			ServiceArticle: &servicearticle.Service{},
 			ServiceRender:  &servicerender.Service{},
 		},
+
+		transport: transport,
 	}
+
+	transport.AddRoute(
+		&transportfiber.ParamAddRoute{
+			Method:  http.MethodGet,
+			Path:    "/",
+			Handler: app.HandlerAll(),
+		},
+	)
 
 	articles, errLoadArticles := app.ServiceArticle.ArticlesFromFolder(app.ArticlesRAWFolder)
 	if errLoadArticles != nil {
@@ -61,5 +85,5 @@ func NewApp(configurationFilePath string) (*App, error) {
 }
 
 func (a *App) Start() error {
-	return nil
+	return a.transport.Start()
 }
