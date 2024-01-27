@@ -12,9 +12,10 @@ func NewDBGORM(db *gorm.DB) *dbGORM {
 	}
 }
 
-func (orm *dbGORM) FirstByPK(pk int, result any) {
-	orm.db.First(
+func (orm *dbGORM) FirstByPK(pk int, result any) error {
+	return orm.db.First(
 		result,
 		pk,
-	)
+	).
+		Error
 }

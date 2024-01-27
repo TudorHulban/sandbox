@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -78,6 +79,35 @@ func BenchmarkGORM(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		connSQLite.FirstByPK(
+			1,
+			&reconstructed,
+		)
+	}
+}
+
+// os: mint 21.3
+// cpu: AMD Ryzen 7 5800H with Radeon Graphics
+// BenchmarkGORMPG-16    	   16459	     93467 ns/op	    5586 B/op	      98 allocs/op
+func BenchmarkGORMPG(b *testing.B) {
+	connGORM, errConnGORM := gorm.Open(
+		postgres.Open(
+			paramsPG.AsDSNGORM(),
+		),
+		&gorm.Config{
+			DisableAutomaticPing: true,
+		},
+	)
+	require.NoError(b, errConnGORM)
+
+	gormPG := NewDBGORM(connGORM)
+
+	var reconstructed Product
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for n := 0; n < b.N; n++ {
+		gormPG.FirstByPK(
 			1,
 			&reconstructed,
 		)

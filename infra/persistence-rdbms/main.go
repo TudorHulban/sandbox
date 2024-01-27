@@ -11,15 +11,15 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func main() {
-	paramsPG := ConfigPostgres{
-		DBName:   "sandbox",
-		User:     "postgres",
-		Password: "password",
-		Host:     "localhost",
-		Port:     5432,
-	}
+var paramsPG = ConfigPostgres{
+	DBName:   "sandbox",
+	User:     "postgres",
+	Password: "password",
+	Host:     "localhost",
+	Port:     5432,
+}
 
+func main() {
 	connGORM, errConnGORM := gorm.Open(
 		postgres.Open(
 			paramsPG.AsDSNGORM(),
