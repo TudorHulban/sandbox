@@ -14,6 +14,8 @@ require (
 	github.com/tsenart/vegeta v12.7.0+incompatible
 	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc
 	gopkg.in/yaml.v3 v3.0.1
+	gorm.io/driver/sqlite v1.5.4
+	gorm.io/gorm v1.25.6
 	gotest.tools v2.2.0+incompatible
 )
 
@@ -25,12 +27,14 @@ require (
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/influxdata/tdigest v0.0.1 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
+	github.com/mattn/go-sqlite3 v1.14.17 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/streadway/quantile v0.0.0-20220407130108-4246515d968d // indirect
