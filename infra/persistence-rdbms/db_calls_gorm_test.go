@@ -32,24 +32,34 @@ func TestGORM(t *testing.T) {
 
 	connSQLite := NewDBGORM(db)
 
-	var reconstructed Product
+	var reconstructed1 Product
 
 	connSQLite.FirstByPK(
 		1,
-		&reconstructed,
+		&reconstructed1,
 	)
 
-	require.NotZero(t, reconstructed)
+	require.NotZero(t, reconstructed1)
 	require.Equal(t,
 		testItem.Price,
-		reconstructed.Price,
+		reconstructed1.Price,
+	)
+
+	var reconstructed2 Product
+
+	connSQLite.GetProductByPK(
+		1,
+		&reconstructed2,
+	)
+
+	require.NotZero(t, reconstructed2)
+	require.Equal(t,
+		testItem.Price,
+		reconstructed2.Price,
 	)
 }
 
-// os: mint 21.3
-// cpu: AMD Ryzen 7 5800H with Radeon Graphics
-// BenchmarkGORM-16    	   21916	     54327 ns/op	    5555 B/op	     130 allocs/op
-func BenchmarkGORM(b *testing.B) {
+func BenchmarkGORMSQLite(b *testing.B) {
 	db, errOpen := gorm.Open(
 		sqlite.Open("file::memory:"),
 		&gorm.Config{},
@@ -85,9 +95,6 @@ func BenchmarkGORM(b *testing.B) {
 	}
 }
 
-// os: mint 21.3
-// cpu: AMD Ryzen 7 5800H with Radeon Graphics
-// BenchmarkGORMPG-16    	   16459	     93467 ns/op	    5586 B/op	      98 allocs/op
 func BenchmarkGORMPG(b *testing.B) {
 	connGORM, errConnGORM := gorm.Open(
 		postgres.Open(
@@ -108,6 +115,32 @@ func BenchmarkGORMPG(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		gormPG.FirstByPK(
+			1,
+			&reconstructed,
+		)
+	}
+}
+
+func BenchmarkGORMRAWPG(b *testing.B) {
+	connGORM, errConnGORM := gorm.Open(
+		postgres.Open(
+			paramsPG.AsDSNGORM(),
+		),
+		&gorm.Config{
+			DisableAutomaticPing: true,
+		},
+	)
+	require.NoError(b, errConnGORM)
+
+	gormPG := NewDBGORM(connGORM)
+
+	var reconstructed Product
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for n := 0; n < b.N; n++ {
+		gormPG.GetProductByPK(
 			1,
 			&reconstructed,
 		)

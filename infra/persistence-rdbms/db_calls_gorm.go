@@ -19,3 +19,12 @@ func (orm *dbGORM) FirstByPK(pk int, result any) error {
 	).
 		Error
 }
+
+func (orm *dbGORM) GetProductByPK(pk int, result any) error {
+	return orm.db.Raw(
+		"select id, created_at, updated_at, deleted_at, code, price from products where id=$1",
+		pk,
+	).
+		Scan(result).
+		Error
+}
