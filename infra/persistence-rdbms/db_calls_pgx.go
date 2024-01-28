@@ -4,20 +4,58 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type dbPGX struct {
-	db *pgx.Conn
+	dbSimple *pgx.Conn
+	dbPool   *pgxpool.Pool
 }
 
-func NewDBPGX(db *pgx.Conn) *dbPGX {
-	return &dbPGX{
-		db: db,
+func NewDBPGX(ctx context.Context, cfg *ConfigPostgres) (*dbPGX, error) {
+	connPGXPool, errConnPGXPool := pgxpool.New(
+		ctx,
+		cfg.AsDSNPGX(),
+	)
+	if errConnPGXPool != nil {
+		return nil,
+			errConnPGXPool
 	}
+
+	connPGXSimple, errConnPGXSimple := pgx.Connect(
+		ctx,
+		cfg.AsDSNPGX(),
+	)
+	if errConnPGXSimple != nil {
+		return nil,
+			errConnPGXSimple
+	}
+
+	return &dbPGX{
+			dbSimple: connPGXSimple,
+			dbPool:   connPGXPool,
+		},
+		nil
 }
 
-func (pgx *dbPGX) GetProductByPK(ctx context.Context, pk int, result *Product) error {
-	return pgx.db.QueryRow(
+func (pgx *dbPGX) GetProductByPKSimple(ctx context.Context, pk int, result *Product) error {
+	return pgx.dbSimple.QueryRow(
+		ctx,
+		"select id, created_at, updated_at, deleted_at, code, price from products where id=$1",
+		pk,
+	).
+		Scan(
+			&result.ID,
+			&result.CreatedAt,
+			&result.UpdatedAt,
+			&result.DeletedAt,
+			&result.Code,
+			&result.Price,
+		)
+}
+
+func (pgx *dbPGX) GetProductByPKPool(ctx context.Context, pk int, result *Product) error {
+	return pgx.dbPool.QueryRow(
 		ctx,
 		"select id, created_at, updated_at, deleted_at, code, price from products where id=$1",
 		pk,

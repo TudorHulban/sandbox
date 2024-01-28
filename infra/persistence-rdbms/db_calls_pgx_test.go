@@ -4,20 +4,17 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/require"
 )
 
-func BenchmarkPGX(b *testing.B) {
+func BenchmarkPGXSimple(b *testing.B) {
 	ctx := context.Background()
 
-	connPGX, errConnPGX := pgx.Connect(
+	connPGX, errConnPGX := NewDBPGX(
 		ctx,
-		paramsPG.AsDSNPGX(),
+		&paramsPG,
 	)
 	require.NoError(b, errConnPGX)
-
-	pgxPG := NewDBPGX(connPGX)
 
 	var reconstructed Product
 
@@ -25,7 +22,30 @@ func BenchmarkPGX(b *testing.B) {
 	b.ReportAllocs()
 
 	for n := 0; n < b.N; n++ {
-		pgxPG.GetProductByPK(
+		connPGX.GetProductByPKSimple(
+			ctx,
+			1,
+			&reconstructed,
+		)
+	}
+}
+
+func BenchmarkPGXPool(b *testing.B) {
+	ctx := context.Background()
+
+	connPGX, errConnPGX := NewDBPGX(
+		ctx,
+		&paramsPG,
+	)
+	require.NoError(b, errConnPGX)
+
+	var reconstructed Product
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for n := 0; n < b.N; n++ {
+		connPGX.GetProductByPKPool(
 			ctx,
 			1,
 			&reconstructed,
