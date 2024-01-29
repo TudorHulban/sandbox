@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 
+	ddltable "github.com/TudorHulban/GolangSandbox/infra/ddl-table"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -59,43 +60,7 @@ func TestGORM(t *testing.T) {
 	)
 }
 
-func BenchmarkGORMSQLite(b *testing.B) {
-	db, errOpen := gorm.Open(
-		sqlite.Open("file::memory:"),
-		&gorm.Config{},
-	)
-	require.NoError(b, errOpen)
-	require.NotNil(b, db)
-
-	db.AutoMigrate(
-		&Product{},
-	)
-
-	testItem := Product{
-		Code:  "D42",
-		Price: 100,
-	}
-
-	db.Create(
-		&testItem,
-	)
-
-	connSQLite := NewDBGORM(db)
-
-	var reconstructed Product
-
-	b.ResetTimer()
-	b.ReportAllocs()
-
-	for n := 0; n < b.N; n++ {
-		connSQLite.FirstByPK(
-			1,
-			&reconstructed,
-		)
-	}
-}
-
-func BenchmarkGORMPG(b *testing.B) {
+func TestGORMDDL(t *testing.T) {
 	connGORM, errConnGORM := gorm.Open(
 		postgres.Open(
 			paramsPG.AsDSNGORM(),
@@ -104,10 +69,19 @@ func BenchmarkGORMPG(b *testing.B) {
 			DisableAutomaticPing: true,
 		},
 	)
-	require.NoError(b, errConnGORM)
+	require.NoError(t, errConnGORM)
 
-	connGORM.AutoMigrate(
+	table, errNew := ddltable.NewTable(
 		&Product{},
+	)
+	require.NoError(t, errNew)
+	require.NotZero(t, table)
+
+	require.NoError(t,
+		connGORM.Exec(
+			table.AsDDLPostgres(),
+		).
+			Error,
 	)
 
 	testItem := Product{
@@ -115,47 +89,10 @@ func BenchmarkGORMPG(b *testing.B) {
 		Price: 100,
 	}
 
-	connGORM.Create(
-		&testItem,
+	require.NoError(t,
+		connGORM.Create(
+			&testItem,
+		).
+			Error,
 	)
-
-	gormPG := NewDBGORM(connGORM)
-
-	var reconstructed Product
-
-	b.ResetTimer()
-	b.ReportAllocs()
-
-	for n := 0; n < b.N; n++ {
-		gormPG.FirstByPK(
-			1,
-			&reconstructed,
-		)
-	}
-}
-
-func BenchmarkGORMRAWPG(b *testing.B) {
-	connGORM, errConnGORM := gorm.Open(
-		postgres.Open(
-			paramsPG.AsDSNGORM(),
-		),
-		&gorm.Config{
-			DisableAutomaticPing: true,
-		},
-	)
-	require.NoError(b, errConnGORM)
-
-	gormPG := NewDBGORM(connGORM)
-
-	var reconstructed Product
-
-	b.ResetTimer()
-	b.ReportAllocs()
-
-	for n := 0; n < b.N; n++ {
-		gormPG.GetProductByPK(
-			1,
-			&reconstructed,
-		)
-	}
 }
