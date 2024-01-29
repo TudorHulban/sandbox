@@ -106,6 +106,19 @@ func BenchmarkGORMPG(b *testing.B) {
 	)
 	require.NoError(b, errConnGORM)
 
+	connGORM.AutoMigrate(
+		&Product{},
+	)
+
+	testItem := Product{
+		Code:  "D42",
+		Price: 100,
+	}
+
+	connGORM.Create(
+		&testItem,
+	)
+
 	gormPG := NewDBGORM(connGORM)
 
 	var reconstructed Product
