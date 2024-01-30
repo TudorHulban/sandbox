@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -13,10 +12,13 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-func TestContainer1(t *testing.T) {
+// GetTestContainerPG returns test container and cleanup function for the created container.
+func GetTestContainerPG(t *testing.T) (*postgres.PostgresContainer, func()) {
 	ctx := context.Background()
 
-	pgContainer, errContainer := postgres.RunContainer(ctx,
+	result, errContainer := postgres.RunContainer(
+		ctx,
+
 		testcontainers.WithImage("postgres:15.3-alpine"),
 
 		postgres.WithDatabase(paramsPG.DBName),
@@ -25,18 +27,27 @@ func TestContainer1(t *testing.T) {
 
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2).WithStartupTimeout(5*time.Second)),
+				WithOccurrence(2).
+				WithStartupTimeout(5*time.Second),
+		),
 	)
 	require.NoError(t, errContainer)
 
-	t.Cleanup(
+	return result,
 		func() {
-			fmt.Println("cleanup test....")
-
 			require.NoError(t,
-				pgContainer.Terminate(ctx),
+				result.Terminate(ctx),
 			)
-		},
+		}
+}
+
+func TestContainer1(t *testing.T) {
+	ctx := context.Background()
+
+	pgContainer, funcClean := GetTestContainerPG(t)
+
+	t.Cleanup(
+		funcClean,
 	)
 
 	connDSN, errConnection := pgContainer.ConnectionString(ctx, "sslmode=disable")
@@ -64,13 +75,64 @@ func TestContainer1(t *testing.T) {
 		Price: 100,
 	}
 
-	tag, errInsert := pgxSimple.dbSimple.Exec(
+	_, errInsert := pgxSimple.dbSimple.Exec(
 		ctx,
 		testItem.AsSQLInsert(),
 	)
 	require.NoError(t, errInsert)
 
-	fmt.Println("tag:", tag, testItem.AsSQLInsert())
+	var reconstructedProduct Product
+
+	require.NoError(t,
+		pgxSimple.GetProductByPKSimple(
+			ctx,
+			1,
+			&reconstructedProduct,
+		),
+	)
+	require.NotZero(t, reconstructedProduct)
+	require.Equal(t, testItem.Price, reconstructedProduct.Price)
+}
+
+func TestContainer2(t *testing.T) {
+	ctx := context.Background()
+
+	pgContainer, funcClean := GetTestContainerPG(t)
+
+	t.Cleanup(
+		funcClean,
+	)
+
+	connDSN, errConnection := pgContainer.ConnectionString(ctx, "sslmode=disable")
+	require.NoError(t, errConnection)
+
+	table, errNew := ddltable.NewTable(
+		&Product{},
+	)
+	require.NoError(t, errNew)
+	require.NotZero(t, table)
+
+	pgxSimple, errPGX := NewPGXSimpleFromTestContainersDSN(ctx, connDSN)
+	require.NoError(t, errPGX)
+	require.NotNil(t, pgxSimple)
+
+	_, errExec := pgxSimple.dbSimple.Exec(
+		ctx,
+		table.AsDDLPostgres(),
+	)
+	require.NoError(t, errExec)
+
+	testItem := Product{
+		ID:    1,
+		Code:  "D43",
+		Price: 100,
+	}
+
+	_, errInsert := pgxSimple.dbSimple.Exec(
+		ctx,
+		testItem.AsSQLInsert(),
+	)
+	require.NoError(t, errInsert)
 
 	var reconstructedProduct Product
 

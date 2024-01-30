@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"testing"
 
 	ddltable "github.com/TudorHulban/GolangSandbox/infra/ddl-table"
@@ -61,9 +62,20 @@ func TestGORM(t *testing.T) {
 }
 
 func TestGORMDDL(t *testing.T) {
+	pgContainer, funcClean := GetTestContainerPG(t)
+
+	t.Cleanup(
+		funcClean,
+	)
+
+	ctx := context.Background()
+
+	connDSN, errConnection := pgContainer.ConnectionString(ctx, "sslmode=disable")
+	require.NoError(t, errConnection)
+
 	connGORM, errConnGORM := gorm.Open(
 		postgres.Open(
-			paramsPG.AsDSNGORM(),
+			connDSN,
 		),
 		&gorm.Config{
 			DisableAutomaticPing: true,
@@ -94,5 +106,20 @@ func TestGORMDDL(t *testing.T) {
 			&testItem,
 		).
 			Error,
+	)
+
+	var reconstructedProduct Product
+
+	require.NoError(t,
+		connGORM.First(
+			&reconstructedProduct,
+			1,
+		).
+			Error,
+	)
+	require.NotZero(t, reconstructedProduct)
+	require.Equal(t,
+		testItem.Price,
+		reconstructedProduct.Price,
 	)
 }
