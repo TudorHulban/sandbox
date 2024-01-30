@@ -7,6 +7,7 @@ const (
 	_TagPK                 = "pk"
 	_TagUnique             = "unique"
 	_TagIndexed            = "index"
+	_TagIndexUnique        = "indexunique"
 	_TagRequired           = "required"
 	_TagDefault            = "default"
 	_TagOverrideColumnName = "columnname"

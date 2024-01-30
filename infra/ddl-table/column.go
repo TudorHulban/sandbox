@@ -11,6 +11,7 @@ type column struct {
 	Name         string
 	PGType       string
 	DefaultValue string
+	IndexName    string
 
 	IsPK          bool
 	IsNullable    bool
@@ -119,6 +120,7 @@ func (col *column) UpdateWith(tagValues string, alreadyHavePK bool) error {
 
 		if tagClean == _TagIndexed {
 			col.IsIndexed = true
+			col.IndexName = compoundTagValue
 		}
 
 		if tagClean == _TagRequired {

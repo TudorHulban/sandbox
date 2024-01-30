@@ -18,7 +18,12 @@ type Person struct {
 	SkipExported    bool `hera:"-"`
 }
 
-func TestTable(t *testing.T) {
+type PersonsInGroups struct {
+	IDPersons uint `hera:"index:ix_personsingroups"`
+	IDGroups  uint `hera:"index:ix_personsingroups"`
+}
+
+func TestTablePersons(t *testing.T) {
 	table, errNew := NewTable(
 		&Person{},
 	)
@@ -28,4 +33,31 @@ func TestTable(t *testing.T) {
 	// fmt.Println(table.Columns)
 
 	fmt.Println(table.AsDDLPostgres())
+}
+
+func TestTablePersonsInGroups(t *testing.T) {
+	table, errNew := NewTable(
+		&PersonsInGroups{},
+	)
+	require.NoError(t, errNew)
+	require.NotZero(t, table)
+
+	fmt.Println(table.Columns)
+
+	fmt.Println(table.AsDDLPostgres())
+}
+
+func BenchmarkTable(b *testing.B) {
+	table, errNew := NewTable(
+		&Person{},
+	)
+	require.NoError(b, errNew)
+	require.NotZero(b, table)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for n := 0; n < b.N; n++ {
+		table.AsDDLPostgres()
+	}
 }
