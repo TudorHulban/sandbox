@@ -36,3 +36,7 @@ func (cfg ConfigPostgres) AsDSNPGX() string {
 		cfg.DBName,
 	)
 }
+
+func NewConfigPostgres(testContainersDSN string) (*ConfigPostgres, error) {
+	return nil, nil
+}

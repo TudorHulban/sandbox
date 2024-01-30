@@ -1,5 +1,9 @@
 package main
 
+import "fmt"
+
+const TableProducts = "products"
+
 type Product struct {
 	// gorm.Model
 	ID        uint  `hera:"pk"`
@@ -9,4 +13,17 @@ type Product struct {
 
 	Code  string
 	Price uint
+}
+
+func (p *Product) AsSQLInsert() string {
+	return fmt.Sprintf(
+		"insert into %s values ('%d', '%d', '%d', '%d', '%s', '%d');",
+		TableProducts,
+		p.ID,
+		p.CreatedAt,
+		p.UpdatedAt,
+		p.DeletedAt,
+		p.Code,
+		p.Price,
+	)
 }

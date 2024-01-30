@@ -85,7 +85,7 @@ func TestGORMDDL(t *testing.T) {
 	)
 
 	testItem := Product{
-		Code:  "D42",
+		Code:  "D43",
 		Price: 100,
 	}
 
