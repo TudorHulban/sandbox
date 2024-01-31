@@ -15,12 +15,12 @@ type Transport struct {
 	app *fiber.App
 }
 
-type ParamTransportFiber struct {
+type ParamTransportSocket struct {
 	Port string `valid:"port"`
 	Host string `valid:"host"`
 }
 
-func NewTransport(params *ParamTransportFiber) (*Transport, error) {
+func NewTransport(params *ParamTransportSocket) (*Transport, error) {
 	if _, errValidate := govalidator.ValidateStruct(params); errValidate != nil {
 		return nil,
 			errValidate
@@ -35,7 +35,8 @@ func NewTransport(params *ParamTransportFiber) (*Transport, error) {
 	return &Transport{
 			Port: uint16(numericPort),
 			Host: params.Host,
-			app:  fiber.New(),
+
+			app: fiber.New(),
 		},
 		nil
 }

@@ -36,7 +36,7 @@ func NewApp(configurationFilePath string) (*App, error) {
 	}
 
 	transport, errNewTransport := transportfiber.NewTransport(
-		&transportfiber.ParamTransportFiber{
+		&transportfiber.ParamTransportSocket{
 			Port: "3000",
 			Host: "localhost",
 		},
