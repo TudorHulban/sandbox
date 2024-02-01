@@ -35,39 +35,3 @@ func (p *Product) AsSQLGetByPK(pk uint) string {
 		pk,
 	)
 }
-
-func (p *Product) DDLFunctionGetByPK() string {
-	fn := `
-create or replace
-function fnGetProduct(in pk int)
-returns table
-            (
-            	id bigint,
-            	created_at bigint,
-                updated_at bigint,
-				deleted_at bigint,
-				code text,
-				price bigint
-            )
-language plpgsql
-as 
-$$
-begin
-	return query
-	select
-	p.id,
-	p.created_at,
-	p.updated_at,
-	p.deleted_at,
-	p.code,
-	p.price
-from
-	products p
-where
-	p.id = pk;
-end
-$$;
-`
-
-	return fn
-}

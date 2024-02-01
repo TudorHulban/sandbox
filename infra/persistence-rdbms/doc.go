@@ -7,3 +7,9 @@ package main
 // BenchmarkGORMRAWPG-16               3799            340385 ns/op            3807 B/op         77 allocs/op
 // BenchmarkPGXSimple-16               5822            216842 ns/op             560 B/op         12 allocs/op
 // BenchmarkPGXPool-16                 5097            239600 ns/op             722 B/op         13 allocs/op
+
+// pgx insert example as per
+// https://stackoverflow.com/questions/2944297/postgresql-function-for-last-inserted-id
+
+// pgx function query example as per
+// https://medium.com/geekculture/work-with-go-postgresql-using-pgx-caee4573672
