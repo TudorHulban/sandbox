@@ -27,3 +27,35 @@ func (p *Product) AsSQLInsert() string {
 		p.Price,
 	)
 }
+
+func (p *Product) AsSQLGetByPK(pk uint) string {
+	return fmt.Sprintf(
+		"select * from %s where id = %d",
+		TableProducts,
+		pk,
+	)
+}
+
+func (p *Product) DDLFunctionGetByPK() string {
+	fn := `
+	create or replace
+	function fnGetProduct(
+	in pk int, 
+	
+	out id int,
+	out created_at int,
+	out updated_at int)
+	as $$
+	select
+		id,
+		created_at,
+		updated_at
+	from
+		products
+	where
+		id = $1 $$
+	language sql;
+`
+
+	return fn
+}

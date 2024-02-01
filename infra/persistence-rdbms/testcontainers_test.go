@@ -50,7 +50,10 @@ func TestContainer1(t *testing.T) {
 		funcClean,
 	)
 
-	connDSN, errConnection := pgContainer.ConnectionString(ctx, "sslmode=disable")
+	connDSN, errConnection := pgContainer.ConnectionString(
+		ctx,
+		"sslmode=disable",
+	)
 	require.NoError(t, errConnection)
 
 	table, errNew := ddltable.NewTable(
@@ -59,15 +62,18 @@ func TestContainer1(t *testing.T) {
 	require.NoError(t, errNew)
 	require.NotZero(t, table)
 
-	pgxSimple, errPGX := NewPGXSimpleFromTestContainersDSN(ctx, connDSN)
+	pgxSimple, errPGX := NewPGXSimpleFromTestContainersDSN(
+		ctx,
+		connDSN,
+	)
 	require.NoError(t, errPGX)
 	require.NotNil(t, pgxSimple)
 
-	_, errExec := pgxSimple.dbSimple.Exec(
+	_, errCreateTable := pgxSimple.dbSimple.Exec(
 		ctx,
 		table.AsDDLPostgres(),
 	)
-	require.NoError(t, errExec)
+	require.NoError(t, errCreateTable)
 
 	testItem := Product{
 		ID:    1,
