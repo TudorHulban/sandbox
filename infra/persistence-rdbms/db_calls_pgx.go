@@ -92,26 +92,20 @@ func (pgx *dbPGX) GetProductByPKSimple(ctx context.Context, pk int, result *Prod
 }
 
 func (pgx *dbPGXSimple) GetProductByPKSimpleSP(ctx context.Context, pk int, result *Product) error {
-	row := pgx.dbSimple.QueryRow(
+	return pgx.dbSimple.QueryRow(
 		ctx,
 		fmt.Sprintf(
-			"select fnGetProduct(%d)",
+			"select * from fnGetProduct(%d)",
 			pk,
 		),
-		pk,
+	).Scan(
+		&result.ID,
+		&result.CreatedAt,
+		&result.UpdatedAt,
+		&result.DeletedAt,
+		&result.Code,
+		&result.Price,
 	)
-	// Scan(
-	// 	&result.ID,
-	// 	&result.CreatedAt,
-	// 	&result.UpdatedAt,
-	// 	// &result.DeletedAt,
-	// 	// &result.Code,
-	// 	// &result.Price,
-	// )
-
-	fmt.Println("row:", row)
-
-	return nil
 }
 
 func (pgx *dbPGX) GetProductByPKPool(ctx context.Context, pk int, result *Product) error {

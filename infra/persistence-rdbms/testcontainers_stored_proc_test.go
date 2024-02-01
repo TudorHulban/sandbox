@@ -58,7 +58,7 @@ func TestStoredProcedures(t *testing.T) {
 		Price: 100,
 	}
 
-	fmt.Println(testItem.DDLFunctionGetByPK())
+	// fmt.Println(testItem.DDLFunctionGetByPK())
 
 	_, errCreateFN := pgxSimple.dbSimple.Exec(
 		ctx,
@@ -72,7 +72,7 @@ func TestStoredProcedures(t *testing.T) {
 	)
 	require.NoError(t, errInsert)
 
-	fmt.Println(testItem.AsSQLInsert())
+	// fmt.Println(testItem.AsSQLInsert())
 
 	var reconstructedProduct Product
 
