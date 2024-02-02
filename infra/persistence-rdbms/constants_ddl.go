@@ -72,6 +72,36 @@ end
 $$;
 `
 
+// ex. call spupdateproduct(2,null,null,0,'new text', 399)
+const spUpdateProduct = `
+create or replace
+procedure spupdateproduct(
+in pk bigint,
+in pCreatedAt bigint,
+in pUpdatedAt bigint,
+in pDeletedAt bigint,
+in pCode text,
+in pPrice bigint
+)
+
+language plpgsql
+as 
+$$
+begin
+update 
+	products p
+set 
+	created_at = coalesce (pCreatedAt, p.created_at),
+	updated_at = coalesce (pUpdatedAt, p.updated_at),
+	deleted_at = coalesce (pDeletedAt, p.deleted_at),
+	code = coalesce (pCode, p.code),
+	price = coalesce (pPrice, p.price)
+where
+	id = pk;
+end
+$$;
+`
+
 const spDeleteSoftProduct = `
 create or replace
 procedure spsoftdeleteproduct(
