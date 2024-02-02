@@ -11,10 +11,12 @@ import (
 type Person struct {
 	Persons struct{} `hera:"tablename"`
 
-	ID              uint `hera:"pk"`
-	Name            string
+	Name string
+
+	ID uint `hera:"pk, order:0"`
+
 	Age             int16
-	AllowedToDrive  bool `hera:"default:false, columnname:driving,"`
+	AllowedToDrive  bool `hera:"default:false, columnname:driving, order:2"`
 	skipNotExported bool
 	SkipExported    bool `hera:"-"`
 	Birthdate       sql.NullString

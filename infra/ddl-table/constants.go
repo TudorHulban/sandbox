@@ -12,6 +12,7 @@ const (
 	_TagDefault            = "default"
 	_TagOverrideColumnName = "columnname"
 	_TagOverrideTableName  = "tablename"
+	_TagOverrideOrder      = "order"
 )
 
 const _TagPointer = "*"

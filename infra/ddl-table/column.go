@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -12,6 +13,8 @@ type column struct {
 	PGType       string
 	DefaultValue string
 	IndexName    string
+
+	OrderNumber uint
 
 	IsPK          bool
 	IsNullable    bool
@@ -33,7 +36,8 @@ func newColumns(object any) (columns, string, error) {
 			FieldByIndex([]int{i})
 
 		column := column{
-			Name: fieldRoot.Name,
+			Name:        fieldRoot.Name,
+			OrderNumber: uint(i),
 		}
 
 		if valueTag, hasTag := fieldRoot.Tag.Lookup(_TagName); hasTag {
@@ -121,6 +125,18 @@ func (col *column) UpdateWith(tagValues string, alreadyHavePK bool) error {
 
 		if tagClean == _TagUnique {
 			col.IsUnique = true
+		}
+
+		if tagClean == _TagOverrideOrder {
+			order, errConv := strconv.Atoi(compoundTagValue)
+			if errConv != nil {
+				return fmt.Errorf(
+					"override order tag: %w",
+					errConv,
+				)
+			}
+
+			col.OrderNumber = uint(order)
 		}
 
 		if tagClean == _TagIndexed {

@@ -16,6 +16,8 @@ func NewTable(object any) (*Table, error) {
 			errGetColumns
 	}
 
+	columns.sortForColumnOrder()
+
 	var tableName string
 
 	if len(overrideTableName) > 0 {
@@ -88,6 +90,7 @@ func (t *Table) ddlTable() string {
 	return strings.Join(result, "")
 }
 
+// ddlIndex - TODO: not ready
 func (t *Table) ddlIndex() string {
 	var indexName string
 

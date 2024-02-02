@@ -2,6 +2,7 @@ package ddltable
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -18,7 +19,7 @@ func (cols columns) String() string {
 	for ix, column := range cols {
 		result = append(result,
 			fmt.Sprintf(
-				"%d. Name: %s, Type: %s, IsPK: %t, IsNullable: %t, IsIndexed: %t, IsToBeSkipped: %t, IndexName: %s",
+				"%d. Name: %s, Type: %s, IsPK: %t, IsNullable: %t, IsIndexed: %t, IsToBeSkipped: %t, IndexName: %s, Order: %d",
 				ix+1,
 				column.Name,
 				column.PGType,
@@ -27,9 +28,18 @@ func (cols columns) String() string {
 				column.IsIndexed,
 				column.IsToBeSkipped,
 				column.IndexName,
+				column.OrderNumber,
 			),
 		)
 	}
 
 	return strings.Join(result, "\n")
+}
+
+func (cols columns) sortForColumnOrder() {
+	byOrder := func(i, j int) bool {
+		return cols[i].OrderNumber < cols[j].OrderNumber
+	}
+
+	sort.Slice(cols, byOrder)
 }
