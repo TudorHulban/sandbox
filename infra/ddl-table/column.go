@@ -54,7 +54,12 @@ func newColumns(object any) (columns, string, error) {
 			continue
 		}
 
-		column.PGType = reflectToPG(fieldRoot.Type.String(), column.IsPK)
+		var isNullable bool
+
+		column.PGType, isNullable = reflectToPG(fieldRoot.Type.String(), column.IsPK)
+		if isNullable {
+			column.IsNullable = true
+		}
 
 		if column.IsPK {
 			alreadyHavePK = true
@@ -162,7 +167,7 @@ func (col *column) AsDDLPostgres() string {
 		result = append(result, "UNIQUE")
 	}
 
-	if col.IsNullable {
+	if !col.IsNullable {
 		result = append(result, "NOT NULL")
 	}
 

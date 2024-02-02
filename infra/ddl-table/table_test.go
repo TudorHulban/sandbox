@@ -1,6 +1,7 @@
 package ddltable
 
 import (
+	"database/sql"
 	"fmt"
 	"testing"
 
@@ -16,6 +17,7 @@ type Person struct {
 	AllowedToDrive  bool `hera:"default:false, columnname:driving,"`
 	skipNotExported bool
 	SkipExported    bool `hera:"-"`
+	Birthdate       sql.NullString
 }
 
 type PersonsInGroups struct {
@@ -23,14 +25,14 @@ type PersonsInGroups struct {
 	IDGroups  uint `hera:"index:ix_personsingroups"`
 }
 
-func TestTablePersons(t *testing.T) {
+func TestPersonsTable(t *testing.T) {
 	table, errNew := NewTable(
 		&Person{},
 	)
 	require.NoError(t, errNew)
 	require.NotZero(t, table)
 
-	// fmt.Println(table.Columns)
+	fmt.Println(table.Columns)
 
 	fmt.Println(table.AsDDLPostgres())
 }
