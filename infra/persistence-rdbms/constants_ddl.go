@@ -71,3 +71,42 @@ where
 end
 $$;
 `
+
+const spDeleteSoftProduct = `
+create or replace
+procedure spsoftdeleteproduct(
+in pk bigint,
+in deletedTime bigint
+)
+
+language plpgsql
+as 
+$$
+begin
+update
+	products
+set
+	deleted_at = deletedTime
+where
+	id = pk;
+end
+$$;
+`
+
+const spDeleteHardProduct = `
+create or replace
+procedure spharddeleteproduct(
+in pk bigint
+)
+
+language plpgsql
+as 
+$$
+begin
+delete from 
+	products
+where
+	id = pk;
+end
+$$;
+`
