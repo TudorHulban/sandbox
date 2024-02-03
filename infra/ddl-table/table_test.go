@@ -46,9 +46,13 @@ func TestTablePersonsInGroups(t *testing.T) {
 	require.NoError(t, errNew)
 	require.NotZero(t, table)
 
-	fmt.Println(table.Columns)
+	// fmt.Println(table.Columns)
 
-	fmt.Println(table.AsDDLPostgres())
+	ddlTable, ddlIndexes, errDDL := table.AsDDLPostgres()
+	require.NoError(t, errDDL)
+
+	fmt.Println(ddlTable)
+	fmt.Println(ddlIndexes)
 }
 
 func BenchmarkTable(b *testing.B) {

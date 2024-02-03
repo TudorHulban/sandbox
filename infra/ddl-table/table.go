@@ -40,25 +40,21 @@ func NewTable(object any) (*Table, error) {
 		nil
 }
 
-func (t *Table) AsDDLPostgres() (string, error) {
+// AsDDLPostgres returns DDL Table, DDL Table index(es).
+func (t *Table) AsDDLPostgres() (string, string, error) {
 	ddlTable := t.ddlTable()
 	ddlIndex, errDDLIndex := t.ddlIndex()
 	if errDDLIndex != nil {
-		return "",
+		return "", "",
 			errDDLIndex
 	}
 
 	if len(ddlIndex) == 0 {
-		return ddlTable, nil
+		return ddlTable,
+			"", nil
 	}
 
-	return strings.Join(
-			[]string{
-				ddlTable,
-				ddlIndex,
-			},
-			"\n",
-		),
+	return ddlTable, ddlIndex,
 		nil
 }
 
@@ -103,6 +99,12 @@ func (t *Table) ddlIndex() (string, error) {
 
 	for _, column := range t.Columns {
 		if column.IsIndexed {
+			if len(column.IndexName) == 0 {
+				indexName = t.Name + "_idx"
+			} else {
+				indexName = column.IndexName
+			}
+
 			if _, exists := t.Indexes[column.IndexName]; exists {
 				if column.IndexType != t.Indexes[column.IndexName].Type {
 					return "",
@@ -110,19 +112,13 @@ func (t *Table) ddlIndex() (string, error) {
 							"for column %s, index type (%s) is different than previous index type for index name %s",
 							column.Name,
 							column.IndexType,
-							column.IndexName,
+							indexName,
 						)
 				}
 
-				t.Indexes[column.IndexName].ColumnNames = append(t.Indexes[column.IndexName].ColumnNames, column.Name)
+				t.Indexes[indexName].ColumnNames = append(t.Indexes[indexName].ColumnNames, column.Name)
 
 				continue
-			}
-
-			if len(column.IndexName) == 0 {
-				indexName = t.Name + "_idx"
-			} else {
-				indexName = column.IndexName
 			}
 
 			t.Indexes[indexName] = &index{
