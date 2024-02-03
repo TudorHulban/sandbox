@@ -13,6 +13,7 @@ type column struct {
 	PGType       string
 	DefaultValue string
 	IndexName    string
+	IndexType    string
 
 	OrderNumber uint
 

@@ -1,12 +1,14 @@
 package ddltable
 
 import (
+	"fmt"
 	"strings"
 )
 
 type Table struct {
 	Name    string
 	Columns columns
+	Indexes map[string]*index
 }
 
 func NewTable(object any) (*Table, error) {
@@ -33,25 +35,31 @@ func NewTable(object any) (*Table, error) {
 	return &Table{
 			Name:    pluralize(tableName),
 			Columns: columns,
+			Indexes: make(map[string]*index),
 		},
 		nil
 }
 
-func (t *Table) AsDDLPostgres() string {
+func (t *Table) AsDDLPostgres() (string, error) {
 	ddlTable := t.ddlTable()
-	ddlIndex := t.ddlIndex()
+	ddlIndex, errDDLIndex := t.ddlIndex()
+	if errDDLIndex != nil {
+		return "",
+			errDDLIndex
+	}
 
 	if len(ddlIndex) == 0 {
-		return ddlTable
+		return ddlTable, nil
 	}
 
 	return strings.Join(
-		[]string{
-			ddlTable,
-			ddlIndex,
-		},
-		"\n",
-	)
+			[]string{
+				ddlTable,
+				ddlIndex,
+			},
+			"\n",
+		),
+		nil
 }
 
 func (t *Table) ddlTable() string {
@@ -90,29 +98,58 @@ func (t *Table) ddlTable() string {
 	return strings.Join(result, "")
 }
 
-// ddlIndex - TODO: not ready
-func (t *Table) ddlIndex() string {
+func (t *Table) ddlIndex() (string, error) {
 	var indexName string
-
-	var indexedColumns []string
 
 	for _, column := range t.Columns {
 		if column.IsIndexed {
-			indexedColumns = append(indexedColumns,
-				column.Name,
-			)
+			if _, exists := t.Indexes[column.IndexName]; exists {
+				if column.IndexType != t.Indexes[column.IndexName].Type {
+					return "",
+						fmt.Errorf(
+							"for column %s, index type (%s) is different than previous index type for index name %s",
+							column.Name,
+							column.IndexType,
+							column.IndexName,
+						)
+				}
 
-			indexName = column.IndexName
+				t.Indexes[column.IndexName].ColumnNames = append(t.Indexes[column.IndexName].ColumnNames, column.Name)
+
+				continue
+			}
+
+			if len(column.IndexName) == 0 {
+				indexName = t.Name + "_idx"
+			} else {
+				indexName = column.IndexName
+			}
+
+			t.Indexes[indexName] = &index{
+				Type: column.IndexType,
+				ColumnNames: []string{
+					column.Name,
+				},
+			}
 		}
 	}
 
-	if len(indexedColumns) == 0 {
-		return ""
+	if len(t.Indexes) == 0 {
+		return "", nil
 	}
 
-	if len(indexName) == 0 {
-		indexName = t.Name + "_idx"
+	return t.renderIndexes(),
+		nil
+}
+
+func (t *Table) renderIndexes() string {
+	result := make([]string, 0)
+
+	for indexName, indexInfo := range t.Indexes {
+		result = append(result,
+			indexInfo.render()(t.Name, indexName),
+		)
 	}
 
-	return "create index " + indexName + " ON " + t.Name + " (" + strings.Join(indexedColumns, ",") + ");"
+	return strings.Join(result, "\n")
 }
