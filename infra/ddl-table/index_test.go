@@ -10,5 +10,5 @@ func TestIndexRender(t *testing.T) {
 		ColumnNames: []string{"a", "b"},
 	}
 
-	fmt.Println(ix.render()("table-name", "index-name"))
+	fmt.Println(ix.migrationUp()("table-name", "index-name"))
 }

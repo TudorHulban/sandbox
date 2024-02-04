@@ -41,24 +41,33 @@ func NewTable(object any) (*Table, error) {
 }
 
 // AsDDLPostgres returns DDL Table, DDL Table index(es).
-func (t *Table) AsDDLPostgres() (string, string, error) {
-	ddlTable := t.ddlTable()
-	ddlIndex, errDDLIndex := t.ddlIndex()
+func (t *Table) AsDDLPostgres() (*Migration, *Migration, error) {
+	ddlIndexMigrationUp, ddlIndexMigrationDown, errDDLIndex := t.ddlIndexMigrationUp()
 	if errDDLIndex != nil {
-		return "", "",
+		return nil, nil,
 			errDDLIndex
 	}
 
-	if len(ddlIndex) == 0 {
-		return ddlTable,
-			"", nil
+	if len(ddlIndexMigrationUp) == 0 && len(ddlIndexMigrationDown) == 0 {
+		return &Migration{
+				Up:   t.ddlTableMigrationUp(),
+				Down: t.ddlTableMigrationDown(),
+			},
+			nil, nil
 	}
 
-	return ddlTable, ddlIndex,
+	return &Migration{
+			Up:   t.ddlTableMigrationUp(),
+			Down: t.ddlTableMigrationDown(),
+		},
+		&Migration{
+			Up:   ddlIndexMigrationUp,
+			Down: ddlIndexMigrationDown,
+		},
 		nil
 }
 
-func (t *Table) ddlTable() string {
+func (t *Table) ddlTableMigrationUp() string {
 	result := []string{
 		"create table if not exists ",
 		t.Name,
@@ -94,7 +103,14 @@ func (t *Table) ddlTable() string {
 	return strings.Join(result, "")
 }
 
-func (t *Table) ddlIndex() (string, error) {
+func (t *Table) ddlTableMigrationDown() string {
+	return fmt.Sprintf(
+		"drop table if exists %s",
+		t.Name,
+	)
+}
+
+func (t *Table) ddlIndexMigrationUp() (string, string, error) {
 	var indexName string
 
 	for _, column := range t.Columns {
@@ -107,7 +123,7 @@ func (t *Table) ddlIndex() (string, error) {
 
 			if _, exists := t.Indexes[column.IndexName]; exists {
 				if column.IndexType != t.Indexes[column.IndexName].Type {
-					return "",
+					return "", "",
 						fmt.Errorf(
 							"for column %s, index type (%s) is different than previous index type for index name %s",
 							column.Name,
@@ -131,21 +147,27 @@ func (t *Table) ddlIndex() (string, error) {
 	}
 
 	if len(t.Indexes) == 0 {
-		return "", nil
+		return "", "", nil
 	}
 
-	return t.renderIndexes(),
+	indexesMigrationUp, indexesMigrationDown := t.renderIndexes()
+
+	return indexesMigrationUp, indexesMigrationDown,
 		nil
 }
 
-func (t *Table) renderIndexes() string {
-	result := make([]string, 0)
+func (t *Table) renderIndexes() (string, string) {
+	resultUp, resultDown := make([]string, 0), make([]string, 0)
 
 	for indexName, indexInfo := range t.Indexes {
-		result = append(result,
-			indexInfo.render()(t.Name, indexName),
+		resultUp = append(resultUp,
+			indexInfo.migrationUp()(t.Name, indexName),
+		)
+
+		resultDown = append(resultDown,
+			indexInfo.migrationDown()(t.Name),
 		)
 	}
 
-	return strings.Join(result, "\n")
+	return strings.Join(resultUp, "\n"), strings.Join(resultDown, "\n")
 }
