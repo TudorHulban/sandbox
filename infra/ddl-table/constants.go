@@ -18,3 +18,5 @@ const (
 const _TagPointer = "*"
 
 const _FieldSeparator = ","
+
+const _indexUnique = "unique"

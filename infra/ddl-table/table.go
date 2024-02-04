@@ -176,7 +176,7 @@ func (t *Table) renderIndexes() (string, string) {
 		)
 
 		resultDown = append(resultDown,
-			indexInfo.migrationDown()(t.Name),
+			indexInfo.migrationDown()(indexName),
 		)
 	}
 

@@ -145,6 +145,12 @@ func (col *column) UpdateWith(tagValues string, alreadyHavePK bool) error {
 			col.IndexName = compoundTagValue
 		}
 
+		if tagClean == _TagIndexUnique {
+			col.IsIndexed = true
+			col.IndexType = _indexUnique
+			col.IndexName = compoundTagValue
+		}
+
 		if tagClean == _TagRequired {
 			col.IsNullable = false
 		}

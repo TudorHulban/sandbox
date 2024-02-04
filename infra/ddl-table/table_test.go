@@ -23,8 +23,17 @@ type Person struct {
 }
 
 type PersonsInGroups struct {
-	IDPersons uint `hera:"index:ix_personsingroups"`
-	IDGroups  uint `hera:"index:ix_personsingroups"`
+	IDPersons uint   `hera:"index:ix_personsingroups"`
+	IDGroups  uint   `hera:"index:ix_personsingroups"`
+	Unique    string `hera:"indexunique:ixunique"`
+}
+
+type SQLNullTypes struct {
+	SomeInteger16 sql.NullInt16
+	SomeInteger32 sql.NullInt32
+	SomeInteger64 sql.NullInt64
+
+	SomeFloat64 sql.NullFloat64
 }
 
 func TestPersonsTable(t *testing.T) {
@@ -43,6 +52,19 @@ func TestPersonsTable(t *testing.T) {
 func TestTablePersonsInGroups(t *testing.T) {
 	table, errNew := NewTable(
 		&PersonsInGroups{},
+	)
+	require.NoError(t, errNew)
+	require.NotZero(t, table)
+
+	// fmt.Println(table.Columns)
+
+	fmt.Println(table.MigrationTable)
+	fmt.Println(table.MigrationIndexes)
+}
+
+func TestTableWSQLNullTypes(t *testing.T) {
+	table, errNew := NewTable(
+		&SQLNullTypes{},
 	)
 	require.NoError(t, errNew)
 	require.NotZero(t, table)

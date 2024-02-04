@@ -21,14 +21,26 @@ func reflectToPG(reflectType string, isPK bool) (string, bool) {
 	case "int8", "int16":
 		return "smallint", false
 
+	case "sql.NullInt16":
+		return "smallint", true
+
 	case "int32":
 		return "integer", false
+
+	case "sql.NullInt32":
+		return "integer", true
 
 	case "int", "int64", "uint":
 		return "bigint", false
 
+	case "sql.NullInt64":
+		return "bigint", true
+
 	case "float64", "*float64":
-		return "numeric", false
+		return "DOUBLE PRECISION", false
+
+	case "sql.NullFloat64":
+		return "DOUBLE PRECISION", true
 
 	case "bool", "*bool":
 		return "boolean", false
