@@ -91,7 +91,7 @@ func TestGORMDDL(t *testing.T) {
 
 	require.NoError(t,
 		connGORM.Exec(
-			table.AsDDLPostgres(),
+			table.MigrationTable.Up,
 		).
 			Error,
 	)

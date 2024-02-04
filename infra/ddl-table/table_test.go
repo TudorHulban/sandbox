@@ -34,9 +34,10 @@ func TestPersonsTable(t *testing.T) {
 	require.NoError(t, errNew)
 	require.NotZero(t, table)
 
-	fmt.Println(table.Columns)
+	// fmt.Println(table.Columns)
 
-	fmt.Println(table.AsDDLPostgres())
+	fmt.Println(table.MigrationTable)
+	fmt.Println(table.MigrationIndexes)
 }
 
 func TestTablePersonsInGroups(t *testing.T) {
@@ -48,24 +49,6 @@ func TestTablePersonsInGroups(t *testing.T) {
 
 	// fmt.Println(table.Columns)
 
-	ddlTable, ddlIndexes, errDDL := table.AsDDLPostgres()
-	require.NoError(t, errDDL)
-
-	fmt.Println(ddlTable)
-	fmt.Println(ddlIndexes)
-}
-
-func BenchmarkTable(b *testing.B) {
-	table, errNew := NewTable(
-		&Person{},
-	)
-	require.NoError(b, errNew)
-	require.NotZero(b, table)
-
-	b.ResetTimer()
-	b.ReportAllocs()
-
-	for n := 0; n < b.N; n++ {
-		table.AsDDLPostgres()
-	}
+	fmt.Println(table.MigrationTable)
+	fmt.Println(table.MigrationIndexes)
 }

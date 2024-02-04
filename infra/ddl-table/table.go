@@ -7,8 +7,11 @@ import (
 
 type Table struct {
 	Name    string
-	Columns columns
-	Indexes map[string]*index
+	columns columns
+	indexes map[string]*index
+
+	MigrationTable   *Migration
+	MigrationIndexes *Migration
 }
 
 func NewTable(object any) (*Table, error) {
@@ -32,39 +35,47 @@ func NewTable(object any) (*Table, error) {
 		tableName = tableName[1:]
 	}
 
-	return &Table{
-			Name:    pluralize(tableName),
-			Columns: columns,
-			Indexes: make(map[string]*index),
-		},
+	table := Table{
+		Name:    pluralize(tableName),
+		columns: columns,
+		indexes: make(map[string]*index),
+	}
+
+	if errMigrations := table.asDDLPostgres(); errMigrations != nil {
+		return nil,
+			errMigrations
+	}
+
+	return &table,
 		nil
 }
 
-// AsDDLPostgres returns DDL Table, DDL Table index(es).
-func (t *Table) AsDDLPostgres() (*Migration, *Migration, error) {
+func (t *Table) asDDLPostgres() error {
 	ddlIndexMigrationUp, ddlIndexMigrationDown, errDDLIndex := t.ddlIndexMigrationUp()
 	if errDDLIndex != nil {
-		return nil, nil,
-			errDDLIndex
+		return errDDLIndex
 	}
 
 	if len(ddlIndexMigrationUp) == 0 && len(ddlIndexMigrationDown) == 0 {
-		return &Migration{
-				Up:   t.ddlTableMigrationUp(),
-				Down: t.ddlTableMigrationDown(),
-			},
-			nil, nil
-	}
-
-	return &Migration{
+		t.MigrationTable = &Migration{
 			Up:   t.ddlTableMigrationUp(),
 			Down: t.ddlTableMigrationDown(),
-		},
-		&Migration{
-			Up:   ddlIndexMigrationUp,
-			Down: ddlIndexMigrationDown,
-		},
-		nil
+		}
+
+		return nil
+	}
+
+	t.MigrationTable = &Migration{
+		Up:   t.ddlTableMigrationUp(),
+		Down: t.ddlTableMigrationDown(),
+	}
+
+	t.MigrationIndexes = &Migration{
+		Up:   ddlIndexMigrationUp,
+		Down: ddlIndexMigrationDown,
+	}
+
+	return nil
 }
 
 func (t *Table) ddlTableMigrationUp() string {
@@ -74,11 +85,11 @@ func (t *Table) ddlTableMigrationUp() string {
 		"(",
 	}
 
-	for ix, column := range t.Columns {
+	for ix, column := range t.columns {
 		ddl := column.AsDDLPostgres()
 
 		if len(ddl) == 0 {
-			if ix == len(t.Columns)-1 {
+			if ix == len(t.columns)-1 {
 				if High[string](result) == _FieldSeparator {
 					result = Pop[string](result)
 				}
@@ -91,7 +102,7 @@ func (t *Table) ddlTableMigrationUp() string {
 			ddl,
 		)
 
-		if ix < len(t.Columns)-1 {
+		if ix < len(t.columns)-1 {
 			result = append(result,
 				_FieldSeparator,
 			)
@@ -105,7 +116,7 @@ func (t *Table) ddlTableMigrationUp() string {
 
 func (t *Table) ddlTableMigrationDown() string {
 	return fmt.Sprintf(
-		"drop table if exists %s",
+		"drop table if exists %s;",
 		t.Name,
 	)
 }
@@ -113,7 +124,7 @@ func (t *Table) ddlTableMigrationDown() string {
 func (t *Table) ddlIndexMigrationUp() (string, string, error) {
 	var indexName string
 
-	for _, column := range t.Columns {
+	for _, column := range t.columns {
 		if column.IsIndexed {
 			if len(column.IndexName) == 0 {
 				indexName = t.Name + "_idx"
@@ -121,8 +132,8 @@ func (t *Table) ddlIndexMigrationUp() (string, string, error) {
 				indexName = column.IndexName
 			}
 
-			if _, exists := t.Indexes[column.IndexName]; exists {
-				if column.IndexType != t.Indexes[column.IndexName].Type {
+			if _, exists := t.indexes[column.IndexName]; exists {
+				if column.IndexType != t.indexes[column.IndexName].Type {
 					return "", "",
 						fmt.Errorf(
 							"for column %s, index type (%s) is different than previous index type for index name %s",
@@ -132,12 +143,12 @@ func (t *Table) ddlIndexMigrationUp() (string, string, error) {
 						)
 				}
 
-				t.Indexes[indexName].ColumnNames = append(t.Indexes[indexName].ColumnNames, column.Name)
+				t.indexes[indexName].ColumnNames = append(t.indexes[indexName].ColumnNames, column.Name)
 
 				continue
 			}
 
-			t.Indexes[indexName] = &index{
+			t.indexes[indexName] = &index{
 				Type: column.IndexType,
 				ColumnNames: []string{
 					column.Name,
@@ -146,7 +157,7 @@ func (t *Table) ddlIndexMigrationUp() (string, string, error) {
 		}
 	}
 
-	if len(t.Indexes) == 0 {
+	if len(t.indexes) == 0 {
 		return "", "", nil
 	}
 
@@ -159,7 +170,7 @@ func (t *Table) ddlIndexMigrationUp() (string, string, error) {
 func (t *Table) renderIndexes() (string, string) {
 	resultUp, resultDown := make([]string, 0), make([]string, 0)
 
-	for indexName, indexInfo := range t.Indexes {
+	for indexName, indexInfo := range t.indexes {
 		resultUp = append(resultUp,
 			indexInfo.migrationUp()(t.Name, indexName),
 		)

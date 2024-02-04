@@ -40,11 +40,11 @@ func TestStoredProcedures(t *testing.T) {
 
 	_, errCreateTable := pgxSimple.dbSimple.Exec(
 		ctx,
-		table.AsDDLPostgres(),
+		table.MigrationTable.Up,
 	)
 	require.NoError(t, errCreateTable)
 
-	fmt.Println(table.AsDDLPostgres())
+	fmt.Println(table.MigrationTable.Up)
 
 	now := time.Now().UnixNano()
 

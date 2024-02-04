@@ -71,7 +71,7 @@ func TestContainer1(t *testing.T) {
 
 	_, errCreateTable := pgxSimple.dbSimple.Exec(
 		ctx,
-		table.AsDDLPostgres(),
+		table.MigrationTable.Up,
 	)
 	require.NoError(t, errCreateTable)
 
@@ -124,7 +124,7 @@ func TestContainer2(t *testing.T) {
 
 	_, errExec := pgxSimple.dbSimple.Exec(
 		ctx,
-		table.AsDDLPostgres(),
+		table.MigrationTable.Up,
 	)
 	require.NoError(t, errExec)
 
