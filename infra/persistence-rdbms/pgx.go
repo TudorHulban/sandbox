@@ -22,6 +22,8 @@ var _dbConnection *pgxpool.Pool
 var mu sync.RWMutex
 
 func connectPGXWithRetries(ctx context.Context, params *paramsConnectPGXWithRetries) (*pgxpool.Pool, error) {
+	var errResult error
+
 	for i := 0; i < int(params.NoRetries); i++ {
 		connPGXPool, errConnPGXPool := pgxpool.New(
 			ctx,
@@ -32,22 +34,26 @@ func connectPGXWithRetries(ctx context.Context, params *paramsConnectPGXWithRetr
 		}
 
 		if i == int(params.NoRetries) {
-			return nil,
-				apperrors.ErrCausedByInfrastructure{
-					Caller:  "connectPGXWithRetries",
-					Calling: "pgxpool.New",
-					Issue: fmt.Errorf(
-						"database not ready after %d retries:%w",
-						params.NoRetries,
-						errConnPGXPool,
-					),
-				}
+			errResult = apperrors.ErrCausedByInfrastructure{
+				Caller:  "connectPGXWithRetries",
+				Calling: "pgxpool.New",
+				Issue: fmt.Errorf(
+					"database not ready after %d retries:%w",
+					params.NoRetries,
+					errConnPGXPool,
+				),
+			}
+
+			break
 		}
 
 		time.Sleep(
 			params.FNRetry(uint(i)),
 		)
 	}
+
+	return nil,
+		errResult
 }
 
 func GetPostgresDBConnection(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
@@ -68,7 +74,7 @@ func GetPostgresDBConnection(ctx context.Context, dsn string) (*pgxpool.Pool, er
 			DSN:       dsn,
 			NoRetries: 3,
 			FNRetry: func(numberRetry uint) time.Duration {
-				return time.Millisecond * 1500 * time.Duration(numberRetry)
+				return time.Millisecond * 1500 * time.Duration(numberRetry+1)
 			},
 		},
 	)
