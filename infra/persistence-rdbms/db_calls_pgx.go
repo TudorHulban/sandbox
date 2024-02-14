@@ -75,6 +75,28 @@ func (pgx *dbPGXSimple) GetProductByPKSimple(ctx context.Context, pk int, result
 		)
 }
 
+func (pgx *dbPGXSimple) GetCountFromTable(ctx context.Context, tableName string) (int, error) {
+	var result int
+
+	errCount := pgx.dbSimple.QueryRow(
+		ctx,
+		fmt.Sprintf(
+			"select count(*) as count from %s",
+			tableName,
+		),
+	).Scan(
+		&result,
+	)
+
+	if errCount != nil {
+		return 0,
+			errCount
+	}
+
+	return result,
+		nil
+}
+
 func (pgx *dbPGX) GetProductByPKSimple(ctx context.Context, pk int, result *Product) error {
 	return pgx.dbSimple.QueryRow(
 		ctx,

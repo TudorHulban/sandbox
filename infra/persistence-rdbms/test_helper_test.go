@@ -41,12 +41,30 @@ func GetTestContainerPG(t *testing.T) (*postgres.PostgresContainer, func()) {
 		}
 }
 
-func GetTestContainerFlyway(t *testing.T) (*testcontainerflyway.ContainerFlyway, error) {
+type ParamsGetTestContainerFlyway struct {
+	MigrationsAbsolutePath string
+	ExternalPGPort         uint
+}
+
+func GetTestContainerFlyway(params *ParamsGetTestContainerFlyway, t *testing.T) (*testcontainerflyway.ContainerFlyway, func()) {
 	ctx := context.Background()
 
-	result, errContainer := testcontainerflyway.NewContainerFlyway(
+	result, errContainer := testcontainerflyway.RunContainer(
 		ctx,
-		&testcontainerflyway.ConfigFlyway{},
+
+		&testcontainerflyway.ConfigFlyway{
+			MigrationsPath: params.MigrationsAbsolutePath,
+
+			DBName:   paramsPG.DBName,
+			User:     paramsPG.User,
+			Password: paramsPG.Password,
+
+			Port: params.ExternalPGPort,
+		},
+		testcontainers.WithWaitStrategy(
+			wait.ForLog("Flyway OSS Edition").
+				WithStartupTimeout(10*time.Second),
+		),
 	)
 	require.NoError(t, errContainer)
 

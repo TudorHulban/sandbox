@@ -8,19 +8,19 @@ import (
 )
 
 type ConfigFlyway struct {
-	migrationsPath string
+	MigrationsPath string
 
-	dbName   string
-	user     string
-	password string
-	port     uint
+	DBName   string
+	User     string
+	Password string
+	Port     uint
 }
 
 func (c ConfigFlyway) AsURL() string {
 	return fmt.Sprintf(
 		"jdbc:postgresql://localhost:%d/%s",
-		c.port,
-		c.dbName,
+		c.Port,
+		c.DBName,
 	)
 }
 
@@ -30,18 +30,25 @@ type ContainerFlyway struct {
 	*ConfigFlyway
 }
 
-func NewContainerFlyway(ctx context.Context, cfg *ConfigFlyway, options ...testcontainers.ContainerCustomizer) (*ContainerFlyway, error) {
+func RunContainer(ctx context.Context, cfg *ConfigFlyway, options ...testcontainers.ContainerCustomizer) (*ContainerFlyway, error) {
 	req := testcontainers.ContainerRequest{
 		Image: "flyway/flyway:8.2.2",
 		Env: map[string]string{
-			"URL":      cfg.AsURL(),
-			"USER":     cfg.user,
-			"PASSWORD": cfg.password,
+			"FLYWAY_URL":      cfg.AsURL(),
+			"FLYWAY_USER":     cfg.User,
+			"FLYWAY_PASSWORD": cfg.Password,
 		},
 		Files: []testcontainers.ContainerFile{
 			{
-				HostFilePath: cfg.migrationsPath,
+				HostFilePath:      cfg.MigrationsPath,
+				ContainerFilePath: "/flyway/sql",
 			},
+		},
+		Networks: []string{
+			"host",
+		},
+		Cmd: []string{
+			"migrate",
 		},
 	}
 
