@@ -18,7 +18,7 @@ var (
 )
 
 type httpResponse struct {
-	Msg   string   `json:"message"` //with capital so it is exported
+	Msg   string   `json:"message"`
 	Users []string `json:"users"`
 }
 
@@ -28,11 +28,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	response := httpResponse{Msg: "xxxx", Users: users}
+
 	json.NewEncoder(w).Encode(response)
 }
 
 func main() {
-	fmt.Println("Running...")
+	fmt.Printf("running on port: %s\n", port)
 
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("dist/img"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("dist/js"))))
@@ -45,22 +46,22 @@ func main() {
 	go func() {
 		fmt.Println("started: ", time.Now().UTC())
 
-		err := server.ListenAndServe()
-		if err != nil {
+		if err := server.ListenAndServe(); err != nil {
 			log.Println("error: ", err)
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
+
 	signal.Notify(quit, os.Interrupt)
 	<-quit
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := server.Shutdown(ctx)
-	if err != nil {
-		log.Println("error: ", err)
+	if errShutdown := server.Shutdown(ctx); errShutdown != nil {
+		log.Println("error: ", errShutdown)
 	}
+
 	fmt.Println("server stopped", time.Now().UTC())
 }

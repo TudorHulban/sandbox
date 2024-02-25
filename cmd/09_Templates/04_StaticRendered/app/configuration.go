@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/TudorHulban/log"
-	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
 
@@ -30,11 +29,11 @@ type ConfigFile struct {
 }
 
 type InfoSite struct {
-	ListeningPort int    `yaml:"port"`
-	Host          string `yaml:"host"`
-
 	FaviconImagePath string
 	SiteLogoPath     string
+
+	Host          string `yaml:"host"`
+	ListeningPort int    `yaml:"port"`
 }
 
 type InfoArticles struct {
@@ -43,14 +42,14 @@ type InfoArticles struct {
 }
 
 type ConfigurationApp struct {
-	ConfigFile `yaml:"config-file"`
+	HTMLPageTemplate
 
 	L *log.Logger `yaml:"-"`
 
+	ConfigFile `yaml:"config-file"`
+
 	InfoSite     `yaml:"site"`
 	InfoArticles `yaml:"articles"`
-
-	HTMLPageTemplate
 }
 
 func NewAppConfiguration(importPath string, logLevel int) (*ConfigurationApp, error) {
@@ -69,8 +68,8 @@ func NewAppConfiguration(importPath string, logLevel int) (*ConfigurationApp, er
 	}
 
 	var result struct {
-		InfoSite
 		HTMLPageTemplate
+		InfoSite
 	}
 
 	if errUnmarshal := json.Unmarshal(data, &result); errUnmarshal != nil {
@@ -84,16 +83,20 @@ func NewAppConfiguration(importPath string, logLevel int) (*ConfigurationApp, er
 	return &ConfigurationApp{
 			InfoSite:         result.InfoSite,
 			HTMLPageTemplate: result.HTMLPageTemplate,
-			L:                log.NewLogger(log.DEBUG, os.Stdout, true),
+
+			L: log.NewLogger(log.DEBUG, os.Stdout, true),
 		},
 		nil
 }
 
-func (cfg *ConfigurationApp) SaveConfiguration(w io.Writer) (n int, err error) {
+func (cfg *ConfigurationApp) SaveConfiguration(w io.Writer) (int, error) {
 	configuration, errMarshal := yaml.Marshal(cfg)
 	if errMarshal != nil {
 		return 0,
-			errors.WithMessage(errMarshal, "could not unmarshal configuration")
+			fmt.Errorf(
+				"unmarshaling configuration: %w",
+				errMarshal,
+			)
 	}
 
 	return w.Write(configuration)
@@ -102,13 +105,16 @@ func (cfg *ConfigurationApp) SaveConfiguration(w io.Writer) (n int, err error) {
 func (cfg *ConfigurationApp) SaveConfigurationTo(path string) error {
 	configuration, errMarshal := yaml.Marshal(cfg)
 	if errMarshal != nil {
-		return errors.WithMessage(errMarshal, "could not unmarshal configuration")
+		return fmt.Errorf(
+			"unmarshaling configuration: %w",
+			errMarshal,
+		)
 	}
 
 	return os.WriteFile(
 		path,
 		configuration,
-		0644,
+		0o600,
 	)
 }
 

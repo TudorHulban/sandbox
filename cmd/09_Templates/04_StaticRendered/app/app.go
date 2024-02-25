@@ -75,7 +75,6 @@ func NewApp(configurationFilePath string) (*App, error) {
 
 	return &app,
 		nil
-
 }
 
 func (a *App) addRoutes() {

@@ -17,7 +17,9 @@ func main() {
 		os.Exit(apperrors.OSExitForAppInitialization)
 	}
 
-	defer application.SaveConfigurationTo(constants.ConfigFilePathBackup)
+	defer func() {
+		application.SaveConfigurationTo(constants.ConfigFilePathBackup)
+	}()
 
 	if errStart := application.Start(); errStart != nil {
 		fmt.Println(errStart)

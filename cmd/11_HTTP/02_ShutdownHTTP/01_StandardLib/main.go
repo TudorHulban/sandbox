@@ -23,7 +23,10 @@ func handleInterrupt(serverHTTP *http.Server, terminationSecs uint8) {
 	// we can now shutdown
 	log.Println("shutting down...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(int(terminationSecs))*time.Second)
+	ctx, cancel := context.WithTimeout(
+		context.Background(),
+		time.Duration(int(terminationSecs))*time.Second,
+	)
 	defer cancel()
 
 	if errShutdown := serverHTTP.Shutdown(ctx); errShutdown != nil {

@@ -13,9 +13,10 @@ import (
 type retryInterval func(numberRetry uint) time.Duration
 
 type paramsConnectPGXWithRetries struct {
-	DSN       string
+	FNRetry retryInterval
+	DSN     string
+
 	NoRetries uint
-	FNRetry   retryInterval
 }
 
 var _dbConnection *pgxpool.Pool

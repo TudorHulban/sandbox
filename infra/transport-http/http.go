@@ -14,17 +14,17 @@ import (
 )
 
 type Transport struct {
-	Port uint16
-	Host string
-
 	server *http.Server
+
+	Host string
+	Port uint16
 }
 
 type ParamTransportSocket struct {
+	Handlers http.Handler
+
 	Port string `valid:"port"`
 	Host string `valid:"host"`
-
-	Handlers http.Handler
 }
 
 func NewTransport(params *ParamTransportSocket) (*Transport, error) {

@@ -11,7 +11,7 @@ type ConfigPostgres struct {
 
 	MaxIdleConnections           int  `env:"MAX_IDLE_CONNECTIONS" envDefault:"10" valid:"range(1|50)"`
 	MaxOpenConnections           int  `env:"MAX_OPEN_CONNECTIONS" envDefault:"10" valid:"range(1|50)"`
-	MaxConnectionLifetimeMinutes int  `env:"MAX_CONNECTION_LIFETIME_MINUTES" envDefault:"10" valid:"range(1|300)"`
+	MaxConnectionLifetimeMinutes int  `env:"MAX_CONNECTION_LIFETIME_MINUTES" envDefault:"10" valid:"range(1|300)"` //nolint:lll
 	UseDefaultTransaction        bool `env:"USE_DEFAULT_TRANSACTION" envDefault:"false"`
 }
 

@@ -31,7 +31,7 @@ func TestHTTP(t *testing.T) {
 	require.NoError(t, errNew)
 	require.NotZero(t, transportHTTP)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(time.Millisecond*2500))
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*2500)
 	defer cancel()
 
 	transportHTTP.Start(ctx)

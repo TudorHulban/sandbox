@@ -3,13 +3,12 @@ package main
 import (
 	"crypto/sha256"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 )
 
 func createFile(path, fileContent string) error {
-	return ioutil.WriteFile(path, []byte(fileContent), 0644)
+	return os.WriteFile(path, []byte(fileContent), 0o600)
 }
 
 func deleteFile(path string) error {

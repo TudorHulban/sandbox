@@ -1,7 +1,7 @@
 package blog
 
-// IArticles interface added for different implementations / types of persistance.
-// Blog types should save automatically articles to persistance when there is a change.
+// IArticles interface added for different implementations / types of persistence.
+// Blog types should save automatically articles to persistence when there is a change.
 type IBlog interface {
 	RenderArticles() error
 

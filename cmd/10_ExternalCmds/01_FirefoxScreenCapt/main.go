@@ -16,7 +16,7 @@ const (
 )
 
 func init() {
-	runCmd("bash", "cleanpng.sh")
+	_ = runCmd("bash", "cleanpng.sh")
 }
 
 func main() {
@@ -36,15 +36,24 @@ func capture(url string, wg *sync.WaitGroup) {
 	imgPath := ramDisk + urlHash + ".png"
 
 	scriptName := urlHash + ".sh"
-	createFile(scriptName, cmd+imgPath+" "+url)
+	_ = createFile(scriptName, cmd+imgPath+" "+url)
 
 	t := time.Now()
-	runCmd("bash", scriptName)
+
+	if errScript := runCmd("bash", scriptName); errScript != nil {
+		fmt.Printf(
+			"capture url: %s: %s\n",
+			url,
+			errScript.Error(),
+		)
+
+		return
+	}
 
 	elapsed := time.Since(t).Milliseconds()
 	fmt.Printf("script took %d miliseconds to run.\n", elapsed)
 
 	fmt.Printf("file %s exists? - %s\n", imgPath, strconv.FormatBool(existsFile(imgPath)))
 
-	deleteFile(scriptName)
+	_ = deleteFile(scriptName)
 }

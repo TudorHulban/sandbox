@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -26,7 +26,7 @@ func (c client) upperCase(word string) (string, error) {
 	}
 	defer response.Body.Close()
 
-	body, errRead := ioutil.ReadAll(response.Body)
+	body, errRead := io.ReadAll(response.Body)
 	if errRead != nil {
 		return "", fmt.Errorf("body error: %w", errGet)
 	}

@@ -17,12 +17,13 @@ type Article struct {
 	HTMLTemplateFile  string `json:"html"`
 	FeaturedImagePath string `json:"featuredimage"`
 
+	RelatedProductsCategories []string `json:"relatedcateg"`
+	RelatedProductsSKUs       []uint64 `json:"relatedsku"`
+
 	Created     uint64 `json:"created"` // UNIX time seconds
 	LastUpdated uint64 `json:"updated"` // UNIX time seconds
-	IsVisible   bool   `json:"visible"`
 
-	RelatedProductsSKUs       []uint64 `json:"relatedsku"`
-	RelatedProductsCategories []string `json:"relatedcateg"`
+	IsVisible bool `json:"visible"`
 }
 
 func NewArticle(fromPath string) (*Article, error) {

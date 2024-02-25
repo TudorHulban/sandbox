@@ -52,8 +52,8 @@ func TestStoredProcedures(t *testing.T) {
 	testItem := Product{
 		ID: 1,
 
-		CreatedAt: int64(now),
-		UpdatedAt: int64(now),
+		CreatedAt: now,
+		UpdatedAt: now,
 
 		Code:  "D43",
 		Price: 100,

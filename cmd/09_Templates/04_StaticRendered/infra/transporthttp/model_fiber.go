@@ -31,7 +31,8 @@ func NewHTTPServer(cfg *Cfg) (*HTTPSServer, error) {
 	return &result, nil
 }
 
-func (s *HTTPSServer) Start() {
+func (s *HTTPSServer) Start() error {
 	s.server.Static("/", s.cfg.StaticAssetsFolder)
-	s.server.Listen(":" + strconv.Itoa(s.cfg.ListenPort))
+
+	return s.server.Listen(":" + strconv.Itoa(s.cfg.ListenPort))
 }

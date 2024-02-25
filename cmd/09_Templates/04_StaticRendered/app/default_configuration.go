@@ -58,7 +58,7 @@ func defaultConfiguration(options ...Option) (*ConfigurationApp, error) {
 
 	if _, err := os.Stat(renderToFolder); err != nil {
 		if os.IsNotExist(err) {
-			os.Mkdir(renderToFolder, os.ModePerm)
+			_ = os.Mkdir(renderToFolder, os.ModePerm)
 		}
 	}
 

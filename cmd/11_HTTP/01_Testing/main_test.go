@@ -14,9 +14,13 @@ func TestClientUpperCase(t *testing.T) {
 	word := "xxx"
 	expectedResponse := "XXX"
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "%s", expectedResponse)
-	}))
+	server := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintf(w, "%s", expectedResponse)
+			},
+		),
+	)
 	defer server.Close()
 
 	client := newClient(server.URL)

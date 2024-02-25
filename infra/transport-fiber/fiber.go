@@ -9,10 +9,10 @@ import (
 )
 
 type Transport struct {
-	Port uint16
-	Host string
-
 	app *fiber.App
+
+	Host string
+	Port uint16
 }
 
 type ParamTransportSocket struct {
@@ -42,9 +42,10 @@ func NewTransport(params *ParamTransportSocket) (*Transport, error) {
 }
 
 type ParamAddRoute struct {
-	Method  string
-	Path    string
 	Handler func(*fiber.Ctx) error
+
+	Method string
+	Path   string
 }
 
 func (t *Transport) AddRoute(params *ParamAddRoute) {
