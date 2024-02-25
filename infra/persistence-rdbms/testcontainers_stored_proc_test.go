@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	ddltable "github.com/TudorHulban/GolangSandbox/infra/ddl-table"
+	ddltable "github.com/TudorHulban/DDLTable"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,6 +26,7 @@ func TestStoredProcedures(t *testing.T) {
 	require.NoError(t, errConnection)
 
 	table, errNew := ddltable.NewTable(
+		_DDLRoot,
 		&Product{},
 	)
 	require.NoError(t, errNew)

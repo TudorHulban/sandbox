@@ -1,5 +1,7 @@
 package main
 
+const _DDLRoot = "hera"
+
 var paramsPG = ConfigPostgres{
 	DBName:   "sandbox",
 	User:     "postgres",

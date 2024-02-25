@@ -1,11 +1,12 @@
 module github.com/TudorHulban/GolangSandbox
 
-go 1.20
+go 1.21.6
 
 require (
+	github.com/TudorHulban/DDLTable v0.0.0-20240224114245-fcae0952bdb6
 	github.com/TudorHulban/log v0.0.0-20220417102515-4df74e30f0a0
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
-	github.com/gertd/go-pluralize v0.2.1
+	github.com/docker/go-connections v0.4.0
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/gorilla/mux v1.8.1
@@ -40,8 +41,8 @@ require (
 	github.com/dgryski/go-gk v0.0.0-20200319235926-a69029f61654 // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/docker/docker v24.0.7+incompatible // indirect
-	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
+	github.com/gertd/go-pluralize v0.2.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect

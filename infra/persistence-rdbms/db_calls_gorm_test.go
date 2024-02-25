@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	ddltable "github.com/TudorHulban/GolangSandbox/infra/ddl-table"
+	ddltable "github.com/TudorHulban/DDLTable"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -84,6 +84,7 @@ func TestGORMDDL(t *testing.T) {
 	require.NoError(t, errConnGORM)
 
 	table, errNew := ddltable.NewTable(
+		_DDLRoot,
 		&Product{},
 	)
 	require.NoError(t, errNew)
