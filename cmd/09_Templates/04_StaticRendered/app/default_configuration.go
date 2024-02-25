@@ -62,7 +62,7 @@ func defaultConfiguration(options ...Option) (*ConfigurationApp, error) {
 		}
 	}
 
-	result.SaveConfigurationTo(result.AppFile)
+	_ = result.SaveConfigurationTo(result.AppFile)
 
 	return result, nil
 }

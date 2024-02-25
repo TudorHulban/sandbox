@@ -16,8 +16,8 @@ func main() {
 	e.GET("/", defaultRouteHandler)
 	e.POST("/login", loginRouteHandler)
 
-	var logLevel log.Lvl
-	logLevel = 2
+	var logLevel log.Lvl = 2
+
 	e.Logger.SetLevel(logLevel)
 	e.HideBanner = true
 	e.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
@@ -38,6 +38,7 @@ func customGenerator(noDigits int) string {
 	for i := range token {
 		token[i] = letterRunes[randomNumber(len(letterRunes))]
 	}
+
 	return string(token) + timestamp
 }
 
