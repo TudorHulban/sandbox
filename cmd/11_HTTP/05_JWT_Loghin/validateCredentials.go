@@ -9,9 +9,8 @@ type UserData struct {
 	IsAdmin bool `json:"isadmin"`
 }
 
+// TODO: validate credentials against persistence.
 func ValidateCredentials(user, password string) (*UserData, error) {
-	// TODO: validate credentials against persistence.
-
 	return &UserData{
 			FirstName: "John",
 			LastName:  "Smith",

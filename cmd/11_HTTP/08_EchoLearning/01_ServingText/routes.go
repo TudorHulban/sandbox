@@ -13,12 +13,14 @@ func defaultRouteHandler(c echo.Context) error {
 }
 
 func loginRouteHandler(c echo.Context) error {
-	vals, err := c.FormParams()
+	valuesForm, err := c.FormParams()
 	if err != nil {
 		log.Fatal("loginRouteHandler:", err)
 	}
-	for k, v := range vals {
-		fmt.Println(k, v[0])
+
+	for key, value := range valuesForm {
+		fmt.Println(key, value[0])
 	}
+
 	return err
 }

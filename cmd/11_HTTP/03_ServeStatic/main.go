@@ -29,7 +29,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	response := httpResponse{Msg: "xxxx", Users: users}
 
-	json.NewEncoder(w).Encode(response)
+	_ = json.NewEncoder(w).Encode(response)
 }
 
 func main() {

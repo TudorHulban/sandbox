@@ -1,9 +1,0 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/mnt/tmpfs.ramdisk/GolangSandbox/12_GraphQL/01_Template'
-rm -rf .vscode graph vendor
-rm -rf server.go go.sum go.mod tools.go gqlgen.yml
-printf '// +build tools\npackage tools\nimport _ "github.com/99designs/gqlgen"' | gofmt > tools.go
-go mod init testq
-go get github.com/99designs/gqlgen
-make: Leaving directory '/mnt/tmpfs.ramdisk/GolangSandbox/12_GraphQL/01_Template'
- 

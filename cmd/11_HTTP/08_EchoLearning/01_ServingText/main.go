@@ -13,6 +13,7 @@ import (
 
 func main() {
 	e := echo.New()
+
 	e.GET("/", defaultRouteHandler)
 	e.POST("/login", loginRouteHandler)
 
@@ -31,7 +32,7 @@ func main() {
 func customGenerator(noDigits int) string {
 	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 
-	var letterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	letterRunes := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	digits := math.Max(float64(len(timestamp)+1), float64(noDigits))
 	token := make([]rune, int(digits)-len(timestamp))
 
@@ -46,6 +47,6 @@ func randomNumber(maximum int) int {
 	if maximum < 1 {
 		return 0
 	}
-	theNumber := rand.Intn(maximum)
-	return theNumber
+
+	return rand.Intn(maximum)
 }

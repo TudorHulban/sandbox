@@ -11,8 +11,8 @@ const ramDisk = ""
 const cmd = "firefox -headless --screenshot "
 
 const (
-	u1 = "https://www.olx.ro/d/oferta/vand-pastura-cruda-100-naturala-135-lei-kg-IDc0lxY.html?reason=observed_ad"
-	u2 = "https://www.olx.ro/d/oferta/vand-pastura-direct-de-la-stupina-apicultor-sj-IDcfuXA.html?reason=observed_ad"
+	u1 = "https://www.olx.ro"
+	u2 = "https://www.olx.ro"
 )
 
 func init() {

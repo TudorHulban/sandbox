@@ -7,27 +7,6 @@ import (
 	"text/template"
 )
 
-// Person concentrates data for rendering the template.
-type Person struct {
-	Name  string
-	Tasks []string
-	Age   int
-}
-
-func main() {
-	person := Person{
-		Name:  "John",
-		Age:   16,
-		Tasks: []string{"T1", "T2", "T3"},
-	}
-
-	w := os.Stdout
-
-	f1(w, "template_name", person)
-	f2(w, "t2.tmpl", person)
-	f3(w, "t2.tmpl", "t2.csv", person)
-}
-
 // f1 renders template to stdout.
 func f1(w io.Writer, templateName string, model Person) {
 	t := template.New(templateName)

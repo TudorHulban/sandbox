@@ -20,19 +20,16 @@ func main() {
 }
 
 func serve(c *fiber.Ctx) error {
-	p1 := Person{
-		Name: "John",
-		Age:  34,
+	team := []Person{
+		{
+			Name: "John",
+			Age:  34,
+		},
+		{
+			Name: "Ann",
+			Age:  32,
+		},
 	}
 
-	p2 := Person{
-		Name: "Ann",
-		Age:  32,
-	}
-
-	team := []Person{p1, p2}
-
-	c.JSON(team)
-
-	return nil
+	return c.JSON(team)
 }
