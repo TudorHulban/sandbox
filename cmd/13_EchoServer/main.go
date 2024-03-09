@@ -37,6 +37,7 @@ func main() {
 		log.Println("listener error: ", errListen)
 		os.Exit(1)
 	}
+
 	log.Println("listening on ", socket)
 
 	for {

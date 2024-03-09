@@ -13,7 +13,7 @@ import (
 
 const urlBinance = "wss://stream.binance.com:9443/ws/bnb@kline_1m"
 
-func webSocketConnection(requestHeader http.Header, url *url.URL) (*websocket.Conn, *http.Response, error) {
+func webSocketConnection(_ http.Header, url *url.URL) (*websocket.Conn, *http.Response, error) {
 	log.Printf("connecting to %s", url.String())
 
 	return websocket.DefaultDialer.Dial(url.String(), nil)
@@ -52,12 +52,14 @@ func sendingMessages(connection *websocket.Conn, messages <-chan string, interru
 
 		case <-interrupt:
 			{
-
 				log.Println("interrupt")
 
 				// Cleanly close the connection by sending a close message and then
 				// waiting (with timeout) for the server to close the connection.
-				errClosing := connection.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+				errClosing := connection.WriteMessage(
+					websocket.CloseMessage,
+					websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
+				)
 				if errClosing != nil {
 					log.Println("closing communication:", errClosing)
 					return
@@ -72,21 +74,23 @@ func sendingMessages(connection *websocket.Conn, messages <-chan string, interru
 }
 
 func main() {
-	// u := url.URL{
-	// 	Scheme: "ws",
-	// 	Host:   "localhost:7000",
-	// 	Path:   "/echo",
-	// }
-
-	u, errParse := url.Parse(urlBinance)
-	if errParse != nil {
-		log.Println("read:", errParse)
-		os.Exit(1)
+	u := url.URL{
+		Scheme: "ws",
+		Host:   "localhost:7000",
+		Path:   "/echo",
 	}
 
-	conn, _, errConnect := webSocketConnection(nil, u)
+	// u, errParse := url.Parse(urlBinance)
+	// if errParse != nil {
+	// 	log.Println("read:", errParse)
+
+	// 	os.Exit(1)
+	// }
+
+	conn, _, errConnect := webSocketConnection(nil, &u)
 	if errConnect != nil {
 		log.Println("read:", errConnect)
+
 		os.Exit(2)
 	}
 

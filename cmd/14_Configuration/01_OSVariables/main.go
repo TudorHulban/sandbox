@@ -31,9 +31,7 @@ func main() {
 		log.Error().Msg(errParse.Error())
 	}
 
-	fmt.Printf("%#v", config)
-	// main.Configuration{
-	// ConfigPorts:main.ConfigPorts{Port1:"9001", Port2:"9002"},
-	// Endpoints:main.Endpoints{Endpoint1:"abcd", Endpoint2:"efgh"},
-	// DevelopmentMode:true}
+	fmt.Printf("%+v\n", config)
+	// should print:
+	// {ConfigPorts:{Port1:9001 Port2:9002} Endpoints:{Endpoint1:abcd Endpoint2:efgh} DevelopmentMode:true}
 }
