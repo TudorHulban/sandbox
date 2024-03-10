@@ -1,22 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 )
-
-const thePath = "/home/tudi/ram"
-
-func main() {
-	allFiles := make([]string, 0)
-
-	doPathWalk(thePath, &allFiles) //AllFiles now contains files in subfolders of APath
-
-	for _, f := range allFiles {
-		fmt.Println(f)
-	}
-}
 
 func doPathWalk(folder string, files *[]string) error {
 	fullPath, err := filepath.Abs(folder)
@@ -24,15 +11,15 @@ func doPathWalk(folder string, files *[]string) error {
 		return err
 	}
 
-	callback := func(path string, fi os.FileInfo) error {
+	callback := func(path string, fi os.FileInfo, err error) error {
 		return hashFile(fullPath, path, fi, files)
 	}
 
 	return filepath.Walk(fullPath, callback)
 }
 
-func hashFile(root, path string, fi os.FileInfo, files *[]string) error {
-	if fi.IsDir() {
+func hashFile(root, path string, fileInfo os.FileInfo, files *[]string) error {
+	if fileInfo.IsDir() {
 		return nil
 	}
 
