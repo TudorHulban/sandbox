@@ -3,6 +3,7 @@ package archiving
 import (
 	"testing"
 
+	"github.com/TudorHulban/GolangSandbox/helpers"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,6 +16,6 @@ func TestZip(t *testing.T) {
 		z.CompressFile(fileName),
 	)
 	require.True(t,
-		fileExists(fileName+zipExtension),
+		helpers.FileExists(fileName+zipExtension),
 	)
 }

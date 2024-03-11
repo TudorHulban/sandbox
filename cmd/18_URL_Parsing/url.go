@@ -8,13 +8,11 @@ import (
 )
 
 func NewURL(parts ...string) (string, error) {
-	var res []string
-	res = append(res, parts...)
-
-	url := strings.Join(res, "/")
+	url := "http://" + strings.Join(parts, "/")
 
 	if !govalidator.IsURL(url) {
-		return "", fmt.Errorf("parts '%s' are not a URL", url)
+		return "",
+			fmt.Errorf("parts '%s' are not a URL", url)
 	}
 
 	return url, nil

@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
-	"log"
 	"net"
 )
 
@@ -15,19 +15,22 @@ func handleConn(connection net.Conn) {
 		bytes, errReader := reader.ReadBytes(byte('\n'))
 		if errReader != nil {
 			if errReader != io.EOF {
-				log.Println("failed to read data", errReader)
+				fmt.Println("failed to read data", errReader)
 			}
+
 			return
 		}
 
 		request := string(bytes)
-		log.Println("request: ", request)
+		fmt.Println("request: ", request)
 
 		resp, err := doWork(request)
 		if err != nil {
 			connection.Write([]byte("try later" + "\n"))
+
 			continue
 		}
+
 		connection.Write([]byte(resp + "\n"))
 	}
 }
