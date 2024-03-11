@@ -3,7 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -16,28 +17,29 @@ type jsonAnswer struct {
 }
 
 type request struct {
-	code    string // producer code
-	id      int64
-	ttl     int64
-	payload []string
+	codeProducer string
+	id           int64
+	ttl          int64
+	payload      []string
 }
 
 func registerWithBroker() (string, error) {
 	json := `{"code": "` + producerCode + `", "ip":"` + ip + `"}`
-	//log.Println("json:", json)
+
 	return jsonRequest(brokerAPIurl, routeRegister, json, "POST")
 }
 
-// postEvent - TODO: refactor
+// TODO: refactor
 func postRequest(req request) (string, error) {
-	json := `{"code": "` + req.code + `", "id":` + strconv.FormatInt(req.id, 10) + `,"ttl":` + strconv.FormatInt(req.ttl, 10) + `,"payload":["` + strings.Join(req.payload[:], "\", \"") + `"]}`
-	log.Println("json:", json)
+	json := `{"code": "` + req.codeProducer + `", "id":` + strconv.FormatInt(req.id, 10) + `,"ttl":` + strconv.FormatInt(req.ttl, 10) + `,"payload":["` + strings.Join(req.payload[:], "\", \"") + `"]}`
+
+	fmt.Println("JSON:", json)
 
 	return jsonRequest(brokerAPIurl, routeEvents, json, "POST")
 }
 
 func readyRequest(req request) bool {
-	json := `{"code": "` + req.code + `", "id":` + strconv.FormatInt(req.id, 10) + `}`
+	json := `{"code": "` + req.codeProducer + `", "id":` + strconv.FormatInt(req.id, 10) + `}`
 	log.Println("json:", json)
 
 	ready, errStatus := jsonRequest(brokerAPIurl, routeStatus, json, "POST")
@@ -47,25 +49,27 @@ func readyRequest(req request) bool {
 }
 
 func jsonRequest(urlAPI, route, json, methodHTTP string) (string, error) {
-	client := &http.Client{}
+	var client http.Client
+
 	jsonString := []byte(json)
 
 	u, _ := url.ParseRequestURI(urlAPI)
 	u.Path = route
 	apiURLFormatted := u.String()
 
-	request, err := http.NewRequest(methodHTTP, apiURLFormatted, bytes.NewBuffer(jsonString))
-	request.Header.Set("X-Custom-Header", "myvalue")
-	request.Header.Set("Content-Type", "application/json")
-	if err != nil {
-		log.Println("1")
-		return "", err
+	request, errNewRequest := http.NewRequest(methodHTTP, apiURLFormatted, bytes.NewBuffer(jsonString))
+	if errNewRequest != nil {
+		return "",
+			errNewRequest
 	}
 
-	response, err := client.Do(request)
-	if err != nil {
-		log.Println("2")
-		return "", err
+	request.Header.Set("X-Custom-Header", "myvalue")
+	request.Header.Set("Content-Type", "application/json")
+
+	response, errNewRequest := client.Do(request)
+	if errNewRequest != nil {
+		return "",
+			errNewRequest
 	}
 
 	return readResponse(response)
@@ -74,13 +78,19 @@ func jsonRequest(urlAPI, route, json, methodHTTP string) (string, error) {
 func readResponse(resp *http.Response) (string, error) {
 	defer resp.Body.Close()
 
-	body, errRead := ioutil.ReadAll(resp.Body)
+	body, errRead := io.ReadAll(resp.Body)
 	if errRead != nil {
-		return "", errRead
+		return "",
+			errRead
 	}
 
 	var response jsonAnswer
-	errConvert := json.Unmarshal(body, &response)
 
-	return response.Response, errConvert
+	if errConvert := json.Unmarshal(body, &response); errConvert != nil {
+		return "",
+			errConvert
+	}
+
+	return response.Response,
+		nil
 }

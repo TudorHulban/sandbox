@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type queue struct {
+type Queue struct {
 	events             []event
 	ttl                int64 // default TTL
 	lastID             int64
@@ -17,8 +17,8 @@ type queue struct {
 	mux                sync.Mutex
 }
 
-func newQueue(defaultTTL int64) *queue {
-	return &queue{
+func newQueue(defaultTTL int64) *Queue {
+	return &Queue{
 		ttl:       defaultTTL,
 		producers: make(map[string]*producer),
 		consumers: make(map[string]*consumer),
@@ -26,7 +26,7 @@ func newQueue(defaultTTL int64) *queue {
 }
 
 // addEvent Method adds event to queue and returns the added event ID.
-func (q *queue) addEvent(e event) int64 {
+func (q *Queue) addEvent(e event) int64 {
 	// passed by copy event will use to add to queue
 	e.ID = q.newID()
 
@@ -35,7 +35,7 @@ func (q *queue) addEvent(e event) int64 {
 }
 
 // getOldestEvent Method gets oldest event by creation time for consumer.
-func (q *queue) getOldestEvent(c *consumer) *event {
+func (q *Queue) getOldestEvent(c *consumer) *event {
 	if len(q.events) == 0 {
 		return nil
 	}
@@ -74,7 +74,7 @@ func filterAssignedToConsumer(e event) bool {
 }
 
 // getRequestStatus - TODO: in work
-func (q *queue) getRequestStatus(reqID int64) bool {
+func (q *Queue) getRequestStatus(reqID int64) bool {
 	if len(q.events) == 0 {
 		return true
 	}
@@ -87,7 +87,7 @@ func (q *queue) getRequestStatus(reqID int64) bool {
 	return false
 }
 
-func (q *queue) newID() int64 {
+func (q *Queue) newID() int64 {
 	var result int64
 
 	q.mux.Lock()
@@ -98,7 +98,7 @@ func (q *queue) newID() int64 {
 	return result
 }
 
-func (q *queue) clean() {
+func (q *Queue) clean() {
 	q.sortEvents()
 
 	var lastOldestEvent int64
@@ -112,13 +112,13 @@ func (q *queue) clean() {
 }
 
 // sortEvents - by TTL
-func (q *queue) sortEvents() {
+func (q *Queue) sortEvents() {
 	sort.Slice(q.events, func(i, j int) bool {
 		return q.events[i].ttl < q.events[j].ttl
 	})
 }
 
-func (q *queue) getEventByID(id int64) *event {
+func (q *Queue) getEventByID(id int64) *event {
 	for k, v := range q.events {
 		if v.ID == id {
 			return &q.events[int64(k)]
@@ -128,15 +128,15 @@ func (q *queue) getEventByID(id int64) *event {
 	return nil
 }
 
-func (q *queue) addConsumer(c *consumer) {
+func (q *Queue) addConsumer(c *consumer) {
 	q.consumers[c.Code] = c
 }
 
-func (q *queue) addProducer(p *producer) {
+func (q *Queue) addProducer(p *producer) {
 	q.producers[p.Code] = p
 }
 
-func (q *queue) isRegisteredProducer(code string) (bool, *producer) {
+func (q *Queue) isRegisteredProducer(code string) (bool, *producer) {
 	res, exists := q.producers[code]
 	if !exists {
 		return false, nil
@@ -145,7 +145,7 @@ func (q *queue) isRegisteredProducer(code string) (bool, *producer) {
 	return true, res
 }
 
-func (q *queue) isRegisteredConsumer(code string) (bool, *consumer) {
+func (q *Queue) isRegisteredConsumer(code string) (bool, *consumer) {
 	res, exists := q.consumers[code]
 	if !exists {
 		return false, nil
@@ -154,7 +154,7 @@ func (q *queue) isRegisteredConsumer(code string) (bool, *consumer) {
 	return true, res
 }
 
-func (q *queue) addPayload(req request) {
+func (q *Queue) addPayload(req request) {
 	for _, v := range req.Payload {
 		q.addEvent(event{
 			ID:             q.newID(),

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,22 +13,7 @@ type jsonAnswer struct {
 	Response string `json:"response"`
 }
 
-const _Port = "8080"
-const _SecondsDefaultQueueTTL = 600
-
-const (
-	urlRegisterProducer = "/registerproducer"
-	urlRegisterConsumer = "/registerconsumer"
-	urlPostEvents       = "/postevents"
-	urlConsumeEvent     = "/consumevent" // switch to GET - later
-	urlReadyEventID     = "/readyevent"
-	urlStatusRequestID  = "/statusrequest" // switch to GET - later)
-)
-
-var q queue = *newQueue(_SecondsDefaultQueueTTL) // one queue only for now
-
 func main() {
-	http.HandleFunc(urlRegisterProducer, handlerRegisterProducer)
 	http.HandleFunc(urlRegisterConsumer, handlerRegisterConsumer)
 	http.HandleFunc(urlPostEvents, handlerPostEvent)
 	http.HandleFunc(urlConsumeEvent, handlerConsumeEvent)
@@ -37,31 +21,6 @@ func main() {
 	http.HandleFunc(urlStatusRequestID, handlerStatusRequestID)
 
 	http.ListenAndServe((fmt.Sprintf(":%v", _Port)), nil)
-}
-
-func sendResponse(w http.ResponseWriter, rawResponse string) error {
-	response := jsonAnswer{
-		Response: rawResponse,
-	}
-
-	return json.NewEncoder(w).Encode(&response)
-}
-
-func handlerRegisterProducer(w http.ResponseWriter, r *http.Request) {
-	req, errDecode := decodeRequest(r, registerProducer)
-	if errDecode != nil {
-		sendResponse(w, errDecode.Error())
-
-		return
-	}
-
-	var generatedProducer producer
-	mapstructure.Decode(req, &generatedProducer)
-	q.addProducer(&generatedProducer)
-
-	log.Println("registered producers:", len(q.producers), q.producers)
-
-	sendResponse(w, "ok")
 }
 
 func handlerRegisterConsumer(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +35,7 @@ func handlerRegisterConsumer(w http.ResponseWriter, r *http.Request) {
 	mapstructure.Decode(req, &generatedConsumer)
 	q.addConsumer(&generatedConsumer)
 
-	log.Println("registered consumers:", len(q.consumers), q.consumers)
+	fmt.Println("registered consumers:", len(q.consumers), q.consumers)
 
 	sendResponse(w, "ok")
 }

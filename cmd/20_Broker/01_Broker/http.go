@@ -2,7 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"net/http"
+
+	"github.com/valyala/fasthttp"
 )
 
 // producer - quota not implemented
@@ -40,14 +41,15 @@ type task struct {
 	ConsumerCode string `json:"code"`
 }
 
-func decodeRequest(r *http.Request, f func() interface{}) (interface{}, error) {
-	decoder := json.NewDecoder(r.Body)
+func decodeRequest(r *fasthttp.Request, f func() interface{}) (interface{}, error) {
+	decoder := json.NewDecoder(r.BodyStream())
 	ev := f()
 
 	errDecode := decoder.Decode(&ev)
 	if errDecode != nil {
 		return nil, errDecode
 	}
+
 	return ev, nil
 }
 
