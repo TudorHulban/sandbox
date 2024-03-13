@@ -12,7 +12,7 @@ import (
 func TestFlyway(t *testing.T) {
 	ctx := context.Background()
 
-	pgContainer, funcCleanPg := GetTestContainerPG(t)
+	pgContainer, config, funcCleanPg := GetTestContainerPG(t)
 
 	t.Cleanup(
 		funcCleanPg,
