@@ -7,13 +7,12 @@ import (
 	"time"
 
 	"github.com/TudorHulban/GolangSandbox/apperrors"
+	"github.com/TudorHulban/GolangSandbox/helpers"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type retryInterval func(numberRetries uint) time.Duration
-
 type paramsConnectPGXWithRetries struct {
-	FNRetry retryInterval
+	FNRetry helpers.RetryInterval
 	DSN     string
 
 	NoRetries uint

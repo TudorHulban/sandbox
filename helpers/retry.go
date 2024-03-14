@@ -1,12 +1,14 @@
-package main
+package helpers
 
 import (
 	"fmt"
 	"time"
 )
 
+type RetryInterval func(numberRetries uint) time.Duration
+
 type ParamsRetry struct {
-	FNRetry   retryInterval
+	FNRetry   RetryInterval
 	NoRetries uint
 }
 

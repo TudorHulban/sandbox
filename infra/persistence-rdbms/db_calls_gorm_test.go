@@ -5,6 +5,7 @@ import (
 	"time"
 
 	ddltable "github.com/TudorHulban/DDLTable"
+	"github.com/TudorHulban/GolangSandbox/helpers"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -75,8 +76,8 @@ func TestGORMDDL(t *testing.T) {
 		funcClean,
 	)
 
-	connGORM, errConnGORM := Retry[gorm.DB](
-		&ParamsRetry{
+	connGORM, errConnGORM := helpers.Retry[gorm.DB](
+		&helpers.ParamsRetry{
 			NoRetries: 5,
 			FNRetry: func(numberRetry uint) time.Duration {
 				return time.Millisecond * 70 * time.Duration(numberRetry+1)
