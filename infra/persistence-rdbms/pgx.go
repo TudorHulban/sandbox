@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type retryInterval func(numberRetry uint) time.Duration
+type retryInterval func(numberRetries uint) time.Duration
 
 type paramsConnectPGXWithRetries struct {
 	FNRetry retryInterval

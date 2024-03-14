@@ -1,8 +1,8 @@
 package main
 
 import (
-	"context"
 	"testing"
+	"time"
 
 	ddltable "github.com/TudorHulban/DDLTable"
 	"github.com/stretchr/testify/require"
@@ -62,25 +62,36 @@ func TestGORM(t *testing.T) {
 }
 
 func TestGORMDDL(t *testing.T) {
-	pgContainer, funcClean := GetTestContainerPG(t)
+	_, cfg, funcClean := GetTestContainerPG(
+		&ParamsGetTestContainerPostgres{
+			DBPassword: paramsPG.Password,
+			DBUser:     paramsPG.User,
+			DBName:     paramsPG.DBName,
+		},
+		t,
+	)
 
 	t.Cleanup(
 		funcClean,
 	)
 
-	ctx := context.Background()
+	connGORM, errConnGORM := Retry[gorm.DB](
+		&ParamsRetry{
+			NoRetries: 5,
+			FNRetry: func(numberRetry uint) time.Duration {
+				return time.Millisecond * 70 * time.Duration(numberRetry+1)
+			},
+		},
 
-	connDSN, errConnection := pgContainer.ConnectionString(ctx, "sslmode=disable")
-	require.NoError(t, errConnection)
-
-	connGORM, errConnGORM := gorm.Open(
-		postgres.Open(
-			connDSN,
-		),
-		&gorm.Config{
-			DisableAutomaticPing: true,
+		func() (*gorm.DB, error) {
+			return gorm.Open(
+				postgres.Open(
+					cfg.AsDSNGORM(),
+				),
+			)
 		},
 	)
+
 	require.NoError(t, errConnGORM)
 
 	table, errNew := ddltable.NewTable(
