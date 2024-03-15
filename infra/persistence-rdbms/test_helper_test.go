@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/TudorHulban/GolangSandbox/config"
 	testcontainerflyway "github.com/TudorHulban/GolangSandbox/infra/testcontainer-flyway"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/require"
@@ -12,16 +13,18 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-type ParamsGetTestContainerPostgres struct {
+type PostgresCredentials struct {
 	DBPassword string
 	DBUser     string
 	DBName     string
+}
 
+type ParamsGetTestContainerPostgres struct {
+	PostgresCredentials
 	ExternalPGPort string
 }
 
-// GetTestContainerPG returns test container and cleanup function for the created container.
-func GetTestContainerPG(params *ParamsGetTestContainerPostgres, t *testing.T) (*testcontainers.Container, *ConfigPostgres, func()) {
+func GetTestContainerPG(params *ParamsGetTestContainerPostgres, t *testing.T) (*config.ConfigPostgres, func()) {
 	ctx := context.Background()
 
 	reqContainer := testcontainers.GenericContainerRequest{
@@ -29,7 +32,7 @@ func GetTestContainerPG(params *ParamsGetTestContainerPostgres, t *testing.T) (*
 			Image:        "postgres:15.3-alpine",
 			ExposedPorts: []string{"5432/tcp"},
 			Env: map[string]string{
-				"POSTGRES_PASSWORD": paramsPG.Password,
+				"POSTGRES_PASSWORD": paramsPG.DBPassword,
 				"POSTGRES_USER":     params.DBUser,
 				"POSTGRES_DB":       params.DBName,
 			},
@@ -48,14 +51,16 @@ func GetTestContainerPG(params *ParamsGetTestContainerPostgres, t *testing.T) (*
 	hostPostgres, errHost := container.Host(ctx)
 	require.NoError(t, errHost)
 
-	return &container,
-		&ConfigPostgres{
-			DBName:   params.DBName,
-			User:     params.DBUser,
-			Password: params.DBPassword,
-			Host:     hostPostgres,
-			Port:     portPostgres.Int(),
+	return &config.ConfigPostgres{
+			DBInfo: config.DBInfo{
+				DBName:     params.DBName,
+				DBUser:     params.DBUser,
+				DBPassword: params.DBPassword,
+				Host:       hostPostgres,
+				Port:       uint(portPostgres.Int()),
+			},
 		},
+
 		func() {
 			require.NoError(t,
 				container.Terminate(ctx),
@@ -64,24 +69,28 @@ func GetTestContainerPG(params *ParamsGetTestContainerPostgres, t *testing.T) (*
 }
 
 type ParamsGetTestContainerFlyway struct {
-	MigrationsAbsolutePath string
-	ExternalPGPort         uint
+	config.DBInfo
+
+	MigrationsFiles []testcontainers.ContainerFile
+	ExternalPGPort  uint
 }
 
-func GetTestContainerFlyway(params *ParamsGetTestContainerFlyway, t *testing.T) (*testcontainerflyway.ContainerFlyway, func()) {
+func RunTestContainerFlyway(params *ParamsGetTestContainerFlyway, t *testing.T) {
 	ctx := context.Background()
 
-	result, errContainer := testcontainerflyway.RunContainer(
+	errContainer := testcontainerflyway.RunContainerFlyway(
 		ctx,
 
 		&testcontainerflyway.ConfigFlyway{
-			MigrationsPath: params.MigrationsAbsolutePath,
+			MigrationsFiles: params.MigrationsFiles,
 
-			DBName:   paramsPG.DBName,
-			User:     paramsPG.User,
-			Password: paramsPG.Password,
-
-			Port: params.ExternalPGPort,
+			DBInfo: config.DBInfo{
+				DBName:     params.DBName,
+				DBUser:     params.DBUser,
+				DBPassword: params.DBPassword,
+				Host:       params.Host,
+				Port:       params.ExternalPGPort,
+			},
 		},
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("Flyway OSS Edition").
@@ -89,11 +98,4 @@ func GetTestContainerFlyway(params *ParamsGetTestContainerFlyway, t *testing.T) 
 		),
 	)
 	require.NoError(t, errContainer)
-
-	return result,
-		func() {
-			require.NoError(t,
-				result.Terminate(ctx),
-			)
-		}
 }

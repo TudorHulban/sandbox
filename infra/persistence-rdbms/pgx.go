@@ -6,55 +6,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/TudorHulban/GolangSandbox/apperrors"
 	"github.com/TudorHulban/GolangSandbox/helpers"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type paramsConnectPGXWithRetries struct {
-	FNRetry helpers.RetryInterval
-	DSN     string
-
-	NoRetries uint
-}
-
 var _dbConnection *pgxpool.Pool
 var mu sync.RWMutex
-
-func connectPGXWithRetries(ctx context.Context, params *paramsConnectPGXWithRetries) (*pgxpool.Pool, error) {
-	var errResult error
-
-	for i := 0; i < int(params.NoRetries); i++ {
-		connPGXPool, errConnPGXPool := pgxpool.New(
-			ctx,
-			params.DSN,
-		)
-		if errConnPGXPool == nil {
-			return connPGXPool, nil
-		}
-
-		if i == int(params.NoRetries) {
-			errResult = apperrors.ErrCausedByInfrastructure{
-				Caller:  "connectPGXWithRetries",
-				Calling: "pgxpool.New",
-				Issue: fmt.Errorf(
-					"database not ready after %d retries:%w",
-					params.NoRetries,
-					errConnPGXPool,
-				),
-			}
-
-			break
-		}
-
-		time.Sleep(
-			params.FNRetry(uint(i)),
-		)
-	}
-
-	return nil,
-		errResult
-}
 
 func GetPostgresDBConnection(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
 	mu.RLock()
@@ -68,14 +25,19 @@ func GetPostgresDBConnection(ctx context.Context, dsn string) (*pgxpool.Pool, er
 	mu.Lock()
 	defer mu.Unlock()
 
-	_dbConnection, errConnect := connectPGXWithRetries(
-		ctx,
-		&paramsConnectPGXWithRetries{
-			DSN:       dsn,
-			NoRetries: 3,
+	_dbConnection, errConnect := helpers.Retry[pgxpool.Pool](
+		&helpers.ParamsRetry{
+			NoRetries: 5,
 			FNRetry: func(numberRetry uint) time.Duration {
-				return time.Millisecond * 1500 * time.Duration(numberRetry+1)
+				return time.Millisecond * 50 * time.Duration(numberRetry+1)
 			},
+		},
+
+		func() (*pgxpool.Pool, error) {
+			return pgxpool.New(
+				ctx,
+				dsn,
+			)
 		},
 	)
 	if errConnect != nil {

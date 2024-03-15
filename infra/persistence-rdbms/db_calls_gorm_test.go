@@ -63,11 +63,13 @@ func TestGORM(t *testing.T) {
 }
 
 func TestGORMDDL(t *testing.T) {
-	_, cfg, funcClean := GetTestContainerPG(
+	cfg, funcClean := GetTestContainerPG(
 		&ParamsGetTestContainerPostgres{
-			DBPassword: paramsPG.Password,
-			DBUser:     paramsPG.User,
-			DBName:     paramsPG.DBName,
+			PostgresCredentials: PostgresCredentials{
+				DBPassword: paramsPG.DBPassword,
+				DBUser:     paramsPG.DBUser,
+				DBName:     paramsPG.DBName,
+			},
 		},
 		t,
 	)
@@ -80,7 +82,7 @@ func TestGORMDDL(t *testing.T) {
 		&helpers.ParamsRetry{
 			NoRetries: 5,
 			FNRetry: func(numberRetry uint) time.Duration {
-				return time.Millisecond * 70 * time.Duration(numberRetry+1)
+				return time.Millisecond * 50 * time.Duration(numberRetry+1)
 			},
 		},
 

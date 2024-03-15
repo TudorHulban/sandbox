@@ -5,14 +5,13 @@ import "fmt"
 const TableProducts = "products"
 
 type Product struct {
-	// gorm.Model
-	Code string
+	Code string `hera:"order:5"`
 
-	CreatedAt int64 `hera:"columnname:created_at"`
-	UpdatedAt int64 `hera:"columnname:updated_at"`
-	DeletedAt int64 `hera:"columnname:deleted_at"`
+	CreatedAt int64 `hera:"columnname:created_at, order:2"`
+	UpdatedAt int64 `hera:"columnname:updated_at, order:3"`
+	DeletedAt int64 `hera:"columnname:deleted_at, order:4"`
 
-	ID    uint `hera:"pk"`
+	ID    uint `hera:"pk, order:1"`
 	Price uint
 }
 

@@ -7,23 +7,27 @@ import (
 	"time"
 
 	ddltable "github.com/TudorHulban/DDLTable"
+	"github.com/TudorHulban/GolangSandbox/helpers"
 	"github.com/stretchr/testify/require"
 )
 
 func TestStoredProcedures(t *testing.T) {
 	ctx := context.Background()
 
-	pgContainer, funcClean := GetTestContainerPG(t)
+	configContainer, funcClean := GetTestContainerPG(
+		&ParamsGetTestContainerPostgres{
+			PostgresCredentials: PostgresCredentials{
+				DBPassword: paramsPG.DBPassword,
+				DBUser:     paramsPG.DBUser,
+				DBName:     paramsPG.DBName,
+			},
+		},
+		t,
+	)
 
 	t.Cleanup(
 		funcClean,
 	)
-
-	connDSN, errConnection := pgContainer.ConnectionString(
-		ctx,
-		"sslmode=disable",
-	)
-	require.NoError(t, errConnection)
 
 	table, errNew := ddltable.NewTable(
 		_DDLRoot,
@@ -32,9 +36,20 @@ func TestStoredProcedures(t *testing.T) {
 	require.NoError(t, errNew)
 	require.NotZero(t, table)
 
-	pgxSimple, errPGX := NewPGXSimpleFromTestContainersDSN(
-		ctx,
-		connDSN,
+	pgxSimple, errPGX := helpers.Retry[dbPGXSimple](
+		&helpers.ParamsRetry{
+			NoRetries: 5,
+			FNRetry: func(numberRetry uint) time.Duration {
+				return time.Millisecond * 50 * time.Duration(numberRetry+1)
+			},
+		},
+
+		func() (*dbPGXSimple, error) {
+			return NewPGXSimpleFromTestContainersDSN(
+				ctx,
+				configContainer.AsDSNPGX(),
+			)
+		},
 	)
 	require.NoError(t, errPGX)
 	require.NotNil(t, pgxSimple)

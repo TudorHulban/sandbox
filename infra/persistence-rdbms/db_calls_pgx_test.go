@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/TudorHulban/GolangSandbox/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -12,7 +13,9 @@ func BenchmarkPGXSimple(b *testing.B) {
 
 	connPGX, errConnPGX := NewDBPGX(
 		ctx,
-		&paramsPG,
+		&config.ConfigPostgres{
+			DBInfo: paramsPG,
+		},
 	)
 	require.NoError(b, errConnPGX)
 
@@ -35,7 +38,9 @@ func BenchmarkPGXPool(b *testing.B) {
 
 	connPGX, errConnPGX := NewDBPGX(
 		ctx,
-		&paramsPG,
+		&config.ConfigPostgres{
+			DBInfo: paramsPG,
+		},
 	)
 	require.NoError(b, errConnPGX)
 

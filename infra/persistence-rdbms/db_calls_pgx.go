@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/TudorHulban/GolangSandbox/config"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -33,7 +34,7 @@ func NewPGXSimpleFromTestContainersDSN(ctx context.Context, cfg string) (*dbPGXS
 		nil
 }
 
-func NewDBPGX(ctx context.Context, cfg *ConfigPostgres) (*dbPGX, error) {
+func NewDBPGX(ctx context.Context, cfg *config.ConfigPostgres) (*dbPGX, error) {
 	connPGXPool, errConnPGXPool := pgxpool.New(
 		ctx,
 		cfg.AsDSNPGX(),
