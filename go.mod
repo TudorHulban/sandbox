@@ -4,6 +4,7 @@ go 1.21.6
 
 require (
 	github.com/TudorHulban/DDLTable v0.0.0-20240224114245-fcae0952bdb6
+	github.com/TudorHulban/epochid v0.0.0-20220912160557-6fd65ab75fcc
 	github.com/TudorHulban/log v0.0.0-20220417102515-4df74e30f0a0
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/caarlos0/env/v7 v7.1.0

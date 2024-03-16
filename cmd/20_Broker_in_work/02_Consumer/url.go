@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -15,7 +14,7 @@ import (
 func createFile(path string, content string) error {
 	co := []byte(content)
 
-	return ioutil.WriteFile(path, co, 0644)
+	return os.WriteFile(path, co, 0644)
 }
 
 func deleteFile(path string) error {

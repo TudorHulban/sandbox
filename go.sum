@@ -11,6 +11,8 @@ github.com/Microsoft/hcsshim v0.11.4 h1:68vKo2VN8DE9AdN4tnkWnmdhqdbpUFM8OF3Airm7
 github.com/Microsoft/hcsshim v0.11.4/go.mod h1:smjE4dvqPX9Zldna+t5FG3rnoHhaB7QYxPRqGcpAD9w=
 github.com/TudorHulban/DDLTable v0.0.0-20240224114245-fcae0952bdb6 h1:4Tcda3w+Qj9UOOoOQnRxDK9tLWNZfg/SseqcRQilWO0=
 github.com/TudorHulban/DDLTable v0.0.0-20240224114245-fcae0952bdb6/go.mod h1:bd9fMO/wbOdTIvaJ5lt2AORHzhLi4Og5kyNLmL76oTw=
+github.com/TudorHulban/epochid v0.0.0-20220912160557-6fd65ab75fcc h1:iKNpk9TQEy0j6QwdvwLOocQOCRUA8b36gPz34hwWF0k=
+github.com/TudorHulban/epochid v0.0.0-20220912160557-6fd65ab75fcc/go.mod h1:RmFeB3R0jxMrWEcPvDrpkhy0JrtfXAiihJ0D2VPwLmI=
 github.com/TudorHulban/log v0.0.0-20220417102515-4df74e30f0a0 h1:oEN0fnc1h8dlpKVOExCSH07sK9gZdlLsCIZRt5VsT5g=
 github.com/TudorHulban/log v0.0.0-20220417102515-4df74e30f0a0/go.mod h1:ew305nN8YryUTCYmLewSYkDsgLnlhUGMrFxhvastTLI=
 github.com/andybalholm/brotli v1.0.6 h1:Yf9fFpf49Zrxb9NlQaluyE92/+X7UVHlhMNJN2sxfOI=

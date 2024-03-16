@@ -8,17 +8,16 @@ import (
 
 type Broker struct {
 	Transport *transportfiber.Transport
-	Queues    []*Queue
+	Queues    []*Topic
 }
 
-type ParamTransport struct {
-	Port string
-	Host string
+type ParamsNewBroker struct {
+	transportfiber.ParamTransportSocket
 }
 
-func NewBroker(params *ParamTransport) (*Broker, error) {
+func NewBroker(params *ParamsNewBroker) (*Broker, error) {
 	transport, errCrTransport := transportfiber.NewTransport(
-		(*transportfiber.ParamTransportSocket)(params),
+		&params.ParamTransportSocket,
 	)
 	if errCrTransport != nil {
 		return nil,
@@ -27,8 +26,8 @@ func NewBroker(params *ParamTransport) (*Broker, error) {
 
 	return &Broker{
 			Transport: transport,
-			Queues: []*Queue{
-				newQueue(_SecondsDefaultQueueTTL),
+			Queues: []*Topic{
+				NewTopic(_SecondsDefaultQueueTTL),
 			},
 		},
 		nil

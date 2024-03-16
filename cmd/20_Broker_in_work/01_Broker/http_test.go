@@ -2,22 +2,24 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 const apiURL = "http://localhost:" + port
 
 func TestRegisterProducer(t *testing.T) {
-	client := &http.Client{}
+	var client http.Client
+
 	jsonString := []byte(`{"code": "P1", "ip": "127.0.0.5"}`)
 
 	//curl -X POST -H 'Content-Type: application/json' -d "{\"code\": \"P77\", \"ip\": \"127.0.0.77\"}" http://127.0.0.1:8080/registerproducer
 	//apiURL := "http://requestbin.fullcontact.com"
 	//route := "/yx8kxbyx/"
+
 	u, _ := url.ParseRequestURI(apiURL)
 	u.Path = urlRegisterProducer
 
@@ -34,14 +36,16 @@ func TestRegisterProducer(t *testing.T) {
 		t.Error("NewRequest  error: ", errDo)
 	}
 
-	r, _ := readResponse(response)
+	r, errRead := readResponse(response)
+	require.NoError(t, errRead)
 	if r != "ok" {
 		t.Error("producer not registered correctly", r)
 	}
 }
 
 func TestPostEvent(t *testing.T) {
-	client := &http.Client{}
+	var client http.Client
+
 	jsonString := []byte(`{"code": "P1", "id": 1001, "ttl": 100, "payload": ["url1", "url2"]}`)
 
 	u, _ := url.ParseRequestURI(apiURL)
@@ -67,7 +71,8 @@ func TestPostEvent(t *testing.T) {
 }
 
 func TestConsumeEvent(t *testing.T) {
-	client := &http.Client{}
+	var client http.Client
+
 	jsonString := []byte(`{"code": "C1"}`)
 
 	u, _ := url.ParseRequestURI(apiURL)
@@ -90,17 +95,4 @@ func TestConsumeEvent(t *testing.T) {
 	if r != "url1" {
 		t.Error("error consume: ", r)
 	}
-}
-
-func readResponse(resp *http.Response) (string, error) {
-	defer resp.Body.Close()
-
-	body, errRead := ioutil.ReadAll(resp.Body)
-	if errRead != nil {
-		return "", errRead
-	}
-
-	var result jsonAnswer
-	errConvert := json.Unmarshal(body, &result)
-	return result.Response, errConvert
 }
