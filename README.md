@@ -1,4 +1,5 @@
 # Golang Resources <a name="top"></a>
+
 * [Why Go?](#why)
 * [Getting Started](#start)
 * [Directory Structure](#directory)

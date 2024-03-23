@@ -3,10 +3,9 @@ package main
 import "strconv"
 
 func compress(word string) string {
-	var result string
+	var res string
 
 	var currentLetter string
-
 	var currentNumOccurences int
 
 	// no rune needed based on assumption.
@@ -17,21 +16,23 @@ func compress(word string) string {
 
 		if currentLetter == word[i:i+1] {
 			currentNumOccurences++
-		} else {
-			result = result + currentLetter + strconv.Itoa(currentNumOccurences)
+		}
+
+		if currentLetter != word[i:i+1] {
+			res = res + currentLetter + strconv.Itoa(currentNumOccurences)
 
 			currentLetter = word[i : i+1]
 			currentNumOccurences = 1
 		}
 
 		if i == len(word)-1 {
-			result = result + currentLetter + strconv.Itoa(currentNumOccurences)
+			res = res + currentLetter + strconv.Itoa(currentNumOccurences)
 		}
 	}
 
-	if len(result) >= len(word) {
+	if len(res) >= len(word) {
 		return word
 	}
 
-	return result
+	return res
 }
