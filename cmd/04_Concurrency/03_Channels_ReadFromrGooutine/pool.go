@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"sync"
 	"time"
 )
@@ -47,11 +46,11 @@ func (p *pool) do(t task) {
 	p.noTasks--
 
 	if p.noTasks == 0 {
-		log.Println("no more tasks. closing work.")
+		fmt.Println("no more tasks. closing work.")
 
 		close(p.chWork)
 
-		log.Println("work now closed.")
+		fmt.Println("work now closed.")
 	}
 }
 
@@ -66,7 +65,7 @@ func (p *pool) start() {
 
 		p.tasksHandled = append(p.tasksHandled, event)
 
-		log.Printf(
+		fmt.Printf(
 			"done work %v.",
 			event,
 		)

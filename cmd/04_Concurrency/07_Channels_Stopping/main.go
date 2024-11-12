@@ -5,6 +5,20 @@ import (
 	"time"
 )
 
+func do(work chan int64) {
+	for {
+		work <- time.Now().UnixMilli()
+	}
+}
+
+func stop(stop chan struct{}) {
+	time.Sleep(5000 * time.Millisecond)
+
+	fmt.Println("elapsed finished...")
+
+	stop <- struct{}{}
+}
+
 func main() {
 	chDo := make(chan int64)
 	defer close(chDo)

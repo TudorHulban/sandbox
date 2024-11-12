@@ -1,9 +1,0 @@
-package main
-
-// You are given a number, which should be:"
-// a. passed to a goroutine,
-// b. doubled
-// c. passed back to the main
-// d. printed.
-
-// Explain the implementation and possible ways to solve the task.

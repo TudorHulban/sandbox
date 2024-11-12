@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"sync"
 )
 
@@ -19,7 +19,7 @@ func doWork(work chan int, from, steps int) {
 	_poolWorkers--
 
 	if _poolWorkers == 0 {
-		log.Println("Closing work.")
+		fmt.Println("closing work")
 
 		close(work)
 	}
@@ -40,6 +40,6 @@ func main() {
 			break
 		}
 
-		log.Println("event:", value)
+		fmt.Println("event:", value)
 	}
 }

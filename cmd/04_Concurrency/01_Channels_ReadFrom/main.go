@@ -1,11 +1,13 @@
 package main
 
-import (
-	"log"
-)
+import "fmt"
+
+// we close the channel when go routine finishes
+// and not when main go routine finishes.
 
 func main() {
 	n := 10
+
 	chIntegers := make(chan int)
 
 	go func() {
@@ -22,6 +24,6 @@ func main() {
 			break
 		}
 
-		log.Printf("event: %d\n", value)
+		fmt.Printf("event: %d\n", value)
 	}
 }

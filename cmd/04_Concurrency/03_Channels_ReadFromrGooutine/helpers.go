@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"math"
 )
 
@@ -36,7 +36,7 @@ func createWork(from, steps, noWorkers int) tasks {
 	res[noWorkers-1].end = res[noWorkers-1].end + (steps - assigned)
 
 	for ix, task := range res {
-		log.Printf("Task %v with following details: begin - %v, end - %v.\n",
+		fmt.Printf("Task %v with following details: begin - %v, end - %v.\n",
 			ix+1, task.begin, task.end)
 	}
 
